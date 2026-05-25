@@ -4,7 +4,7 @@
 // @copyright		2013
 // @license			No Distribution!
 // @description		Setzt den Karten-Link zusĂÂ¤tzlich wieder auf die alte Position.
-// @include			http://de*.die-staemme.de/game.php?*
+// @include			http://hu*.klanhaboru.hu/game.php?*
 // ==/UserScript==
 
 /* Script API */
