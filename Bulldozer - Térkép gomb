@@ -1,0 +1,63 @@
+// ==UserScript==
+// @name         Bulldozer - Térkép gomb
+// @author       pL4n3
+// @copyright    2013
+// @license      Bulldozer Gaming
+// @version      2.0
+// @description  Térkép gomb visszahelyezése régi pozícióra
+// @include      https://hu*.klanhaboru.hu/game.php?*
+// @grant        unsafeWindow
+// ==/UserScript==
+
+var win = typeof unsafeWindow != 'undefined'
+    ? unsafeWindow
+    : window;
+
+// EREDETI jQuery/context
+win.$.ajaxSetup({
+    cache: true
+});
+
+/* Script API */
+var api = typeof unsafeWindow != 'undefined'
+    ? unsafeWindow.ScriptAPI
+    : window.ScriptAPI;
+
+api.register(
+    '70-Map Position',
+    true,
+    'pL4n3',
+    'support-nur-im-forum@die-staemme.de'
+);
+
+// ===== EREDETI SCRIPT =====
+
+tr = document.getElementById('menu_row');
+
+td = tr.children[2];
+
+link = td.children[0].getAttribute('href');
+
+menu2 = document.getElementById('menu_row2');
+
+maptd = document.createElement('td');
+
+maptd.className = 'firstcell box-item icon-box nowrap';
+
+newLink = document.createElement('a');
+
+newLink.href = link;
+
+newSpan = document.createElement('span');
+
+newSpan.className = 'icon header map';
+
+maptext = document.createTextNode(' Térkép');
+
+newLink.appendChild(newSpan);
+
+newLink.appendChild(maptext);
+
+maptd.appendChild(newLink);
+
+menu2.insertBefore(maptd, menu2.firstChild);
