@@ -2451,54 +2451,50 @@ margin-bottom:15px;
 display:flex;
 justify-content:space-between;
 align-items:center;
+width:100%;
 padding:10px;
+box-sizing:border-box;
 ">
 
-<h3 style="
-margin:0;
-color:#7a0000;
+<div style="
+display:flex;
+align-items:center;
+gap:10px;
+font-size:18px;
+font-weight:bold;
+color:#7d0000;
 ">
 
 <img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/command/attack.png"
-
 style="
-width:16px;
-height:16px;
-vertical-align:-3px;
-margin-right:8px;
+width:18px;
+height:18px;
 ">
+
+<span>
 
 A TAGOK BEÉRKEZŐ TÁMADÁSAI
 
-</h3>
+</span>
 
-<button id="closeIncomingScanner"
+</div>
 
+<div>
+
+<a
+id="closeIncomingScanner"
+class="btn btn-confirm-yes"
 style="
-background:linear-gradient(
-to bottom,
-#7d1d1d,
-#470d0d
-);
-
-border:2px solid #d86b6b;
-
-border-radius:8px;
-
-padding:5px 12px;
-
-color:#fff;
-
-font-size:12px;
-
-font-weight:bold;
-
-cursor:pointer;
+display:inline-block;
+min-width:auto;
+padding:4px 14px;
 ">
 
 ❌ Bezárás
 
-</button>
+</a>
+
+</div>
 
 </div>
 
