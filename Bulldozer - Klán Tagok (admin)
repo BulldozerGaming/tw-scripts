@@ -2448,10 +2448,11 @@ margin-bottom:15px;
 ">
 
 <div style="
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:10px;
+display:grid;
+grid-template-columns: 1fr 470px;
+align-items:flex-start;
+gap:20px;
+width:100%;
 ">
 
 <h3 style="
@@ -2908,9 +2909,8 @@ ${v.village}
 style="
 background:#fff9f9;
 border:1px solid #d9aaaa;
-width:460px;
+width:100%;
 table-layout:fixed;
-margin-left:auto;
 ">
 
 <tr style="
