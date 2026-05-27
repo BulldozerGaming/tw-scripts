@@ -1360,10 +1360,10 @@ $('#bdScanner').remove();
 $('#defenseScanner').remove();
 
 $('#incomingScanner').remove();
-$('#startIncomingScan').show();
 
 $('#startNukeScan').hide();
 $('#startDefenseScan').hide();
+$('#startIncomingScan').hide();
 
     let panel = `
 
