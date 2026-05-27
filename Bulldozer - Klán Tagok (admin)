@@ -2693,6 +2693,11 @@ travelCols.length < cols.length
 )
 ? -2
 : 0;
+const supportIncoming =
+await getIncomingSupport(
+village
+);
+
 incomingResult.push({
 
 player:
@@ -2716,31 +2721,29 @@ heavy:getCol(cols,indexes.heavy)
 
 travelUnits:{
 
-spear:
-getCol(
+spear:getCol(
 travelCols,
 indexes.spear + roadShift
 ),
 
-sword:
-getCol(
+sword:getCol(
 travelCols,
 indexes.sword + roadShift
 ),
 
-archer:
-getCol(
+archer:getCol(
 travelCols,
 indexes.archer + roadShift
 ),
 
-heavy:
-getCol(
+heavy:getCol(
 travelCols,
 indexes.heavy + roadShift
 )
 
-}
+},
+
+supportIncoming
 
 });
 
@@ -2754,6 +2757,133 @@ renderIncoming();
 
 }
 );
+
+
+async function getIncomingSupport(
+villageHtml
+){
+
+const idMatch =
+villageHtml.match(
+/id=(\d+)/
+);
+
+if(!idMatch){
+
+return {
+
+spear:0,
+sword:0,
+archer:0,
+heavy:0
+
+};
+
+}
+
+const villageId =
+idMatch[1];
+
+const url =
+
+`${location.origin}`+
+
+`/game.php?village=`+
+
+game_data.village.id+
+
+`&screen=info_village&id=`+
+
+villageId;
+
+const html =
+await fetchPage(
+url
+);
+
+const doc =
+new DOMParser()
+.parseFromString(
+html,
+'text/html'
+);
+
+const tables =
+doc.querySelectorAll('.vis');
+
+let table = null;
+
+tables.forEach(t=>{
+
+if(
+t.innerText.includes(
+'Érkező erősítés'
+)
+){
+table=t;
+}
+
+});
+
+if(!table){
+
+return {
+
+spear:0,
+sword:0,
+archer:0,
+heavy:0
+
+};
+
+}
+
+const row =
+table.querySelector(
+'tr:nth-child(2)'
+);
+
+if(!row){
+
+return {
+
+spear:0,
+sword:0,
+archer:0,
+heavy:0
+
+};
+
+}
+
+const cells =
+row.querySelectorAll('td');
+
+return {
+
+spear:
+parseInt(
+cells[0]?.innerText
+)||0,
+
+sword:
+parseInt(
+cells[1]?.innerText
+)||0,
+
+archer:
+parseInt(
+cells[3]?.innerText
+)||0,
+
+heavy:
+parseInt(
+cells[7]?.innerText
+)||0
+
+};
+
+}
 
 function renderIncoming(){
 
@@ -2994,6 +3124,40 @@ font-size:11px;
 
 <td>
 <strong>${v.travelUnits.heavy}</strong>
+</td>
+
+</tr>
+
+<tr>
+
+<td>
+
+Érkező
+
+</td>
+
+<td>
+
+${v.supportIncoming.spear}
+
+</td>
+
+<td>
+
+${v.supportIncoming.sword}
+
+</td>
+
+<td>
+
+${v.supportIncoming.archer}
+
+</td>
+
+<td>
+
+${v.supportIncoming.heavy}
+
 </td>
 
 </tr>
