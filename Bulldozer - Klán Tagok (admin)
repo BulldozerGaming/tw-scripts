@@ -2693,10 +2693,6 @@ travelCols.length < cols.length
 )
 ? -2
 : 0;
-const supportIncoming =
-await getIncomingSupport(
-village
-);
 
 incomingResult.push({
 
@@ -2741,9 +2737,7 @@ travelCols,
 indexes.heavy + roadShift
 )
 
-},
-
-supportIncoming
+}
 
 });
 
@@ -2759,104 +2753,6 @@ renderIncoming();
 );
 
 
-async function getIncomingSupport(
-villageHtml
-){
-
-const idMatch =
-villageHtml.match(
-/id=(\d+)/
-);
-
-if(!idMatch){
-
-return {
-
-spear:0,
-sword:0,
-archer:0,
-heavy:0
-
-};
-
-}
-
-const villageId =
-idMatch[1];
-
-const url =
-
-`${location.origin}`+
-
-`/game.php?village=`+
-
-game_data.village.id+
-
-`&screen=info_village&id=`+
-
-villageId;
-
-const html =
-await fetchPage(
-url
-);
-
-const doc =
-new DOMParser()
-.parseFromString(
-html,
-'text/html'
-);
-
-const table =
-doc.querySelector(
-'#support_sum'
-);
-
-if(
-!table
-){
-
-return {
-
-spear:0,
-sword:0,
-archer:0,
-heavy:0
-
-};
-
-}
-
-const cells =
-table.querySelectorAll(
-'tbody td'
-);
-
-return {
-
-spear:
-parseInt(
-cells[0]?.innerText
-)||0,
-
-sword:
-parseInt(
-cells[1]?.innerText
-)||0,
-
-archer:
-parseInt(
-cells[3]?.innerText
-)||0,
-
-heavy:
-parseInt(
-cells[7]?.innerText
-)||0
-
-};
-}
 
 function renderIncoming(){
 
@@ -3101,39 +2997,7 @@ font-size:11px;
 
 </tr>
 
-<tr>
 
-<td>
-
-Érkező
-
-</td>
-
-<td>
-
-${v.supportIncoming.spear}
-
-</td>
-
-<td>
-
-${v.supportIncoming.sword}
-
-</td>
-
-<td>
-
-${v.supportIncoming.archer}
-
-</td>
-
-<td>
-
-${v.supportIncoming.heavy}
-
-</td>
-
-</tr>
 
 </table>
 
