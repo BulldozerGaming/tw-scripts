@@ -2425,124 +2425,317 @@ $('.defGlobalToggle')
 // INCOMING SCANNER
 // =====================================
 
-let incomingResult=[];
+let incomingResult = [];
 
-async function scanIncomingPlayer(player){
+$('#startIncomingScan').on(
+'click',
+async function(){
+
+$('#bdScanner').remove();
+$('#defenseScanner').remove();
+$('#incomingScanner').remove();
+
+$('#startNukeScan').hide();
+$('#startDefenseScan').hide();
+$('#startIncomingScan').hide();
+
+let incomingPanel = `
+
+<div class="vis"
+id="incomingScanner"
+style="
+margin-bottom:15px;
+">
+
+<div style="
+display:grid;
+grid-template-columns: 1fr 470px;
+align-items:flex-start;
+gap:20px;
+width:100%;
+">
+
+<h3 style="
+margin:0;
+color:#7a0000;
+">
+
+<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/command/attack.png"
+
+style="
+width:16px;
+height:16px;
+vertical-align:-3px;
+margin-right:8px;
+">
+
+A TAGOK BEÉRKEZŐ TÁMADÁSAI
+
+</h3>
+
+<button id="closeIncomingScanner"
+
+style="
+background:linear-gradient(
+to bottom,
+#7d1d1d,
+#470d0d
+);
+
+border:2px solid #d86b6b;
+
+border-radius:8px;
+
+padding:5px 12px;
+
+color:#fff;
+
+font-size:12px;
+
+font-weight:bold;
+
+cursor:pointer;
+">
+
+❌ Bezárás
+
+</button>
+
+</div>
+
+<div id="incomingStatus"
+style="
+padding:15px;
+">
+
+Vizsgálat...
+
+</div>
+
+</div>
+
+`;
+
+$('#bdScannerButtonWrap')
+.after(incomingPanel);
+
+
+
+incomingResult=[];
+
+for(const player of players){
+
+$('#incomingStatus').html(`
+
+<div style="
+text-align:center;
+padding:20px;
+font-size:14px;
+color:#7a0000;
+line-height:24px;
+">
+
+Beérkező támadások vizsgálata folyamatban...
+
+<div style="
+margin-top:10px;
+font-size:15px;
+">
+
+<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/welcome/player_points.webp"
+
+style="
+width:18px;
+height:18px;
+vertical-align:-3px;
+">
+
+<strong>
+
+Vizsgálat:
+
+</strong>
+
+<strong>
+
+${player.name}
+
+</strong>
+
+</div>
+
+<div style="
+margin-top:14px;
+font-size:12px;
+font-style:italic;
+opacity:0.95;
+">
+
+<span style="
+font-weight:bold;
+color:#555;
+">
+
+By
+
+</span>
+
+<span style="
+font-weight:bold;
+color:#8b0000;
+">
+
+Crytek
+
+</span>
+
+</div>
+
+</div>
+
+`);
 
 let url=
-`${location.origin}/game.php?village=${game_data.village.id}&screen=ally&mode=members_defense&player_id=${player.id}`;
+
+`${location.origin}`+
+`/game.php?village=${game_data.village.id}`+
+`&screen=ally`+
+`&mode=members_defense`+
+`&player_id=${player.id}`;
 
 let html=
 await fetchPage(url);
 
 let doc=
-new DOMParser().parseFromString(
+new DOMParser()
+.parseFromString(
 html,
 'text/html'
 );
 
 let table=null;
 
-doc.querySelectorAll('.vis').forEach(t=>{
-
-let txt=t.innerText;
+doc.querySelectorAll('.vis')
+.forEach(t=>{
 
 if(
-txt.includes('Falu') &&
-txt.includes('Pont')
+t.innerText.includes('Faluban')
+||
+t.innerText.includes('Úton')
 ){
 table=t;
 }
 
 });
 
-if(!table)return;
+if(!table){
+continue;
+}
+
+let indexes=
+getUnitIndexes(table);
 
 let rows=
 table.querySelectorAll('tr');
 
-let unitIndex=
-getUnitIndexes(table);
-
-for(let i=0;i<rows.length;i++){
+for(
+let i=0;
+i<rows.length;
+i++
+){
 
 let cols=
-rows[i].querySelectorAll('td');
-
-if(cols.length<5)
-continue;
-
-let village=
-cols[0]?.innerText?.trim();
+rows[i]
+.querySelectorAll('td');
 
 if(
-!village ||
-village.includes('faluban') ||
-village.includes('Úton')
+cols.length<5
 ){
 continue;
 }
 
-let roadCols=
-rows[i+1]
-? rows[i+1].querySelectorAll('td')
-:[];
+let village=
+cols[0]
+?.innerHTML;
 
-const roadShift=
-(
-roadCols.length &&
-roadCols.length<cols.length
-)
-?-2:0;
+if(
+!village
+){
+continue;
+}
 
-let attacks=
-rows[i]
+let travelRow=
+rows[i+1];
+
+let travelCols =
+travelRow
+? travelRow.querySelectorAll('td')
+: [];
+
+let incoming=
+parseInt(
+cols[
+cols.length-1
+]
 .innerText
-.match(/(\d+)\s*támadás/i);
+.replace(/\./g,'')
+.trim()
+)||0;
+
+if(
+incoming<=0
+){
+continue;
+}
+const roadShift =
+(
+travelCols.length &&
+travelCols.length < cols.length
+)
+? -2
+: 0;
 
 incomingResult.push({
 
-player:player.name,
+player:
+player.name,
+
+incoming,
 
 village,
 
-incoming:
-attacks
-?parseInt(attacks[1])
-:0,
+villageUnits:{
 
-faluban:{
+spear:getCol(cols,indexes.spear),
 
-spear:getCol(cols,unitIndex.spear),
+sword:getCol(cols,indexes.sword),
 
-sword:getCol(cols,unitIndex.sword),
+archer:getCol(cols,indexes.archer),
 
-archer:getCol(cols,unitIndex.archer),
-
-heavy:getCol(cols,unitIndex.heavy)
+heavy:getCol(cols,indexes.heavy)
 
 },
 
-road:{
+travelUnits:{
 
 spear:getCol(
-roadCols,
-unitIndex.spear+roadShift
+travelCols,
+indexes.spear + roadShift
 ),
 
 sword:getCol(
-roadCols,
-unitIndex.sword+roadShift
+travelCols,
+indexes.sword + roadShift
 ),
 
 archer:getCol(
-roadCols,
-unitIndex.archer+roadShift
+travelCols,
+indexes.archer + roadShift
 ),
 
 heavy:getCol(
-roadCols,
-unitIndex.heavy+roadShift
+travelCols,
+indexes.heavy + roadShift
 )
 
 }
@@ -2555,231 +2748,264 @@ i++;
 
 }
 
-$('#startIncomingScan')
-.off()
-.on(
-'click',
-async function(){
-
-$('#incomingScanner').remove();
-$('#bdScanner').remove();
-$('#defenseScanner').remove();
-
-$('#startIncomingScan').hide();
-$('#startDefenseScan').hide();
-$('#startNukeScan').hide();
-
-$('#bdScannerButtonWrap')
-.after(`
-
-<div class="vis"
-id="incomingScanner"
-style="margin-bottom:15px;">
-
-<div style="
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:10px;
-">
-
-<h3 style="
-margin:0;
-color:#7d0000;
-">
-
-⚔ A TAGOK BEÉRKEZŐ TÁMADÁSAI
-
-</h3>
-
-<button
-id="closeIncomingScanner"
-class="btn">
-
-Bezárás
-
-</button>
-
-</div>
-
-<div id="incomingContent">
-
-Betöltés...
-
-</div>
-
-</div>
-
-`);
-
-incomingResult=[];
-
-for(let player of players){
-
-$('#incomingContent')
-.html(`
-
-<div style="
-padding:20px;
-text-align:center;
-">
-
-Beérkező támadások vizsgálata...
-
-<br><br>
-
-<b>${player.name}</b>
-
-</div>
-
-`);
-
-await scanIncomingPlayer(
-player
-);
-
-}
-
 renderIncoming();
 
-});
+}
+);
+
+
 
 function renderIncoming(){
+
+let html=`
+<table class="vis"
+width="100%"
+style="
+border-collapse:separate;
+border-spacing:0 6px;
+">
+`;
 
 let grouped={};
 
 incomingResult.forEach(v=>{
 
-if(!grouped[v.player])
+if(!grouped[v.player]){
 grouped[v.player]=[];
+}
 
-grouped[v.player]
-.push(v);
+grouped[v.player].push(v);
 
 });
 
-let html='';
+let playerIndex=0;
 
 Object.entries(grouped)
-.forEach(([player,list])=>{
+.forEach(([player,villages])=>{
 
-let total=
-list.reduce(
-(a,b)=>
-a+b.incoming,
-0
-);
+let playerId=
+`incoming_${playerIndex}`;
 
 html+=`
 
-<div style="
-border-top:2px solid #9d2a2a;
-margin-top:12px;
-">
+<tr class="incomingPlayerToggle"
 
-<div class="incomingPlayer"
-
-data-player="${player}"
+data-id="${playerId}"
 
 style="
-display:flex;
-justify-content:space-between;
-padding:8px;
 cursor:pointer;
-font-weight:bold;
-color:#7d0000;
+background:linear-gradient(
+to right,
+#b54a4a,
+#efd0d0
+);
+height:32px;
 ">
 
-<span>
+<td style="
+padding-left:10px;
+border-top:2px solid #8f2c2c;
+border-bottom:2px solid #8f2c2c;
+">
 
-👤 ${player}
+<strong style="
+font-size:13px;
+color:#5b0000;
+display:flex;
+align-items:center;
+gap:6px;
+">
 
-</span>
+<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/welcome/player_points.webp"
+style="
+width:14px;
+height:14px;
+">
 
-<span>
+${player}
 
-${total}
+</strong>
 
-</span>
+</td>
 
-</div>
+<td align="right"
 
-<div
-id="pl_${player.replace(/\W/g,'')}"
+style="
+padding-right:12px;
+border-top:2px solid #8f2c2c;
+border-bottom:2px solid #8f2c2c;
+">
+
+<strong>
+
+${
+villages.reduce(
+(sum,v)=>
+sum+v.incoming,
+0
+)
+}
+
+</strong>
+
+</td>
+
+</tr>
+
+<tr id="${playerId}"
 style="display:none;">
+
+<td colspan="2">
+
+<table class="vis"
+width="100%"
+style="
+border-collapse:collapse;
+">
 
 `;
 
-list.forEach(v=>{
+villages.forEach(v=>{
 
 html+=`
 
-<div style="
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:10px;
-border-top:1px solid #d7c7a3;
+<tr style="
+background:#fff6f6;
+border-bottom:1px solid #d6aaaa;
 ">
 
-<div>
+<td style="
+min-width:260px;
+font-weight:bold;
+padding-left:8px;
+font-size:12px;
+">
 
-<div>
+<div style="
+margin-bottom:6px;
+color:#7d0000;
+font-size:13px;
+">
 
-⚔ ${v.incoming} támadás
+<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/command/attack.png"
+style="
+width:14px;
+height:14px;
+vertical-align:-2px;
+margin-right:4px;
+">
+
+${v.incoming} támadás
 
 </div>
-
-<div>
 
 ${v.village}
 
-</div>
+</td>
 
-</div>
+<td>
 
 <table class="vis"
-
 style="
-width:440px;
+background:#fff9f9;
+border:1px solid #d9aaaa;
+width:100%;
 table-layout:fixed;
 ">
 
-<tr>
+<tr style="
+background:#cf8c8c;
+">
 
 <th></th>
-<th><img src="/graphic/unit/unit_spear.png"></th>
-<th><img src="/graphic/unit/unit_sword.png"></th>
-<th><img src="/graphic/unit/unit_archer.png"></th>
-<th><img src="/graphic/unit/unit_heavy.png"></th>
+
+<th>
+<img src="/graphic/unit/unit_spear.png">
+</th>
+
+<th>
+<img src="/graphic/unit/unit_sword.png">
+</th>
+
+<th>
+<img src="/graphic/unit/unit_archer.png">
+</th>
+
+<th>
+<img src="/graphic/unit/unit_heavy.png">
+</th>
 
 </tr>
 
-<tr>
+<tr style="
+background:#f4dfdf;
+">
 
-<td><b>Faluban</b></td>
+<td style="
+padding-left:12px;
+font-size:11px;
+">
 
-<td>${v.faluban.spear}</td>
-<td>${v.faluban.sword}</td>
-<td>${v.faluban.archer}</td>
-<td>${v.faluban.heavy}</td>
+<strong>Faluban</strong>
+
+</td>
+
+<td>
+<strong>${v.villageUnits.spear}</strong>
+</td>
+
+<td>
+<strong>${v.villageUnits.sword}</strong>
+</td>
+
+<td>
+<strong>${v.villageUnits.archer}</strong>
+</td>
+
+<td>
+<strong>${v.villageUnits.heavy}</strong>
+</td>
 
 </tr>
 
-<tr>
+<tr style="
+background:#edd0d0;
+">
 
-<td><b>Úton</b></td>
+<td style="
+padding-left:12px;
+font-size:11px;
+">
 
-<td>${v.road.spear}</td>
-<td>${v.road.sword}</td>
-<td>${v.road.archer}</td>
-<td>${v.road.heavy}</td>
+<strong>Úton</strong>
+
+</td>
+
+<td>
+<strong>${v.travelUnits.spear}</strong>
+</td>
+
+<td>
+<strong>${v.travelUnits.sword}</strong>
+</td>
+
+<td>
+<strong>${v.travelUnits.archer}</strong>
+</td>
+
+<td>
+<strong>${v.travelUnits.heavy}</strong>
+</td>
 
 </tr>
+
+
 
 </table>
 
-</div>
+</td>
+
+</tr>
 
 `;
 
@@ -2787,57 +3013,70 @@ table-layout:fixed;
 
 html+=`
 
-</div>
+</table>
+
+</td>
+
+</tr>
+
+`;
+
+playerIndex++;
+
+});
+
+html+=`
+
+</table>
+
+<div style="
+margin-top:14px;
+font-size:12px;
+font-style:italic;
+opacity:0.95;
+">
+
+<span style="
+font-weight:bold;
+color:#555;
+">
+
+By
+
+</span>
+
+<span style="
+font-weight:bold;
+color:#8b0000;
+">
+
+Crytek
+
+</span>
 
 </div>
 
 `;
 
-});
-
-$('#incomingContent')
+$('#incomingStatus')
 .html(html);
 
-$('.incomingPlayer')
-.off()
-.on(
-'click',
-function(){
+$('.incomingPlayerToggle')
+.off('click')
+.on('click',function(){
 
-let id=
-'pl_'+
-$(this)
-.data('player')
-.replace(/\W/g,'');
-
-$('#'+id)
+$('#'+$(this).data('id'))
 .toggle();
 
 });
 
 }
 
-$(document)
-.off(
-'click',
-'#closeIncomingScanner'
-)
-.on(
-'click',
-'#closeIncomingScanner',
-function(){
+$('#closeIncomingScanner')
+.off('click')
+.on('click',function(){
 
-$('#incomingScanner')
-.remove();
-
-$('#startIncomingScan')
-.show();
-
-$('#startDefenseScan')
-.show();
-
-$('#startNukeScan')
-.show();
+location.reload();
 
 });
 
