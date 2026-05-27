@@ -2481,9 +2481,21 @@ A TAGOK BEÉRKEZŐ TÁMADÁSAI
 
 <div>
 
-<a
-id="closeIncomingScanner"
-class="btn btn-confirm-yes"
+<button id="closeIncomingScanner"
+style="
+background:linear-gradient(
+to bottom,
+#7d1d1d,
+#470d0d
+);
+border:2px solid #d86b6b;
+border-radius:8px;
+padding:5px 12px;
+color:white;
+font-size:12px;
+font-weight:bold;
+cursor:pointer;
+">
 style="
 display:inline-block;
 min-width:auto;
@@ -2492,7 +2504,7 @@ padding:4px 14px;
 
 ❌ Bezárás
 
-</a>
+</button>
 
 </div>
 
@@ -2876,8 +2888,8 @@ padding:0;
 
 <div style="
 display:grid;
-grid-template-columns:1fr 470px;
-gap:20px;
+grid-template-columns:260px 520px;
+gap:12px;
 align-items:flex-start;
 width:100%;
 padding:8px;
@@ -2916,29 +2928,37 @@ ${v.village}
 
 <div>
 
-<div style="
-margin-bottom:6px;
-color:#7d0000;
-font-size:13px;
-">
-
-<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/command/attack.png"
+<table class="vis"
 style="
-width:14px;
-height:14px;
-vertical-align:-2px;
-margin-right:4px;
+background:#fff9f9;
+border:1px solid #d9aaaa;
+width:100%;
+table-layout:fixed;
 ">
 
-${v.incoming} támadás
+<tr style="
+background:#cf8c8c;
+">
 
-</div>
+<th></th>
 
-${v.village}
+<th>
+<img src="/graphic/unit/unit_spear.png">
+</th>
 
-</td>
+<th>
+<img src="/graphic/unit/unit_sword.png">
+</th>
 
-<td>
+<th>
+<img src="/graphic/unit/unit_archer.png">
+</th>
+
+<th>
+<img src="/graphic/unit/unit_heavy.png">
+</th>
+
+</tr>
 
 <table class="vis"
 style="
