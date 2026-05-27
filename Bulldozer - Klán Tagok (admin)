@@ -2425,9 +2425,11 @@ $('.defGlobalToggle')
 // INCOMING SCANNER
 // =====================================
 
+let incomingResult = [];
+
 async function scanIncomingPlayer(player){
 
-let url =
+let url=
 `${location.origin}`+
 `/game.php?village=${game_data.village.id}`+
 `&screen=ally`+
@@ -2459,9 +2461,7 @@ if(
 headers.includes('Falu') &&
 headers.includes('Pont')
 ){
-
 table=t;
-
 }
 
 });
@@ -2506,27 +2506,20 @@ roadCols.length < cols.length
 ? -2
 : 0;
 
-let incoming=
-0;
+let incoming=0;
 
-let attackImg=
-rows[i]
-.querySelector(
-'img[src*="attack"]'
-);
-
-if(attackImg){
-
-let txt=
+let attackText=
 rows[i].innerText;
 
-let m=
-txt.match(/(\d+)/);
+let attackMatch=
+attackText.match(/(\d+)\s*támadás/i);
+
+if(attackMatch){
 
 incoming=
-m
-? parseInt(m[1])
-: 0;
+parseInt(
+attackMatch[1]
+);
 
 }
 
@@ -2572,25 +2565,25 @@ moving:{
 spear:
 getCol(
 roadCols,
-unitIndex.spear + roadShift
+unitIndex.spear+roadShift
 ),
 
 sword:
 getCol(
 roadCols,
-unitIndex.sword + roadShift
+unitIndex.sword+roadShift
 ),
 
 archer:
 getCol(
 roadCols,
-unitIndex.archer + roadShift
+unitIndex.archer+roadShift
 ),
 
 heavy:
 getCol(
 roadCols,
-unitIndex.heavy + roadShift
+unitIndex.heavy+roadShift
 )
 
 }
@@ -2603,27 +2596,32 @@ i++;
 
 }
 
+$('#startIncomingScan')
+.off()
+.on(
+'click',
+async function(){
 
-let incomingResult = [];
-
-$('#startIncomingScan').off().on('click', async function(){
+$('#incomingScanner').remove();
 
 $('#startIncomingScan').hide();
 $('#startNukeScan').hide();
 $('#startDefenseScan').hide();
 
-$('#incomingScanner').remove();
+$('#bdScanner').remove();
+$('#defenseScanner').remove();
 
-$('body').append(`
+$('#bdScannerButtonWrap')
+.after(`
 
 <div class="vis"
 id="incomingScanner"
 style="
-margin-top:15px;
+margin-bottom:15px;
 ">
 
 <div style="
-padding:12px;
+padding:10px;
 display:flex;
 justify-content:space-between;
 align-items:center;
@@ -2631,20 +2629,10 @@ align-items:center;
 
 <h3 style="
 margin:0;
-display:flex;
-align-items:center;
-gap:10px;
 color:#7d0000;
-font-size:18px;
 ">
 
-<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/command/attack.png"
-style="
-width:18px;
-height:18px;
-">
-
-A TAGOK BEÉRKEZŐ TÁMADÁSAI
+⚔ A TAGOK BEÉRKEZŐ TÁMADÁSAI
 
 </h3>
 
@@ -2662,10 +2650,9 @@ class="btn">
 style="
 padding:20px;
 text-align:center;
-color:#7d0000;
 ">
 
-Beérkező támadások vizsgálata folyamatban...
+Betöltés...
 
 </div>
 
@@ -2679,34 +2666,17 @@ for(let player of players){
 
 $('#incomingContent').html(`
 
-<div style="
-padding:20px;
-text-align:center;
-">
-
-Beérkező támadások vizsgálata folyamatban...
+Beérkező támadások vizsgálata...
 
 <br><br>
 
-<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/welcome/player_points.webp"
-style="
-width:15px;
-vertical-align:-2px;
-">
-
-<b>Vizsgálat:</b>
-
-${player.name}
-
-<br><br>
-
-<i>By Crytek</i>
-
-</div>
+<b>${player.name}</b>
 
 `);
 
-await scanIncomingPlayer(player);
+await scanIncomingPlayer(
+player
+);
 
 }
 
@@ -2714,28 +2684,29 @@ renderIncoming();
 
 });
 
-
-// =====================================
-// CLOSE
-// =====================================
-
-$(document).on(
+$(document)
+.off(
+'click',
+'#closeIncomingScanner'
+)
+.on(
 'click',
 '#closeIncomingScanner',
 function(){
 
-$('#incomingScanner').remove();
+$('#incomingScanner')
+.remove();
 
-$('#startIncomingScan').show();
-$('#startNukeScan').show();
-$('#startDefenseScan').show();
+$('#startIncomingScan')
+.show();
+
+$('#startNukeScan')
+.show();
+
+$('#startDefenseScan')
+.show();
 
 });
-
-
-// =====================================
-// RENDER
-// =====================================
 
 function renderIncoming(){
 
@@ -2743,174 +2714,105 @@ let grouped={};
 
 incomingResult.forEach(v=>{
 
-if(!grouped[v.player]){
+if(
+!grouped[v.player]
+){
 
 grouped[v.player]=[];
 
 }
 
-grouped[v.player].push(v);
+grouped[v.player]
+.push(v);
 
 });
 
 let html='';
 
-Object.entries(grouped).forEach(([player,villages])=>{
+Object.entries(grouped)
+.forEach(([player,list])=>{
 
 let total=
-villages.reduce(
-(a,b)=>a+b.incoming,
+list.reduce(
+(a,b)=>
+a+b.incoming,
 0
 );
 
 html+=`
 
-<div style="
-margin-top:12px;
-border-top:2px solid #a11;
-">
-
-<div style="
-padding:8px;
-font-weight:bold;
-display:flex;
-justify-content:space-between;
-">
-
-<div>
-
-<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/welcome/player_points.webp"
+<table class="vis"
+width="100%"
 style="
-width:14px;
-vertical-align:-2px;
+margin-bottom:12px;
 ">
+
+<tr>
+
+<th>
 
 ${player}
 
-</div>
+</th>
 
-<div>
+<th width="70">
 
 ${total}
 
-</div>
+</th>
 
-</div>
+</tr>
 
 `;
 
-villages.forEach(v=>{
+list.forEach(v=>{
 
 html+=`
 
-<div style="
-padding:10px;
-border-top:1px solid #d3b7b7;
-display:flex;
-justify-content:space-between;
-align-items:center;
-gap:20px;
-">
+<tr>
 
-<div style="
-min-width:260px;
-">
+<td>
 
-<div style="
-color:#7d0000;
-margin-bottom:5px;
-">
+<b>
 
-<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/command/attack.png"
-style="
-width:14px;
-vertical-align:-2px;
-">
+${v.incoming}
+támadás
 
-${v.incoming} támadás
+</b>
 
-</div>
-
-<div style="
-font-weight:bold;
-">
+<br>
 
 ${v.village}
 
-</div>
+</td>
 
-</div>
+<td>
 
-<table class="vis"
-style="
-width:440px;
-">
+${v.units.spear}
 
-<tr>
+/
 
-<th></th>
+${v.units.sword}
 
-<th>
-<img src="/graphic/unit/unit_spear.png">
-</th>
+/
 
-<th>
-<img src="/graphic/unit/unit_sword.png">
-</th>
+${v.units.heavy}
 
-<th>
-<img src="/graphic/unit/unit_archer.png">
-</th>
-
-<th>
-<img src="/graphic/unit/unit_heavy.png">
-</th>
+</td>
 
 </tr>
-
-<tr>
-
-<td><b>Faluban</b></td>
-
-<td>${v.units.spear}</td>
-
-<td>${v.units.sword}</td>
-
-<td>${v.units.archer}</td>
-
-<td>${v.units.heavy}</td>
-
-</tr>
-
-<tr>
-
-<td><b>Úton</b></td>
-
-<td>${v.moving.spear}</td>
-
-<td>${v.moving.sword}</td>
-
-<td>${v.moving.archer}</td>
-
-<td>${v.moving.heavy}</td>
-
-</tr>
-
-</table>
-
-</div>
 
 `;
 
 });
 
-html+='</div>';
+html+=`</table>`;
 
 });
 
-$('#incomingContent').html(html);
+$('#incomingContent')
+.html(html);
 
 }
-
 
 })();
