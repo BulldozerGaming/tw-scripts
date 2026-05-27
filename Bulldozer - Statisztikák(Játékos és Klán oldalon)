@@ -1,0 +1,1422 @@
+// ==UserScript==
+// @name           Bulldozer - Statisztikák(Játékos és Klán oldalon)
+// @description    Statisztikák játékosokhoz, törzsekhez
+// @license        Bulldozer Gaming
+// @version        2.0
+// @include        https://hu*.klanhaboru.hu/game.php*screen=info_player*
+// @include        https://hu*.klanhaboru.hu/game.php*screen=info_ally*
+// @include        https://hu*.klanhaboru.hu/game.php*screen=info_village*
+// @exclude        https://hu*.klanhaboru.hu/game.php*mode=block*screen=info_player*
+// @grant          unsafeWindow
+// ==/UserScript==
+
+(function () {
+
+    var win = typeof unsafeWindow != 'undefined'
+        ? unsafeWindow
+        : window;
+
+    // EREDETI jQuery ELÉRÉS
+    var $ = win.$;
+
+    // cache
+    $.ajaxSetup({
+        cache: true
+    });
+
+    /* Script API */
+    var api = typeof unsafeWindow != 'undefined'
+        ? unsafeWindow.ScriptAPI
+        : window.ScriptAPI;
+
+    api.register(
+        '290-DS-Ultimate Grafikonok',
+        true,
+        'MKich, skatecram, Osse',
+        'support-nur-im-forum@die-staemme.de'
+    );
+
+    function getUrlParameter(sParam) {
+
+        let sPageURL = win.location.search.substring(1);
+
+        let sURLVariables = sPageURL.split('&');
+
+        let sParameterName;
+
+        for (let i = 0; i < sURLVariables.length; i++) {
+
+            sParameterName = sURLVariables[i].split('=');
+
+            if (sParameterName[0] === sParam) {
+
+                return sParameterName[1] === undefined
+                    ? true
+                    : decodeURIComponent(sParameterName[1]);
+            }
+        }
+    }
+
+    function generateDSUltimateImage(
+        s,
+        w,
+        t,
+        id,
+        diagramType,
+        width
+    ) {
+
+        let data = '';
+
+        data += '<a href="https://ds-ultimate.de/in/';
+        data += s + w + '/';
+        data += t + '/';
+        data += id;
+        data += '" target="_blank">';
+
+        data += '<img src="https://ds-ultimate.de/api/picture/';
+        data += s + '-';
+        data += w + '-';
+        data += t + '-';
+        data += id + '-';
+        data += diagramType + '-';
+        data += width + '-';
+        data += Math.round(width / 3);
+       data += '.png" style="max-width:100%;height:auto;display:block;">';
+
+        data += '</a>';
+
+        return data;
+    }
+
+    let worldFull = win.game_data.world;
+
+    let server = win.game_data.market;
+
+    let world = worldFull.replaceAll(server, "");
+
+    let id = getUrlParameter('id')
+        ? getUrlParameter('id')
+        : win.game_data.player.id;
+
+    let element;
+    let width;
+    let type;
+    let diagrams;
+
+    // ===== JÁTÉKOS =====
+    if (getUrlParameter('screen') == 'info_player') {
+
+        element =
+    $('#villages_list')
+        .prevAll('.vis')
+        .first();
+
+        type = 'player';
+
+        diagrams = [
+
+            {
+                type: "statsGeneral",
+                data: [
+                    { type: "points", name: "Pontok" },
+                    { type: "rank", name: "Helyezés" },
+                    { type: "village", name: "Falvak" },
+                ]
+            },
+
+            {
+                type: "statsBash",
+                data: [
+                    { type: "gesBash", name: "Összes legyőzött ellenfél" },
+                    { type: "offBash", name: "Legyőzött ellenfél támadóként" },
+                    { type: "defBash", name: "Legyőzött ellenfél védekezőként" },
+                    { type: "supBash", name: "Legyőzött ellenfél támogatásként" },
+                ]
+            },
+        ];
+    }
+
+    // ===== TÖRZS =====
+    else if (getUrlParameter('screen') == 'info_ally') {
+
+        element = $($('.vis')[0]);
+
+        type = 'ally';
+
+        diagrams = [
+
+            {
+                type: "statsGeneral",
+                data: [
+                    { type: "points", name: "Pontok" },
+                    { type: "rank", name: "Helyezés" },
+                    { type: "village", name: "Falvak" },
+                ]
+            },
+
+            {
+                type: "statsBash",
+                data: [
+                    { type: "gesBash", name: "Összes legyőzött ellenfél" },
+                    { type: "offBash", name: "Legyőzött ellenfél támadóként" },
+                    { type: "defBash", name: "Legyőzött ellenfél védekezőként" },
+                ]
+            },
+        ];
+    }
+
+    width = element.width();
+
+    if (element) {
+
+      let aData = "";
+
+        diagrams.forEach(function (elmD) {
+
+            if (elmD.data.length > 1) {
+
+                aData += '<tr class="DSULT-hidden-stat"><td colspan="2">';
+                aData += '<select id="DSULT_select_' + elmD.type + '" class="DSULT-select">';
+
+                let rows = "";
+
+                elmD.data.forEach(function (elmE) {
+
+                    aData += '<option value="DSULT_opt_';
+                    aData += elmD.type + '_';
+                    aData += elmE.type + '">';
+                    aData += elmE.name;
+                    aData += '</option>';
+
+                   rows += '<tr class="DSULT-hidden-stat" id="DSULT_opt_';
+                    rows += elmD.type + '_';
+                    rows += elmE.type + '">';
+
+                    rows += '<td colspan="2">';
+
+                    rows += generateDSUltimateImage(
+                        server,
+                        world,
+                        type,
+                        id,
+                        elmE.type,
+                        width
+                    );
+
+                    rows += '</td></tr>';
+                });
+
+                aData += '</select></td></tr>' + rows;
+            }
+
+            else {
+
+                elmD.data.forEach(function (elmE) {
+
+                    aData += '<tr id="DSULT_opt_';
+                    aData += elmD.type + '_';
+                    aData += elmE.type + '">';
+
+                    aData += '<td colspan="2">';
+
+                    aData += generateDSUltimateImage(
+                        server,
+                        world,
+                        type,
+                        id,
+                        elmE.type,
+                        width
+                    );
+
+                    aData += '</td></tr>';
+                });
+            }
+        });
+
+
+
+$('tbody', element).append(aData);
+    }
+
+    $(function () {
+
+        $('.DSULT-select').on('change', function () {
+
+            $('option', this).each(function () {
+
+                $('#' + $(this).attr('value')).css(
+                    'display',
+                    'none'
+                );
+            });
+
+            $('#' + $(this).val()).css(
+                'display',
+                'table-row'
+            );
+        });
+
+       $('.DSULT-select').each(function () {
+
+    if (
+        $(this)
+            .closest('tr')
+            .is(':visible')
+    ) {
+
+        $(this).trigger('change');
+    }
+});
+    });
+
+// ===== CLEAN STAT UI =====
+
+$('<style>')
+.prop('type', 'text/css')
+.html(`
+
+    /* Select */
+    .DSULT-select {
+
+        min-width: 260px;
+
+        padding:
+            6px 10px !important;
+
+        margin:
+            10px 0 14px 0 !important;
+
+        border-radius:
+            6px !important;
+
+        border:
+            1px solid #b6945f !important;
+
+        background:
+            linear-gradient(
+                #fffdf8,
+                #efe2c1
+            ) !important;
+
+        font-weight:
+            600;
+
+        color:
+            #4a2d12;
+
+        cursor:
+            pointer;
+
+        box-shadow:
+            inset 0 1px 0 rgba(255,255,255,.4);
+    }
+
+    .DSULT-select:hover {
+
+        filter:
+            brightness(1.03);
+    }
+.DSULT-hidden-stat {
+
+    display: none;
+}
+
+    /* Grafikon cellák */
+    tr[id^="DSULT_opt_"] td {
+
+        padding:
+            14px !important;
+
+        background:
+            #f8f1df !important;
+
+        border:
+            1px solid #d7bf92 !important;
+
+        border-radius:
+            8px !important;
+
+        box-shadow:
+            0 2px 8px rgba(0,0,0,.06);
+
+        overflow:
+            hidden;
+    }
+
+    /* Grafikon képek */
+    tr[id^="DSULT_opt_"] img {
+
+        border-radius:
+            6px;
+
+        border:
+            1px solid rgba(0,0,0,.08);
+
+        background:
+            white;
+    max-width: 100% !important;
+
+    height: auto !important;
+
+    box-sizing: border-box;
+    }
+
+    /* Távolság a blokkok között */
+
+
+    tr[id^="DSULT_opt_"] td {
+
+        margin-bottom:
+            18px !important;
+    }
+
+`)
+.appendTo('head');
+
+
+// ===== CÍM HOZZÁADÁS =====
+
+$('.DSULT-select').each(function (index) {
+
+    // csak az első cím maradjon
+    if (index > 0) {
+        return;
+    }
+
+    let selectRow = $(this).closest('tr');
+
+    if (selectRow.prev().hasClass('DSULT-title-row')) {
+        return;
+    }
+
+    selectRow.before(`
+<tr class="DSULT-title-row DSULT-toggle-stats"
+    style="cursor:pointer;">
+
+    <td colspan="2"
+        style="
+            padding:18px 14px 12px 14px;
+            font-size:18px;
+            font-weight:700;
+            color:#5a3515;
+            border-top:1px solid #d8c39c;
+            user-select:none;
+        ">
+
+        📊 Statisztikák
+        <span id="DSULT_toggle_icon">▼</span>
+
+    </td>
+
+</tr>
+    `);
+});
+
+// ===== VILÁG DOMINANCIA =====
+
+async function loadDominanceStat() {
+
+    if (getUrlParameter('screen') !== 'info_ally') {
+        return;
+    }
+
+    let allyId = getUrlParameter('id');
+
+    $('.vis').first().find('tbody').prepend(`
+
+
+        <tr>
+            <td colspan="2">
+
+                <div class="DSULT-daily-box" id="DSULT_DOM_BOX">
+                    <div class="DSULT-daily-row">
+                        Betöltés...
+                    </div>
+                </div>
+
+            </td>
+        </tr>
+
+    `);
+
+    try {
+
+        let response = await $.get(
+
+            `/game.php?village=${game_data.village.id}` +
+            `&screen=ranking` +
+            `&mode=dominance`
+        );
+
+        let doc = $('<div>').html(response);
+
+        let found = false;
+
+        doc.find('.vis tr').each(function () {
+
+            let cols = $(this).find('td');
+
+            if (cols.length < 2) {
+                return;
+            }
+
+            let href =
+                cols.eq(0)
+                    .find('a')
+                    .attr('href') || '';
+
+            if (
+                !href.includes('screen=info_ally') ||
+                !href.includes('id=' + allyId)
+            ) {
+                return;
+            }
+
+            let percent =
+                cols.eq(1)
+                    .text()
+                    .trim();
+
+            $('#DSULT_DOM_BOX').html(`
+
+                <div class="DSULT-daily-row">
+
+                    <div class="DSULT-daily-left">
+                        👑 Világ dominancia
+                    </div>
+
+                    <div class="DSULT-daily-right">
+                        <strong>${percent}</strong>
+                    </div>
+
+                </div>
+
+            `);
+
+            found = true;
+
+            return false;
+        });
+
+        if (!found) {
+
+            $('#DSULT_DOM_BOX').html(`
+
+                <div class="DSULT-daily-row">
+
+                    <div class="DSULT-daily-left">
+                        👑 Világ dominancia
+                    </div>
+
+                    <div class="DSULT-daily-right">
+                        Nincs adat
+                    </div>
+
+                </div>
+
+            `);
+        }
+
+    } catch (e) {
+
+        console.log(e);
+
+        $('#DSULT_DOM_BOX').html(`
+
+            <div class="DSULT-daily-row">
+
+                <div class="DSULT-daily-left">
+                    👑 Világ dominancia
+                </div>
+
+                <div class="DSULT-daily-right">
+                    Nincs adat
+                </div>
+
+            </div>
+
+        `);
+    }
+}
+
+// ===== PLAYER - LEGYŐZÖTT ELLENFELEK =====
+
+async function loadPlayerKillStats() {
+
+    if (getUrlParameter('screen') !== 'info_player') {
+        return;
+    }
+
+    const playerName =
+        $('#player_info')
+            .find('th')
+            .first()
+            .text()
+            .trim();
+
+    const stats = [
+        { type: 'att', icon: '⚔️', label: 'Támadóként' },
+        { type: 'def', icon: '🛡️', label: 'Védekezőként' },
+        { type: 'support', icon: '🤝', label: 'Támogatóként' },
+        { type: 'all', icon: '🏆', label: 'Összesen' }
+    ];
+
+    $('#player_info tbody').append(`
+
+        <tr class="DSULT-title-row DSULT-hidden-stat">
+            <td colspan="2"
+                style="
+                    padding:18px 14px 12px;
+                    font-size:18px;
+                    font-weight:700;
+                    color:#5a3515;
+                    border-top:1px solid #d8c39c;
+                ">
+                ⚔️ Legyőzött ellenfelek
+            </td>
+        </tr>
+
+        <tr class="DSULT-hidden-stat">
+            <td colspan="2">
+                <div class="DSULT-daily-box" id="DSULT_KILL_BOX">
+                    <div class="DSULT-daily-row">Betöltés...</div>
+                </div>
+            </td>
+        </tr>
+
+    `);
+
+    let html = '';
+
+    for (const stat of stats) {
+
+        try {
+
+            const response = await $.get(
+
+                `/game.php?village=${game_data.village.id}` +
+                `&screen=ranking` +
+                `&mode=kill_player` +
+                `&type=${stat.type}` +
+                `&name=${encodeURIComponent(playerName)}`
+            );
+
+            const doc = $('<div>').html(response);
+
+            let found = false;
+
+            doc.find('table.vis tr').each(function () {
+
+                const cols = $(this).find('td');
+
+                if (cols.length < 4) {
+                    return;
+                }
+
+                const rowPlayerName =
+                    cols.eq(1)
+                        .find('a')
+                        .first()
+                        .text()
+                        .trim();
+
+                if (
+                    rowPlayerName !== playerName
+                ) {
+                    return;
+                }
+
+                const rank =
+                    cols.eq(0).text().trim();
+
+                const value =
+                    cols.eq(3).text().trim();
+
+                html += `
+
+                    <div class="DSULT-daily-row">
+
+                        <div class="DSULT-daily-left">
+                            ${stat.icon}
+                            ${stat.label}
+                        </div>
+
+                        <div class="DSULT-daily-right">
+
+                            <strong>
+                                #${rank}
+                                •
+                                ${value}
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                `;
+
+                found = true;
+
+                return false;
+            });
+
+            if (!found) {
+
+                html += `
+
+                    <div class="DSULT-daily-row">
+
+                        <div class="DSULT-daily-left">
+                            ${stat.icon}
+                            ${stat.label}
+                        </div>
+
+                        <div class="DSULT-daily-right">
+                            Nincs adat
+                        </div>
+
+                    </div>
+
+                `;
+            }
+
+        } catch (e) {
+
+            console.log(e);
+
+            html += `
+
+                <div class="DSULT-daily-row">
+
+                    <div class="DSULT-daily-left">
+                        ${stat.icon}
+                        ${stat.label}
+                    </div>
+
+                    <div class="DSULT-daily-right">
+                        Nincs adat
+                    </div>
+
+                </div>
+
+            `;
+        }
+    }
+
+    $('#DSULT_KILL_BOX').html(html);
+}
+
+
+
+
+
+// ===== PLAYER - LEGJOBB NAPI EREDMÉNYEK =====
+
+async function loadDailyStats() {
+
+    if (getUrlParameter('screen') !== 'info_player') {
+        return;
+    }
+
+    const playerName =
+        $('#player_info')
+            .find('th')
+            .first()
+            .text()
+            .trim();
+
+    const stats = [
+
+        {
+            type: 'kill_att',
+            icon: '⚔️',
+            label: 'Legyőzött egységek támadóként'
+        },
+
+        {
+            type: 'kill_def',
+            icon: '🛡️',
+            label: 'Legyőzött egységek védekezőként'
+        },
+
+        {
+            type: 'kill_sup',
+            icon: '🤝',
+            label: 'Legyőzött egységek támogatásként'
+        },
+
+        {
+            type: 'loot_res',
+            icon: '🌾',
+            label: 'Farmolt nyersanyagok'
+        },
+
+        {
+            type: 'loot_vil',
+            icon: '🔥',
+            label: 'Kifosztott falvak'
+        },
+
+        {
+            type: 'scavenge',
+            icon: '🪵',
+            label: 'Összegyűjtött nyersanyagok'
+        },
+
+        {
+            type: 'conquer',
+            icon: '🏘️',
+            label: 'Meghódított falvak'
+        }
+    ];
+
+    $('#player_info tbody').append(`
+
+        <tr class="DSULT-title-row DSULT-hidden-stat">
+            <td colspan="2"
+                style="
+                    padding:18px 14px 12px;
+                    font-size:18px;
+                    font-weight:700;
+                    color:#5a3515;
+                    border-top:1px solid #d8c39c;
+                ">
+                🏆 Legjobb napi eredmények
+            </td>
+        </tr>
+
+        <tr class="DSULT-hidden-stat">
+            <td colspan="2">
+
+                <div class="DSULT-daily-box" id="DSULT_DAILY_BOX">
+                    <div class="DSULT-daily-row">Betöltés...</div>
+                </div>
+
+            </td>
+        </tr>
+
+    `);
+
+    let html = '';
+
+    for (const stat of stats) {
+
+        try {
+
+            const response = await $.get(
+
+                `/game.php?village=${game_data.village.id}` +
+                `&screen=ranking` +
+                `&mode=in_a_day` +
+                `&type=${stat.type}` +
+                `&name=${encodeURIComponent(playerName)}`
+            );
+
+            const doc = $('<div>').html(response);
+
+            let found = false;
+
+            doc.find('table.vis tr').each(function () {
+
+                const cols = $(this).find('td');
+
+                if (cols.length < 5) {
+                    return;
+                }
+
+                const rowPlayerName =
+                    cols.eq(1)
+                        .find('a')
+                        .first()
+                        .text()
+                        .trim();
+
+                if (
+                    rowPlayerName !== playerName
+                ) {
+                    return;
+                }
+
+                const rank =
+                    cols.eq(0).text().trim();
+
+                const value =
+                    cols.eq(3).text().trim();
+
+                const date =
+                    cols.eq(4).text().trim();
+
+                html += `
+
+                    <div class="DSULT-daily-row">
+
+                        <div class="DSULT-daily-left">
+                            ${stat.icon}
+                            ${stat.label}
+                        </div>
+
+                        <div class="DSULT-daily-right">
+
+                            <strong>
+                                #${rank}
+                                •
+                                ${value}
+                            </strong>
+
+                            <span>
+                                ${date}
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                `;
+
+                found = true;
+
+                return false;
+            });
+
+            if (!found) {
+
+                html += `
+
+                    <div class="DSULT-daily-row">
+
+                        <div class="DSULT-daily-left">
+                            ${stat.icon}
+                            ${stat.label}
+                        </div>
+
+                        <div class="DSULT-daily-right">
+                            Nincs adat
+                        </div>
+
+                    </div>
+
+                `;
+            }
+
+        } catch (e) {
+
+            console.log(e);
+
+            html += `
+
+                <div class="DSULT-daily-row">
+
+                    <div class="DSULT-daily-left">
+                        ${stat.icon}
+                        ${stat.label}
+                    </div>
+
+                    <div class="DSULT-daily-right">
+                        Nincs adat
+                    </div>
+
+                </div>
+
+            `;
+        }
+    }
+
+    $('#DSULT_DAILY_BOX').html(html);
+}
+
+// ===== KLÁN LEGYŐZÖTT ELLENFELEK =====
+
+async function loadAllyKillStats() {
+
+    if (getUrlParameter('screen') !== 'info_ally') {
+        return;
+    }
+
+    let allyId = getUrlParameter('id');
+
+    let stats = [
+        { type: 'att', icon: '⚔️', label: 'Támadóként' },
+        { type: 'def', icon: '🛡️', label: 'Védekezőként' },
+        { type: 'support', icon: '🤝', label: 'Támogatóként' },
+        { type: 'all', icon: '🏆', label: 'Összesen' }
+    ];
+
+    $('.vis').first().find('tbody').append(`
+
+       <tr class="DSULT-title-row DSULT-hidden-stat">
+            <td colspan="2"
+                style="
+                    padding:18px 14px 12px 14px;
+                    font-size:18px;
+                    font-weight:700;
+                    color:#5a3515;
+                    border-top:1px solid #d8c39c;
+                ">
+                ⚔️ Legyőzött ellenfelek (Klánok)
+            </td>
+        </tr>
+
+        <tr class="DSULT-hidden-stat">
+            <td colspan="2">
+
+                <div class="DSULT-daily-box" id="DSULT_ALLY_KILL_BOX">
+                    <div class="DSULT-daily-row">Betöltés...</div>
+                </div>
+
+            </td>
+        </tr>
+
+    `);
+
+    let rows = '';
+
+    for (let stat of stats) {
+
+        let found = false;
+
+        try {
+
+            let response = await $.get(
+
+                `/game.php?village=${game_data.village.id}` +
+                `&screen=ranking` +
+                `&mode=kill_ally` +
+                `&type=${stat.type}`
+            );
+
+            let doc = $('<div>').html(response);
+
+            doc.find('.vis tr').each(function () {
+
+                let cols = $(this).find('td');
+
+                if (cols.length < 3) {
+                    return;
+                }
+
+                let href =
+                    cols.eq(1)
+                        .find('a')
+                        .first()
+                        .attr('href') || '';
+
+                if (
+                    !href.includes('screen=info_ally') ||
+                    !href.includes('id=' + allyId)
+                ) {
+                    return;
+                }
+
+                let rank =
+                    cols.eq(0).text().trim();
+
+                let value =
+                    cols.eq(2).text().trim();
+
+                rows += `
+
+                    <div class="DSULT-daily-row">
+
+                        <div class="DSULT-daily-left">
+                            ${stat.icon}
+                            ${stat.label}
+                        </div>
+
+                        <div class="DSULT-daily-right">
+
+                            <strong>
+                                #${rank}
+                                •
+                                ${value}
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                `;
+
+                found = true;
+
+                return false;
+            });
+
+        } catch (e) {
+
+            console.log(e);
+        }
+
+        if (!found) {
+
+            rows += `
+
+                <div class="DSULT-daily-row">
+
+                    <div class="DSULT-daily-left">
+                        ${stat.icon}
+                        ${stat.label}
+                    </div>
+
+                    <div class="DSULT-daily-right">
+                        Nincs adat
+                    </div>
+
+                </div>
+
+            `;
+        }
+    }
+
+    $('#DSULT_ALLY_KILL_BOX').html(rows);
+}
+
+
+
+
+
+// ===== KLÁN KONTINENS ADATOK =====
+
+async function loadAllyContinentStats() {
+
+    if (getUrlParameter('screen') !== 'info_ally') {
+        return;
+    }
+
+    let allyId = getUrlParameter('id');
+
+    let continents = [44, 45, 54, 55];
+
+    $('.vis').first().find('tbody').append(`
+
+        <tr class="DSULT-title-row DSULT-hidden-stat">
+            <td colspan="2"
+                style="
+                    padding:18px 14px 12px 14px;
+                    font-size:18px;
+                    font-weight:700;
+                    color:#5a3515;
+                    border-top:1px solid #d8c39c;
+                ">
+                🌍 Kontinens helyezések
+            </td>
+        </tr>
+
+        <tr class="DSULT-hidden-stat">
+            <td colspan="2">
+
+                <div class="DSULT-daily-box" id="DSULT_CONT_BOX">
+                    <div class="DSULT-daily-row">Betöltés...</div>
+                </div>
+
+            </td>
+        </tr>
+
+    `);
+
+    let rows = '';
+
+    for (let k of continents) {
+
+        let found = false;
+
+        try {
+
+            let response = await $.get(
+
+                `/game.php?village=${game_data.village.id}` +
+                `&screen=ranking` +
+                `&mode=con_ally` +
+                `&con=${k}`
+            );
+
+            let doc = $('<div>').html(response);
+
+            doc.find('.vis tr').each(function () {
+
+                let cols = $(this).find('td');
+
+                if (cols.length < 3) {
+                    return;
+                }
+
+                let href =
+                    cols.eq(1)
+                        .find('a')
+                        .first()
+                        .attr('href') || '';
+
+                if (
+                    !href.includes('screen=info_ally') ||
+                    !href.includes('id=' + allyId)
+                ) {
+                    return;
+                }
+
+                let rank =
+                    cols.eq(0).text().trim();
+
+                let points =
+                    cols.eq(2).text().trim();
+
+                rows += `
+
+                    <div class="DSULT-daily-row">
+
+                        <div class="DSULT-daily-left">
+                            🌍 K${k}
+                        </div>
+
+                        <div class="DSULT-daily-right">
+                            #${rank}
+                            •
+                            ${points} pont
+                        </div>
+
+                    </div>
+
+                `;
+
+                found = true;
+
+                return false;
+            });
+
+        } catch (e) {
+
+            console.log(e);
+        }
+
+        if (!found) {
+
+            rows += `
+
+                <div class="DSULT-daily-row">
+
+                    <div class="DSULT-daily-left">
+                        🌍 K${k}
+                    </div>
+
+                    <div class="DSULT-daily-right">
+                        Nincs adat
+                    </div>
+
+                </div>
+
+            `;
+        }
+    }
+
+    $('#DSULT_CONT_BOX').html(rows);
+}
+
+// ===== CSS =====
+
+$('<style>')
+.prop('type', 'text/css')
+.html(`
+
+    .DSULT-daily-box {
+
+        margin:
+            10px 0 18px 0;
+
+        border:
+            1px solid #d6c19a;
+
+        border-radius:
+            8px;
+
+        overflow:
+            hidden;
+
+        background:
+            #f7f0dd;
+
+        box-shadow:
+            0 2px 8px rgba(0,0,0,.06);
+    }
+
+    .DSULT-daily-row {
+
+        display:
+            flex;
+
+        justify-content:
+            space-between;
+
+        align-items:
+            center;
+
+        padding:
+            12px 14px;
+
+        border-bottom:
+            1px solid rgba(0,0,0,.06);
+    }
+
+    .DSULT-daily-row:last-child {
+
+        border-bottom:
+            none;
+    }
+
+    .DSULT-daily-left {
+
+        font-weight:
+            600;
+
+        color:
+            #4e2d10;
+    }
+
+    .DSULT-daily-right {
+
+        text-align:
+            right;
+
+        color:
+            #3b2a17;
+    }
+
+    .DSULT-daily-right span {
+
+        display:
+            block;
+
+        font-size:
+            11px;
+
+        opacity:
+            .7;
+    }
+
+`)
+.appendTo('head');
+
+
+// ===== FUTTATÁS =====
+loadDominanceStat();
+
+loadPlayerKillStats();
+loadAllyKillStats();
+
+loadDailyStats();
+loadAllyContinentStats();
+
+// =========================================
+// LENYITHATÓ STATISZTIKA
+// =========================================
+
+$(function () {
+
+    const screen =
+        getUrlParameter('screen');
+
+    if (
+        screen !== 'info_player' &&
+        screen !== 'info_ally'
+    ) {
+        return;
+    }
+
+    const statTitle =
+        $('.DSULT-toggle-stats').first();
+
+    if (!statTitle.length) {
+        return;
+    }
+
+    // csak 1 nyíl
+    $('#DSULT_toggle_icon').remove();
+
+    statTitle.find('td').append(`
+
+        <span id="DSULT_toggle_icon"
+              style="
+                float:right;
+                font-size:16px;
+              ">
+            ▼
+        </span>
+
+    `);
+
+    // PLAYER BLOKKOK
+    if (screen === 'info_player') {
+
+        const lastGraph =
+            $('tr[id^="DSULT_opt_"]:last');
+
+        $('#DSULT_KILL_BOX')
+            .closest('tr')
+            .prev()
+            .addBack()
+            .insertAfter(lastGraph);
+
+        $('#DSULT_DAILY_BOX')
+            .closest('tr')
+            .prev()
+            .addBack()
+            .insertAfter(
+                $('#DSULT_KILL_BOX')
+                    .closest('tr')
+            );
+    }
+
+    // KLÁN BLOKKOK
+    if (screen === 'info_ally') {
+
+        const lastGraph =
+            $('tr[id^="DSULT_opt_"]:last');
+
+        $('#DSULT_ALLY_KILL_BOX')
+            .closest('tr')
+            .prev()
+            .addBack()
+            .insertAfter(lastGraph);
+
+        $('#DSULT_CONT_BOX')
+            .closest('tr')
+            .prev()
+            .addBack()
+            .insertAfter(
+                $('#DSULT_ALLY_KILL_BOX')
+                    .closest('tr')
+            );
+    }
+
+    // minden rejtett stat
+    const rows =
+        $('.DSULT-hidden-stat');
+rows.hide();
+
+    // katt
+    statTitle.on('click', function () {
+
+        const visible =
+            rows.first().is(':visible');
+
+        if (visible) {
+
+            rows.hide();
+
+            $('#DSULT_toggle_icon')
+                .text('▼');
+
+        } else {
+
+            rows.show();
+
+            // csak aktív grafikon
+            $('.DSULT-select')
+                .trigger('change');
+
+            $('#DSULT_toggle_icon')
+                .text('▲');
+        }
+    });
+});
+
+
+})();
