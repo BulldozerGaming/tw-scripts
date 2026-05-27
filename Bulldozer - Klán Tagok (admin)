@@ -175,6 +175,42 @@ let panel = `
 
 `;
 
+<button id="startIncomingScan"
+style="
+background:linear-gradient(
+to bottom,
+#7d1d1d,
+#470d0d
+);
+border:2px solid #d86b6b;
+border-radius:10px;
+padding:8px 16px;
+color:#fff0f0;
+font-size:13px;
+font-weight:bold;
+cursor:pointer;
+display:inline-flex;
+align-items:center;
+gap:8px;
+margin-left:8px;
+">
+
+<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/command/attack.png"
+style="
+width:18px;
+height:18px;
+">
+
+Beérkező támadások
+
+<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/command/attack.png"
+style="
+width:18px;
+height:18px;
+">
+
+</button>
+
 $('.vis').first().before(panel);
 
 // =========================================
@@ -2384,5 +2420,355 @@ $('.defGlobalToggle')
 
 
 
+// =====================================
+// INCOMING SCANNER
+// =====================================
 
+let incomingResult = [];
+
+$('#startIncomingScan').on(
+'click',
+async function(){
+
+$('#bdScanner').remove();
+$('#defenseScanner').remove();
+$('#incomingScanner').remove();
+
+$('#startNukeScan').hide();
+$('#startDefenseScan').hide();
+$('#startIncomingScan').hide();
+
+$('body').append(`
+
+<div class="vis"
+id="incomingScanner"
+style="
+margin-bottom:15px;
+">
+
+<h3 style="
+padding:10px;
+margin:0;
+color:#7a0000;
+">
+
+📥 BEÉRKEZŐ TÁMADÁSOK
+
+</h3>
+
+<div id="incomingStatus"
+style="
+padding:15px;
+">
+
+Vizsgálat...
+
+</div>
+
+</div>
+
+`);
+
+incomingResult=[];
+
+for(const player of players){
+
+$('#incomingStatus').html(
+`Vizsgálat: <strong>${player.name}</strong>`
+);
+
+let url=
+
+`${location.origin}`+
+`/game.php?village=${game_data.village.id}`+
+`&screen=ally`+
+`&mode=members_defense`+
+`&player_id=${player.id}`;
+
+let html=
+await fetchPage(url);
+
+let doc=
+new DOMParser()
+.parseFromString(
+html,
+'text/html'
+);
+
+let table=null;
+
+doc.querySelectorAll('.vis')
+.forEach(t=>{
+
+if(
+t.innerText.includes('Faluban')
+||
+t.innerText.includes('Úton')
+){
+table=t;
+}
+
+});
+
+if(!table){
+continue;
+}
+
+let indexes=
+getUnitIndexes(table);
+
+let rows=
+table.querySelectorAll('tr');
+
+for(
+let i=0;
+i<rows.length;
+i++
+){
+
+let cols=
+rows[i]
+.querySelectorAll('td');
+
+if(
+cols.length<5
+){
+continue;
+}
+
+let village=
+cols[0]
+?.innerHTML;
+
+if(
+!village
+){
+continue;
+}
+
+let travelRow=
+rows[i+1];
+
+let travelCols=
+travelRow
+?.querySelectorAll(
+'td'
+);
+
+let incoming=
+parseInt(
+cols[
+cols.length-1
+]
+.innerText
+.replace(/\./g,'')
+.trim()
+)||0;
+
+if(
+incoming<=0
+){
+continue;
+}
+
+incomingResult.push({
+
+player:
+player.name,
+
+incoming,
+
+village,
+
+villageUnits:{
+
+spear:
+getCol(
+cols,
+indexes.spear
+),
+
+sword:
+getCol(
+cols,
+indexes.sword
+),
+
+archer:
+getCol(
+cols,
+indexes.archer
+),
+
+heavy:
+getCol(
+cols,
+indexes.heavy
+)
+
+},
+
+travelUnits:{
+
+spear:
+getCol(
+travelCols,
+indexes.spear
+),
+
+sword:
+getCol(
+travelCols,
+indexes.sword
+),
+
+archer:
+getCol(
+travelCols,
+indexes.archer
+),
+
+heavy:
+getCol(
+travelCols,
+indexes.heavy
+)
+
+}
+
+});
+
+i++;
+
+}
+
+}
+
+renderIncoming();
+
+}
+);
+
+function renderIncoming(){
+
+let html='';
+
+let grouped={};
+
+incomingResult.forEach(v=>{
+
+if(
+!grouped[
+v.player
+]
+){
+
+grouped[
+v.player
+]=[];
+
+}
+
+grouped[
+v.player
+].push(v);
+
+});
+
+Object.entries(grouped)
+.forEach(
+([player,villages])=>{
+
+html+=`
+
+<h4>
+
+👤 ${player}
+
+(${villages.length})
+
+</h4>
+
+`;
+
+villages.forEach(v=>{
+
+html+=`
+
+<div style="
+border:1px solid #ccc;
+padding:10px;
+margin-bottom:8px;
+">
+
+<div>
+
+<strong>
+
+📥 ${v.incoming}
+
+támadás
+
+</strong>
+
+</div>
+
+<div>
+
+${v.village}
+
+</div>
+
+<br>
+
+Faluban:
+
+S:
+
+${v.villageUnits.spear}
+
+SW:
+
+${v.villageUnits.sword}
+
+A:
+
+${v.villageUnits.archer}
+
+H:
+
+${v.villageUnits.heavy}
+
+<br>
+
+Úton:
+
+S:
+
+${v.travelUnits.spear}
+
+SW:
+
+${v.travelUnits.sword}
+
+A:
+
+${v.travelUnits.archer}
+
+H:
+
+${v.travelUnits.heavy}
+
+</div>
+
+`;
+
+});
+
+});
+
+$('#incomingStatus')
+.html(html);
+
+}
 })();
