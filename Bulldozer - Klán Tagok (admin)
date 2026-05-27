@@ -1363,6 +1363,12 @@ $('#startDefenseScan')
 $('#bdScanner').remove();
 $('#defenseScanner').remove();
 
+$('#incomingScanner').remove();
+$('#startIncomingScan').show();
+
+$('#incomingScanner').remove();
+$('#startIncomingScan').show();
+
 $('#startNukeScan').hide();
 $('#startDefenseScan').hide();
 
@@ -2457,7 +2463,16 @@ margin:0;
 color:#7a0000;
 ">
 
-📥 A TAGOK BEÉRKEZŐ TÁMADÁSAI
+<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/command/attack.png"
+
+style="
+width:16px;
+height:16px;
+vertical-align:-3px;
+margin-right:8px;
+">
+
+A TAGOK BEÉRKEZŐ TÁMADÁSAI
 
 </h3>
 
@@ -2719,25 +2734,25 @@ travelUnits:{
 spear:
 getCol(
 travelCols,
-indexes.spear
+indexes.spear-1
 ),
 
 sword:
 getCol(
 travelCols,
-indexes.sword
+indexes.sword-1
 ),
 
 archer:
 getCol(
 travelCols,
-indexes.archer
+indexes.archer-1
 ),
 
 heavy:
 getCol(
 travelCols,
-indexes.heavy
+indexes.heavy-1
 )
 
 }
