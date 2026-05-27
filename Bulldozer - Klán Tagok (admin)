@@ -2513,9 +2513,75 @@ incomingResult=[];
 
 for(const player of players){
 
-$('#incomingStatus').html(
-`Vizsgálat: <strong>${player.name}</strong>`
-);
+$('#incomingStatus').html(`
+
+<div style="
+text-align:center;
+padding:20px;
+font-size:14px;
+color:#7a0000;
+line-height:24px;
+">
+
+📥 Beérkező támadások vizsgálata folyamatban...
+
+<div style="
+margin-top:10px;
+font-size:15px;
+">
+
+<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/welcome/player_points.webp"
+
+style="
+width:18px;
+height:18px;
+vertical-align:-3px;
+">
+
+<strong>
+
+Vizsgálat:
+
+</strong>
+
+<strong>
+
+${player.name}
+
+</strong>
+
+</div>
+
+<div style="
+margin-top:14px;
+font-size:12px;
+font-style:italic;
+opacity:0.95;
+">
+
+<span style="
+font-weight:bold;
+color:#555;
+">
+
+By
+
+</span>
+
+<span style="
+font-weight:bold;
+color:#8b0000;
+">
+
+Crytek
+
+</span>
+
+</div>
+
+</div>
+
+`);
 
 let url=
 
@@ -2772,7 +2838,13 @@ border-bottom:2px solid #8f2c2c;
 
 <strong>
 
-${villages.length}
+${
+villages.reduce(
+(sum,v)=>
+sum+v.incoming,
+0
+)
+}
 
 </strong>
 
@@ -2815,7 +2887,15 @@ color:#7d0000;
 font-size:13px;
 ">
 
-📥 ${v.incoming} támadás
+<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/command/attack.png"
+style="
+width:14px;
+height:14px;
+vertical-align:-2px;
+margin-right:4px;
+">
+
+${v.incoming} támadás
 
 </div>
 
