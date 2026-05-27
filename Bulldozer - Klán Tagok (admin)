@@ -2527,7 +2527,7 @@ ${player.name}
 
 `);
 
-await scanIncomingPlayer(player);
+await scanPlayer(player);
 
 }
 
