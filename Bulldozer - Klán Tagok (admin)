@@ -2690,7 +2690,14 @@ incoming<=0
 ){
 continue;
 }
+let roadShift = 0;
 
+if(
+travelCols &&
+travelCols.length < cols.length
+){
+roadShift = -2;
+}
 incomingResult.push({
 
 player:
@@ -2702,40 +2709,15 @@ village,
 
 villageUnits:{
 
-spear:
-getCol(
-cols,
-indexes.spear
-),
+spear:getCol(cols,indexes.spear),
 
-sword:
-getCol(
-cols,
-indexes.sword
-),
+sword:getCol(cols,indexes.sword),
 
-archer:
-getCol(
-cols,
-indexes.archer
-),
+archer:getCol(cols,indexes.archer),
 
-heavy:
-getCol(
-cols,
-indexes.heavy
-)
+heavy:getCol(cols,indexes.heavy)
 
 },
-
-let roadShift = 0;
-
-if(
-travelCols &&
-travelCols.length < cols.length
-){
-roadShift = -2;
-}
 
 travelUnits:{
 
