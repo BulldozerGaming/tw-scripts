@@ -2445,15 +2445,51 @@ style="
 margin-bottom:15px;
 ">
 
-<h3 style="
+<div style="
+display:flex;
+justify-content:space-between;
+align-items:center;
 padding:10px;
+">
+
+<h3 style="
 margin:0;
 color:#7a0000;
 ">
 
-📥 BEÉRKEZŐ TÁMADÁSOK
+📥 A TAGOK BEÉRKEZŐ TÁMADÁSAI
 
 </h3>
+
+<button id="closeIncomingScanner"
+
+style="
+background:linear-gradient(
+to bottom,
+#7d1d1d,
+#470d0d
+);
+
+border:2px solid #d86b6b;
+
+border-radius:8px;
+
+padding:5px 12px;
+
+color:#fff;
+
+font-size:12px;
+
+font-weight:bold;
+
+cursor:pointer;
+">
+
+❌ Bezárás
+
+</button>
+
+</div>
 
 <div id="incomingStatus"
 style="
@@ -2655,43 +2691,105 @@ renderIncoming();
 
 function renderIncoming(){
 
-let html='';
+let html=`
+<table class="vis"
+width="100%"
+style="
+border-collapse:separate;
+border-spacing:0 6px;
+">
+`;
 
 let grouped={};
 
 incomingResult.forEach(v=>{
 
-if(
-!grouped[
-v.player
-]
-){
-
-grouped[
-v.player
-]=[];
-
+if(!grouped[v.player]){
+grouped[v.player]=[];
 }
 
-grouped[
-v.player
-].push(v);
+grouped[v.player].push(v);
 
 });
 
+let playerIndex=0;
+
 Object.entries(grouped)
-.forEach(
-([player,villages])=>{
+.forEach(([player,villages])=>{
+
+let playerId=
+`incoming_${playerIndex}`;
 
 html+=`
 
-<h4>
+<tr class="incomingPlayerToggle"
 
-👤 ${player}
+data-id="${playerId}"
 
-(${villages.length})
+style="
+cursor:pointer;
+background:linear-gradient(
+to right,
+#b54a4a,
+#efd0d0
+);
+height:32px;
+">
 
-</h4>
+<td style="
+padding-left:10px;
+border-top:2px solid #8f2c2c;
+border-bottom:2px solid #8f2c2c;
+">
+
+<strong style="
+font-size:13px;
+color:#5b0000;
+display:flex;
+align-items:center;
+gap:6px;
+">
+
+<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/welcome/player_points.webp"
+style="
+width:14px;
+height:14px;
+">
+
+${player}
+
+</strong>
+
+</td>
+
+<td align="right"
+
+style="
+padding-right:12px;
+border-top:2px solid #8f2c2c;
+border-bottom:2px solid #8f2c2c;
+">
+
+<strong>
+
+${villages.length}
+
+</strong>
+
+</td>
+
+</tr>
+
+<tr id="${playerId}"
+style="display:none;">
+
+<td colspan="2">
+
+<table class="vis"
+width="100%"
+style="
+border-collapse:collapse;
+">
 
 `;
 
@@ -2699,80 +2797,205 @@ villages.forEach(v=>{
 
 html+=`
 
-<div style="
-border:1px solid #ccc;
-padding:10px;
-margin-bottom:8px;
+<tr style="
+background:#fff6f6;
+border-bottom:1px solid #d6aaaa;
 ">
 
-<div>
+<td style="
+min-width:260px;
+font-weight:bold;
+padding-left:8px;
+font-size:12px;
+">
 
-<strong>
+<div style="
+margin-bottom:6px;
+color:#7d0000;
+font-size:13px;
+">
 
-📥 ${v.incoming}
-
-támadás
-
-</strong>
+📥 ${v.incoming} támadás
 
 </div>
-
-<div>
 
 ${v.village}
 
-</div>
+</td>
 
-<br>
+<td>
 
-Faluban:
+<table class="vis"
+width="100%"
+style="
+background:#fff9f9;
+border:1px solid #d9aaaa;
+">
 
-S:
+<tr style="
+background:#cf8c8c;
+">
 
-${v.villageUnits.spear}
+<th></th>
 
-SW:
+<th>
+<img src="/graphic/unit/unit_spear.png">
+</th>
 
-${v.villageUnits.sword}
+<th>
+<img src="/graphic/unit/unit_sword.png">
+</th>
 
-A:
+<th>
+<img src="/graphic/unit/unit_archer.png">
+</th>
 
-${v.villageUnits.archer}
+<th>
+<img src="/graphic/unit/unit_heavy.png">
+</th>
 
-H:
+</tr>
 
-${v.villageUnits.heavy}
+<tr style="
+background:#f4dfdf;
+">
 
-<br>
+<td style="
+padding-left:12px;
+font-size:11px;
+">
 
-Úton:
+<strong>Faluban</strong>
 
-S:
+</td>
 
-${v.travelUnits.spear}
+<td>
+<strong>${v.villageUnits.spear}</strong>
+</td>
 
-SW:
+<td>
+<strong>${v.villageUnits.sword}</strong>
+</td>
 
-${v.travelUnits.sword}
+<td>
+<strong>${v.villageUnits.archer}</strong>
+</td>
 
-A:
+<td>
+<strong>${v.villageUnits.heavy}</strong>
+</td>
 
-${v.travelUnits.archer}
+</tr>
 
-H:
+<tr style="
+background:#edd0d0;
+">
 
-${v.travelUnits.heavy}
+<td style="
+padding-left:12px;
+font-size:11px;
+">
 
-</div>
+<strong>Úton</strong>
+
+</td>
+
+<td>
+<strong>${v.travelUnits.spear}</strong>
+</td>
+
+<td>
+<strong>${v.travelUnits.sword}</strong>
+</td>
+
+<td>
+<strong>${v.travelUnits.archer}</strong>
+</td>
+
+<td>
+<strong>${v.travelUnits.heavy}</strong>
+</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
 
 `;
 
 });
 
+html+=`
+
+</table>
+
+</td>
+
+</tr>
+
+`;
+
+playerIndex++;
+
 });
+
+html+=`
+
+</table>
+
+<div style="
+margin-top:14px;
+font-size:12px;
+font-style:italic;
+opacity:0.95;
+">
+
+<span style="
+font-weight:bold;
+color:#555;
+">
+
+By
+
+</span>
+
+<span style="
+font-weight:bold;
+color:#8b0000;
+">
+
+Crytek
+
+</span>
+
+</div>
+
+`;
 
 $('#incomingStatus')
 .html(html);
 
+$('.incomingPlayerToggle')
+.off('click')
+.on('click',function(){
+
+$('#'+$(this).data('id'))
+.toggle();
+
+});
+
 }
+
+$('#closeIncomingScanner')
+.off('click')
+.on('click',function(){
+
+location.reload();
+
+});
+
+
 })();
