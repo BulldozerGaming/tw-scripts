@@ -636,22 +636,17 @@ $('#startNukeScan').hide();
 $('#startIncomingScan').hide();
 $('#incomingScanner').remove();
 
-        let scannerPanel = `
+   let scannerPanel = `
 
-            <div class="vis"
-                 id="bdScanner"
-                 style="margin-bottom:15px;">
+<div class="vis"
+id="bdScanner"
+style="margin-bottom:15px;">
 
-                <h3 style="
-                    margin:0;
-                    padding:10px;
-                    color:#5a3515;
-                ">
-                 <div style="
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:10px;
+<div style="
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:10px;
 ">
 
     <h3 style="
@@ -724,9 +719,8 @@ $('#incomingScanner').remove();
     </div>
 
 </div>
-                </h3>
 
-                <div id="bdStatus"
+<div id="bdStatus"
      style="
         padding:10px;
         position:relative;
