@@ -2448,11 +2448,10 @@ margin-bottom:15px;
 ">
 
 <div style="
-display:grid;
-grid-template-columns: 1fr 470px;
-align-items:flex-start;
-gap:20px;
-width:100%;
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:10px;
 ">
 
 <h3 style="
