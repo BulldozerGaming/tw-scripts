@@ -1,0 +1,522 @@
+// ==UserScript==
+// @name         Bulldozer - 2-Klikkes Csoportváltó
+// @license      Bulldozer Gaming
+// @version      2.0
+// @description  Falu csoportváltó menü a felső sávban
+// @author       ners
+// @match        https://*.klanhaboru.hu/game.php*
+// @grant        unsafeWindow
+// ==/UserScript==
+
+
+
+(function() {
+    'use strict';
+
+    var win = typeof unsafeWindow != 'undefined'
+        ? unsafeWindow
+        : window;
+
+    // eredeti jQuery/context
+    var $ = win.$;
+
+    $.ajaxSetup({
+        cache: true
+    });
+
+    /* Script API */
+    var api = win.ScriptAPI;
+
+    api.register(
+        '700-2-Klikkes Csoportváltó',
+        true,
+        'ners',
+        'support-nur-im-forum@die-staemme.de'
+    );
+
+    const GAME_DATA = win.TribalWars.getGameData();
+
+    const CURRENT_GROUP = GAME_DATA.group_id;
+
+    const KEY_VILLAGE_GROUPS =
+        `${GAME_DATA.world}_village_groups`;
+
+    const KEY_USE_SEPERATORS =
+        `${GAME_DATA.world}_use_seperators`;
+
+    const KEY_USE_SEPERATOR_NAMES =
+        `${GAME_DATA.world}_use_seperator_names`;
+
+    const KEY_SEPERATOR_NAMES =
+        `${GAME_DATA.world}_seperator_names`;
+
+    let url = location.href;
+
+    // ===== CSOPORTOK MENTÉSE =====
+    if (
+        url.includes(`screen=overview_villages`) &&
+        !url.includes(`mode=groups&type=dynamic`) &&
+        !url.includes(`mode=groups&type=menu`) &&
+        !url.endsWith(`mode=groups`)
+    ) {
+
+        handleOverviewVillagesScreen();
+
+    }
+
+    // ===== BEÁLLÍTÁSOK =====
+    else if (GAME_DATA.screen === "settings") {
+
+        createSettingsUi();
+    }
+
+    // ===== CSOPORT BETÖLTÉS =====
+    let groupData = getItem(
+        KEY_VILLAGE_GROUPS,
+        []
+    );
+
+    if (groupData.length) {
+
+        createDropdown(groupData);
+
+    } else {
+
+        let btnLoadGroupData = $(`
+            <a href="/game.php?village=${GAME_DATA.village.id}&screen=overview_villages&mode=combined">
+                Csoportok betöltése
+            </a>
+        `);
+
+        $(`#menu_row`)
+            .children()
+            .last()
+            .before(
+                $(`<td class="menu-item"></td>`)
+                    .append(btnLoadGroupData)
+            );
+    }
+
+    // ===== DROPDOWN =====
+    function createDropdown(groupData) {
+
+        let dropdown = $(`
+            <select style="
+                background: transparent;
+                font-size: 11px;
+                font-weight: 700;
+                vertical-align: top;
+                color: #FFFFFF;
+                text-align-last:center;
+                width: 100%;
+                border-color: transparent;
+                outline: 0;
+                -moz-appearance: none;
+                -webkit-appearance: none;
+                cursor: pointer;
+                padding-left: 6px;
+                padding-right: 6px;
+                padding-bottom: 8px;
+            "></select>
+        `);
+
+        let options = createOptions(groupData);
+
+        if (options.length === 0) {
+            return;
+        }
+
+        let useSeperators = getItem(
+            KEY_USE_SEPERATORS,
+            false
+        );
+
+        let useSeperatorNames = getItem(
+            KEY_USE_SEPERATOR_NAMES,
+            false
+        );
+
+        let seperatorNames = getItem(
+            KEY_SEPERATOR_NAMES,
+            []
+        );
+
+        // első blokk
+        let firstOptionGroup = options[0];
+
+        for (let option of firstOptionGroup) {
+            dropdown.append(option);
+        }
+
+        // többi blokk
+        for (let idx = 1; idx < options.length; idx++) {
+
+            let optionGroup = options[idx];
+
+            if (useSeperators) {
+
+                dropdown.append(
+                    createOptgroup(
+                        optionGroup,
+                        useSeperatorNames
+                            ? seperatorNames[idx - 1]
+                            : ``
+                    )
+                );
+
+            } else {
+
+                for (let option of optionGroup) {
+                    dropdown.append(option);
+                }
+            }
+        }
+
+        // aktuális csoport kijelölése
+        dropdown[0].value = CURRENT_GROUP;
+
+        // váltás
+        dropdown.change(() => {
+
+            let mapCoordinates =
+                location.href.match(/#\d{3};\d{3}$/i);
+
+            if (mapCoordinates === null) {
+
+                selectVillage(
+                    GAME_DATA.village.id,
+                    $("option:selected", dropdown).val()
+                );
+
+            } else {
+
+                mapCoordinates = mapCoordinates[0];
+
+                location.href =
+                    location.href.split(mapCoordinates)[0] +
+                    `&group=${$("option:selected", dropdown).val()}` +
+                    mapCoordinates;
+            }
+        });
+
+        // menübe rakás
+        $(`#menu_row`)
+            .children()
+            .last()
+            .before(
+                $(`<td class="menu-item"></td>`)
+                    .append(
+                        $(`<a></a>`)
+                            .append(dropdown)
+                    )
+            );
+    }
+
+    // ===== OPTIONÖK =====
+function createOptions(groupData) {
+
+    let options = [];
+
+    let currentOptionGroup = [];
+
+    for (let group of groupData) {
+
+    let option = $(`
+        <option
+            style="background-color: #000000;"
+            value="${group[`id`]}">
+           ${group[`name`].replace(/^összes$/i, 'Összes')}
+        </option>
+        `);
+
+
+        currentOptionGroup.push(option);
+
+        if (group['seperatorAfter']) {
+
+            options.push(currentOptionGroup);
+
+            currentOptionGroup = [];
+        }
+    }
+
+    if (currentOptionGroup.length) {
+
+        options.push(currentOptionGroup);
+    }
+
+    return options;
+}
+
+    // ===== ELVÁLASZTÓ =====
+    function createOptgroup(
+        options,
+        categoryName=``
+    ) {
+
+        let optgroup = $(`
+            <optgroup
+                style="background-color: #808080;"
+                ${categoryName != ``
+                    ? ` label="${categoryName}"`
+                    : ``}>
+            </optgroup>
+        `);
+
+        for (let option of options) {
+            optgroup.append(option);
+        }
+
+        return optgroup;
+    }
+
+    // ===== CSOPORT MENTÉS =====
+    function handleOverviewVillagesScreen() {
+
+        let groupData = [];
+
+        for (let item of $(`.group-menu-item`)) {
+
+            item = $(item);
+
+            groupData.push({
+
+                id: item.data(`group-id`),
+
+                name: item.text()
+                    .replace(/^(\[|>)/, ``)
+                    .replace(/(\]|<\s?)$/, ``),
+
+                seperatorAfter:
+                    item.next(`br`).length > 0
+            });
+        }
+
+        setItem(
+            KEY_VILLAGE_GROUPS,
+            groupData
+        );
+    }
+
+    // ===== BEÁLLÍTÁSOK =====
+    function createSettingsUi() {
+
+        let useSeperators = getItem(
+            KEY_USE_SEPERATORS,
+            false
+        );
+
+        let useSeperatorNames = getItem(
+            KEY_USE_SEPERATOR_NAMES,
+            false
+        );
+
+        let seperatorNames = getItem(
+            KEY_SEPERATOR_NAMES,
+            []
+        );
+
+        let tbody = $(`<tbody></tbody>`);
+
+        tbody.append(`
+            <tr>
+                <th colspan="2">
+                    2 Klikkes Csoportváltó
+                </th>
+            </tr>
+        `);
+
+        let chkUseSeperators = $(`
+            <input type="checkbox"
+                name="useSeperators"
+                ${useSeperators ? ` checked` : ``}>
+        `);
+
+        tbody.append(
+            $('<tr></tr>')
+                .append($('<td>Elválasztók:</td>'))
+                .append(
+                    wrapInTd(
+                        $('<div></div>').append(
+                            $('<label></label>')
+                                .append(chkUseSeperators)
+                                .append(' Elválasztók engedélyezése')
+                        )
+                    )
+                )
+        );
+
+        let chkUseSeperatorNames = $(`
+            <input type="checkbox"
+                name="useSeperatorNames"
+                ${useSeperatorNames ? ` checked` : ``}
+                ${useSeperators ? `` : ` disabled`}>
+        `);
+
+        tbody.append(
+            $('<tr></tr>')
+                .append($('<td>Elválasztó nevek:</td>'))
+                .append(
+                    wrapInTd(
+                        $('<div></div>').append(
+                            $('<label></label>')
+                                .append(chkUseSeperatorNames)
+                                .append(' Elválasztó nevek használata')
+                        )
+                    )
+                )
+        );
+
+        let txtSeperatorNames = $(`
+            <input type="text"
+                size="64"
+                value="${seperatorNames.join(`;`)}"
+                ${useSeperators && useSeperatorNames
+                    ? ``
+                    : ` disabled`}>
+        `);
+
+        tbody.append(
+            $('<tr></tr>')
+                .append(
+                    $('<td>Elválasztó nevek (;-vel elválasztva):</td>')
+                )
+                .append(
+                    wrapInTd(txtSeperatorNames)
+                )
+        );
+
+        let btnSaveSeperatorNames = $(`
+            <a class="btn"
+                style="margin:4px;"
+                onselectstart="return false;">
+                Mentés
+            </a>
+        `);
+
+        tbody.append(
+            $('<tr></tr>')
+                .append(
+                    $('<td colspan="2"></td>')
+                        .append(btnSaveSeperatorNames)
+                )
+        );
+
+        let updateState = () => {
+
+            chkUseSeperatorNames.prop(
+                "disabled",
+                !chkUseSeperators.is(`:checked`)
+            );
+
+            txtSeperatorNames.prop(
+                "disabled",
+                !chkUseSeperators.is(`:checked`) ||
+                !chkUseSeperatorNames.is(`:checked`)
+            );
+        };
+
+        chkUseSeperators.change(() => {
+
+            setItem(
+                KEY_USE_SEPERATORS,
+                chkUseSeperators.is(`:checked`)
+            );
+
+            updateState();
+        });
+
+        chkUseSeperatorNames.change(() => {
+
+            setItem(
+                KEY_USE_SEPERATOR_NAMES,
+                chkUseSeperatorNames.is(`:checked`)
+            );
+
+            updateState();
+        });
+
+        btnSaveSeperatorNames.click(() => {
+
+            setItem(
+                KEY_SEPERATOR_NAMES,
+                txtSeperatorNames.val().split(`;`)
+            );
+
+            setTimeout(() => location.reload(), 100);
+        });
+
+        $(`#tribe`)
+            .after(
+                $(`<table class="vis settings" width="100%"></table>`)
+                    .append(tbody)
+            )
+            .after($(`<br>`));
+    }
+
+    // ===== UTIL =====
+    function wrapInTd(element) {
+
+        return $('<td></td>').append(element);
+    }
+
+    function setItem(key, value) {
+
+        localStorage.setItem(
+            key,
+            JSON.stringify(value)
+        );
+    }
+
+    function getItem(key, defaultValue) {
+
+        let value = JSON.parse(
+            localStorage.getItem(key)
+        );
+
+        return value !== null
+            ? value
+            : defaultValue;
+    }
+
+// Hover effekt
+$('<style>')
+.prop('type', 'text/css')
+.html(`
+    #menu_row select {
+        cursor: pointer !important;
+    }
+
+    #menu_row select option {
+        padding: 6px 12px !important;
+        background-color: #000000 !important;
+        color: #ffffff !important;
+    }
+
+    /* kis rés a gomb és lenyíló között */
+    #menu_row select {
+        margin-bottom: 2px;
+    }
+`)
+.appendTo('head');
+
+$('.group-menu-item, .group-menu-label').each(function () {
+
+    let txt = $(this).text().trim();
+
+    if (txt.toLowerCase() === 'összes') {
+
+        $(this).text('Összes');
+    }
+});
+
+// >összes< javítás
+$('strong.group-menu-item').each(function () {
+
+    if ($(this).text().trim().toLowerCase() === '>összes<') {
+
+        $(this).text('>Összes<');
+    }
+});
+
+})();
