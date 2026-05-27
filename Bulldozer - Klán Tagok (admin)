@@ -2436,25 +2436,20 @@ let html=
 await fetchPage(url);
 
 let doc=
-new DOMParser()
-.parseFromString(
+new DOMParser().parseFromString(
 html,
 'text/html'
 );
 
 let table=null;
 
-doc.querySelectorAll('.vis')
-.forEach(t=>{
+doc.querySelectorAll('.vis').forEach(t=>{
 
-let headers=
-Array.from(
-t.querySelectorAll('th')
-).map(x=>x.innerText);
+let txt=t.innerText;
 
 if(
-headers.includes('Falu') &&
-headers.includes('Pont')
+txt.includes('Falu') &&
+txt.includes('Pont')
 ){
 table=t;
 }
@@ -2500,15 +2495,10 @@ roadCols.length<cols.length
 )
 ?-2:0;
 
-let attackMatch=
-rows[i].innerText.match(
-/(\d+)\s*támadás/i
-);
-
-let incoming=
-attackMatch
-? parseInt(attackMatch[1])
-:0;
+let attacks=
+rows[i]
+.innerText
+.match(/(\d+)\s*támadás/i);
 
 incomingResult.push({
 
@@ -2516,9 +2506,12 @@ player:player.name,
 
 village,
 
-incoming,
+incoming:
+attacks
+?parseInt(attacks[1])
+:0,
 
-units:{
+faluban:{
 
 spear:getCol(cols,unitIndex.spear),
 
@@ -2569,9 +2562,7 @@ $('#startIncomingScan')
 async function(){
 
 $('#incomingScanner').remove();
-
 $('#bdScanner').remove();
-
 $('#defenseScanner').remove();
 
 $('#startIncomingScan').hide();
@@ -2597,44 +2588,21 @@ margin:0;
 color:#7d0000;
 ">
 
-<img
-src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/command/attack.png"
-style="
-width:18px;
-vertical-align:-3px;
-margin-right:8px;
-">
-
-A TAGOK BEÉRKEZŐ TÁMADÁSAI
+⚔ A TAGOK BEÉRKEZŐ TÁMADÁSAI
 
 </h3>
 
 <button
 id="closeIncomingScanner"
-style="
-background:linear-gradient(
-to bottom,
-#7d1d1d,
-#470d0d
-);
-border:2px solid #d86b6b;
-border-radius:8px;
-padding:5px 12px;
-color:white;
-font-weight:bold;
-cursor:pointer;
-">
+class="btn">
 
-❌ Bezárás
+Bezárás
 
 </button>
 
 </div>
 
-<div id="incomingContent"
-style="
-padding:15px;
-">
+<div id="incomingContent">
 
 Betöltés...
 
@@ -2648,11 +2616,12 @@ incomingResult=[];
 
 for(let player of players){
 
-$('#incomingContent').html(`
+$('#incomingContent')
+.html(`
 
 <div style="
-text-align:center;
 padding:20px;
+text-align:center;
 ">
 
 Beérkező támadások vizsgálata...
@@ -2684,7 +2653,8 @@ incomingResult.forEach(v=>{
 if(!grouped[v.player])
 grouped[v.player]=[];
 
-grouped[v.player].push(v);
+grouped[v.player]
+.push(v);
 
 });
 
@@ -2700,20 +2670,16 @@ a+b.incoming,
 0
 );
 
-let pid=
-player
-.replace(/\W/g,'');
-
 html+=`
 
 <div style="
-border-top:2px solid #a52a2a;
+border-top:2px solid #9d2a2a;
 margin-top:12px;
 ">
 
 <div class="incomingPlayer"
 
-data-id="${pid}"
+data-player="${player}"
 
 style="
 display:flex;
@@ -2738,8 +2704,8 @@ ${total}
 
 </div>
 
-<div id="${pid}"
-
+<div
+id="pl_${player.replace(/\W/g,'')}"
 style="display:none;">
 
 `;
@@ -2751,16 +2717,14 @@ html+=`
 <div style="
 display:flex;
 justify-content:space-between;
+align-items:center;
 padding:10px;
-border-top:1px solid #d9bcbc;
+border-top:1px solid #d7c7a3;
 ">
 
 <div>
 
-<div style="
-font-weight:bold;
-color:#8b0000;
-">
+<div>
 
 ⚔ ${v.incoming} támadás
 
@@ -2777,29 +2741,17 @@ ${v.village}
 <table class="vis"
 
 style="
-width:450px;
+width:440px;
 table-layout:fixed;
 ">
 
 <tr>
 
 <th></th>
-
-<th>
-<img src="/graphic/unit/unit_spear.png">
-</th>
-
-<th>
-<img src="/graphic/unit/unit_sword.png">
-</th>
-
-<th>
-<img src="/graphic/unit/unit_archer.png">
-</th>
-
-<th>
-<img src="/graphic/unit/unit_heavy.png">
-</th>
+<th><img src="/graphic/unit/unit_spear.png"></th>
+<th><img src="/graphic/unit/unit_sword.png"></th>
+<th><img src="/graphic/unit/unit_archer.png"></th>
+<th><img src="/graphic/unit/unit_heavy.png"></th>
 
 </tr>
 
@@ -2807,13 +2759,10 @@ table-layout:fixed;
 
 <td><b>Faluban</b></td>
 
-<td>${v.units.spear}</td>
-
-<td>${v.units.sword}</td>
-
-<td>${v.units.archer}</td>
-
-<td>${v.units.heavy}</td>
+<td>${v.faluban.spear}</td>
+<td>${v.faluban.sword}</td>
+<td>${v.faluban.archer}</td>
+<td>${v.faluban.heavy}</td>
 
 </tr>
 
@@ -2822,11 +2771,8 @@ table-layout:fixed;
 <td><b>Úton</b></td>
 
 <td>${v.road.spear}</td>
-
 <td>${v.road.sword}</td>
-
 <td>${v.road.archer}</td>
-
 <td>${v.road.heavy}</td>
 
 </tr>
@@ -2858,8 +2804,13 @@ $('.incomingPlayer')
 'click',
 function(){
 
-$('#'+$(this)
-.data('id'))
+let id=
+'pl_'+
+$(this)
+.data('player')
+.replace(/\W/g,'');
+
+$('#'+id)
 .toggle();
 
 });
@@ -2890,6 +2841,5 @@ $('#startNukeScan')
 
 });
 
-})();
 
 })();
