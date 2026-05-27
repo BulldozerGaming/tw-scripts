@@ -2437,7 +2437,7 @@ $('#startNukeScan').hide();
 $('#startDefenseScan').hide();
 $('#startIncomingScan').hide();
 
-$('body').append(`
+let incomingPanel = `
 
 <div class="vis"
 id="incomingScanner"
@@ -2466,7 +2466,12 @@ Vizsgálat...
 
 </div>
 
-`);
+`;
+
+$('#bdScannerButtonWrap')
+.after(incomingPanel);
+
+
 
 incomingResult=[];
 
