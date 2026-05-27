@@ -633,6 +633,8 @@ $('#startNukeScan')
 
         $('#startDefenseScan').hide();
 $('#startNukeScan').hide();
+$('#startIncomingScan').hide();
+$('#incomingScanner').remove();
 
         let scannerPanel = `
 
@@ -1362,9 +1364,6 @@ $('#startDefenseScan')
 
 $('#bdScanner').remove();
 $('#defenseScanner').remove();
-
-$('#incomingScanner').remove();
-$('#startIncomingScan').show();
 
 $('#incomingScanner').remove();
 $('#startIncomingScan').show();
@@ -2538,7 +2537,7 @@ color:#7a0000;
 line-height:24px;
 ">
 
-📥 Beérkező támadások vizsgálata folyamatban...
+Beérkező támadások vizsgálata folyamatban...
 
 <div style="
 margin-top:10px;
@@ -2729,30 +2728,39 @@ indexes.heavy
 
 },
 
+let roadShift = 0;
+
+if(
+travelCols &&
+travelCols.length < cols.length
+){
+roadShift = -2;
+}
+
 travelUnits:{
 
 spear:
 getCol(
 travelCols,
-indexes.spear-1
+indexes.spear + roadShift
 ),
 
 sword:
 getCol(
 travelCols,
-indexes.sword-1
+indexes.sword + roadShift
 ),
 
 archer:
 getCol(
 travelCols,
-indexes.archer-1
+indexes.archer + roadShift
 ),
 
 heavy:
 getCol(
 travelCols,
-indexes.heavy-1
+indexes.heavy + roadShift
 )
 
 }
