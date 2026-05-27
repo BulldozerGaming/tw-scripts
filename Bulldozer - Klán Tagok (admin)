@@ -1,0 +1,2388 @@
+// ==UserScript==
+// @name         Bulldozer - Klán Tagok (admin)
+// @namespace    bulldozer
+// @license      Bulldozer Gaming
+// @version      2.0
+// @description  Klán támadó seregek vizsgálata
+// @match        https://*.klanhaboru.hu/game.php*screen=ally&mode=members*
+// @grant        GM_xmlhttpRequest
+// @connect      klanhaboru.hu
+// ==/UserScript==
+
+(function () {
+
+'use strict';
+
+// =========================================
+// CHECK PAGE
+// =========================================
+
+const params =
+    new URLSearchParams(location.search);
+
+if (
+    game_data.screen !== 'ally' ||
+    params.get('mode') !== 'members'
+) {
+    return;
+}
+
+
+
+// =========================================
+// JOGOSULTSÁG ELLENŐRZÉS
+// =========================================
+
+let isHighRank = false;
+
+const myName = game_data.player.name;
+
+// saját játékos sor keresése
+
+$('.vis tr').each(function () {
+
+    const row = $(this);
+
+    const playerLink =
+        row.find('a[href*="info_player"]')
+           .first();
+
+    if (!playerLink.length) {
+        return;
+    }
+
+    const playerName =
+        playerLink.text().trim();
+
+    // csak a saját sor
+
+    if (playerName !== myName) {
+        return;
+    }
+
+    // cellák száma
+
+    const tdCount =
+        row.find('td').length;
+
+    // alapító + arisztokrata
+    // ezeknél nagyon sok oszlop van
+
+    if (tdCount >= 15) {
+        isHighRank = true;
+    }
+});
+
+// ha nincs megfelelő rang
+
+if (!isHighRank) {
+    return;
+}
+
+
+
+// =========================================
+// PANEL
+// =========================================
+
+let panel = `
+
+    <div id="bdScannerButtonWrap"
+         style="
+            margin-bottom:20px;
+         ">
+
+        <button id="startNukeScan"
+            style="
+                background:linear-gradient(
+                    to bottom,
+                    #7d4b14,
+                    #4b2b08
+                );
+                border:2px solid #c79b52;
+                border-radius:10px;
+                padding:8px 16px;
+                color:#fff6d5;
+                font-size:13px;
+                font-weight:bold;
+                cursor:pointer;
+                box-shadow:
+                    inset 0 1px 0 #f7d28b,
+                    0 2px 5px rgba(0,0,0,0.4);
+                display:inline-flex;
+                align-items:center;
+                gap:8px;
+            ">
+
+            <img src="https://dsde.innogamescdn.com/asset/b206965d/graphic/unit/unit_sword.png"
+                 style="
+                    width:18px;
+                    height:18px;
+                 ">
+
+            Támadók
+
+            <img src="https://dsde.innogamescdn.com/asset/b206965d/graphic/unit/unit_sword.png"
+                 style="
+                    width:18px;
+                    height:18px;
+                 ">
+
+        </button>
+
+<button id="startDefenseScan"
+    style="
+        background:linear-gradient(
+            to bottom,
+            #2d5b7d,
+            #163047
+        );
+        border:2px solid #6ca5d6;
+        border-radius:10px;
+        padding:8px 16px;
+        color:#e8f4ff;
+        font-size:13px;
+        font-weight:bold;
+        cursor:pointer;
+        box-shadow:
+            inset 0 1px 0 #9ed0ff,
+            0 2px 5px rgba(0,0,0,0.4);
+        display:inline-flex;
+        align-items:center;
+        gap:8px;
+        margin-left:8px;
+    ">
+
+    <img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/unit/unit_spear.png"
+         style="
+            width:18px;
+            height:18px;
+         ">
+
+    Védők
+
+    <img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/unit/unit_spear.png"
+         style="
+            width:18px;
+            height:18px;
+         ">
+
+</button>
+
+    </div>
+
+
+
+`;
+
+$('.vis').first().before(panel);
+
+// =========================================
+// HELPERS
+// =========================================
+
+function getUnitIndexes(table) {
+
+    let indexes = {};
+
+    let headers =
+        table.querySelectorAll('tr th');
+
+    headers.forEach((th, index) => {
+
+        let img =
+            th.querySelector('img');
+
+        if (!img) {
+            return;
+        }
+
+        let src =
+            img.src;
+
+        if (src.includes('unit_spear')) {
+            indexes.spear = index;
+        }
+
+        if (src.includes('unit_sword')) {
+            indexes.sword = index;
+        }
+
+        if (src.includes('unit_axe')) {
+            indexes.axe = index;
+        }
+
+        if (src.includes('unit_archer')) {
+            indexes.archer = index;
+        }
+
+        if (src.includes('unit_spy')) {
+            indexes.spy = index;
+        }
+
+        if (src.includes('unit_light')) {
+            indexes.light = index;
+        }
+
+        if (src.includes('unit_marcher')) {
+            indexes.marcher = index;
+        }
+
+        if (src.includes('unit_heavy')) {
+            indexes.heavy = index;
+        }
+
+        if (src.includes('unit_ram')) {
+            indexes.ram = index;
+        }
+
+        if (src.includes('unit_catapult')) {
+            indexes.catapult = index;
+        }
+
+        if (src.includes('unit_knight')) {
+            indexes.knight = index;
+        }
+
+        if (src.includes('unit_snob')) {
+            indexes.snob = index;
+        }
+
+        if (src.includes('unit_militia')) {
+            indexes.militia = index;
+        }
+    });
+
+    return indexes;
+}
+
+function num(v) {
+
+    v = String(v)
+        .replace(/\./g, '')
+        .trim();
+
+    if (
+        v === '?' ||
+        v === ''
+    ) {
+        return 0;
+    }
+
+    return parseInt(v) || 0;
+}
+
+function getCol(cols, index) {
+
+    if (
+        index === undefined ||
+        index === null ||
+        index < 0
+    ) {
+        return 0;
+    }
+
+    return num(
+        cols?.[index]?.innerText
+    );
+}
+
+// =========================================
+// PLAYERS
+// =========================================
+
+const players = [];
+
+$('.vis tr').each(function () {
+
+    let link =
+        $(this)
+        .find('a[href*="info_player"]')
+        .attr('href');
+
+    if (!link) {
+        return;
+    }
+
+    let match =
+        link.match(/id=(\d+)/);
+
+    if (!match) {
+        return;
+    }
+
+    players.push({
+
+        id:
+            match[1],
+
+        name:
+            $(this)
+            .find('a[href*="info_player"]')
+            .first()
+            .text()
+            .trim()
+    });
+});
+
+// =========================================
+// RESULT
+// =========================================
+
+let result = {
+
+    'Nuke': [],
+    '3/4 Nuke': [],
+    '1/2 Nuke': [],
+    '1/4 Nuke': []
+};
+
+// =========================================
+// REQUEST
+// =========================================
+
+async function fetchPage(url) {
+
+    return new Promise(resolve => {
+
+        GM_xmlhttpRequest({
+
+            method: 'GET',
+            url,
+
+            onload: function (r) {
+
+                resolve(r.responseText);
+            }
+        });
+
+    });
+}
+
+// =========================================
+// SCAN PLAYER
+// =========================================
+
+async function scanPlayer(player) {
+
+$('#bdStatus').html(`
+
+    <div style="
+        text-align:center;
+        padding:20px;
+        font-size:14px;
+        color:#6b2d00;
+        line-height:24px;
+    ">
+
+        ⚔️ Támadó seregek vizsgálata folyamatban...
+
+        <div style="
+            margin-top:10px;
+            font-size:15px;
+        ">
+
+<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/welcome/player_points.webp"
+     style="
+        width:18px;
+        height:18px;
+        vertical-align:-3px;
+        margin-right:0px;
+     ">
+
+<strong>Vizsgálat:</strong>
+<strong>${player.name}</strong>
+
+        </div>
+
+<div style="
+    margin-top:14px;
+    font-size:12px;
+    font-style:italic;
+    opacity:0.95;
+">
+
+    <span style="
+        font-weight:bold;
+        color:#555;
+    ">
+        By
+    </span>
+
+    <span style="
+        font-weight:bold;
+        color:#8b0000;
+    ">
+        Crytek
+    </span>
+
+</div>
+
+    </div>
+
+`);
+
+    let url =
+
+        `${location.origin}` +
+        `/game.php?village=${game_data.village.id}` +
+        `&screen=ally` +
+        `&mode=members_troops` +
+        `&player_id=${player.id}`;
+
+    let html =
+        await fetchPage(url);
+
+    let doc =
+        new DOMParser()
+        .parseFromString(
+            html,
+            'text/html'
+        );
+
+    let table = null;
+
+    doc.querySelectorAll('.vis')
+        .forEach(t => {
+
+            if (
+                t.innerText.includes('Falu') &&
+                t.innerText.includes('Pont')
+            ) {
+                table = t;
+            }
+        });
+
+    if (!table) {
+        return;
+    }
+
+    table.querySelectorAll('tr')
+        .forEach(row => {
+
+            let cols =
+                row.querySelectorAll('td');
+
+if (cols.length < 5) {
+    return;
+}
+
+            let village =
+                cols[0].innerHTML;
+
+            if (!village) {
+                return;
+            }
+
+let unitIndex =
+    getUnitIndexes(table);
+
+
+let units = {
+
+    axe:
+        getCol(
+            cols,
+            unitIndex.axe
+        ),
+
+    spy:
+        getCol(
+            cols,
+            unitIndex.spy
+        ),
+
+    light:
+        getCol(
+            cols,
+            unitIndex.light
+        ),
+
+    marcher:
+        getCol(
+            cols,
+            unitIndex.marcher
+        ),
+
+    ram:
+        getCol(
+            cols,
+            unitIndex.ram
+        ),
+
+    catapult:
+        getCol(
+            cols,
+            unitIndex.catapult
+        ),
+
+    knight:
+        getCol(
+            cols,
+            unitIndex.knight
+        ),
+
+    snob:
+        getCol(
+            cols,
+            unitIndex.snob
+        )
+};
+
+let pop = (
+
+    units.axe * 1 +
+    units.spy * 2 +
+    units.light * 4 +
+    units.marcher * 5 +
+    units.ram * 5 +
+    units.catapult * 8 +
+    units.knight * 10 +
+    units.snob * 100
+);
+
+let category = null;
+
+if (pop >= 18000) {
+    category = 'Nuke';
+}
+else if (pop >= 15000) {
+    category = '3/4 Nuke';
+}
+else if (pop >= 10000) {
+    category = '1/2 Nuke';
+}
+else if (pop >= 5000) {
+    category = '1/4 Nuke';
+}
+
+if (!category) {
+    return;
+}
+
+result[category].push({
+
+    player:
+        player.name,
+
+    village,
+
+    units,
+
+    pop
+});
+
+        });
+}
+
+// =========================================
+// START
+// =========================================
+
+async function start() {
+
+    for (let player of players) {
+
+        await scanPlayer(player);
+    }
+
+    render();
+}
+
+// =========================================
+// BUTTON START
+// =========================================
+
+$('#startNukeScan')
+    .on('click', async function () {
+
+        $('#startDefenseScan').hide();
+$('#startNukeScan').hide();
+
+        let scannerPanel = `
+
+            <div class="vis"
+                 id="bdScanner"
+                 style="margin-bottom:15px;">
+
+                <h3 style="
+                    margin:0;
+                    padding:10px;
+                    color:#5a3515;
+                ">
+                 <div style="
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:10px;
+">
+
+    <h3 style="
+        margin:0;
+        color:#5a3515;
+    ">
+        💥 A TAGOK TÁMADÓ SEREGEINEK ÁTTEKINTÉSE
+    </h3>
+
+    <div style="
+        display:flex;
+        align-items:center;
+        gap:6px;
+    ">
+
+        <button id="infoNukeScanner"
+            style="
+                background:linear-gradient(
+                    to bottom,
+                    #7d4b14,
+                    #4b2b08
+                );
+                border:2px solid #c79b52;
+                border-radius:8px;
+                padding:5px 12px 5px 12px;
+                color:#fff6d5;
+                font-size:12px;
+                font-weight:bold;
+                cursor:pointer;
+                display:flex;
+                align-items:center;
+                gap:5px;
+                line-height:1.5;
+            ">
+
+            <img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/questionmark.png"
+                 style="
+                    width:14px;
+                    height:14px;
+                 ">
+
+            Infó
+
+        </button>
+
+        <button id="closeNukeScanner"
+            style="
+                background:linear-gradient(
+                    to bottom,
+                    #7d4b14,
+                    #4b2b08
+                );
+                border:2px solid #c79b52;
+                border-radius:8px;
+                padding:5px 12px 5px 8px;
+                color:#fff6d5;
+                font-size:12px;
+                font-weight:bold;
+                cursor:pointer;
+                display:flex;
+                align-items:center;
+                gap:5px;
+                line-height:1.5;
+            ">
+
+            ❌ Bezárás
+
+        </button>
+
+    </div>
+
+</div>
+                </h3>
+
+                <div id="bdStatus"
+     style="
+        padding:10px;
+        position:relative;
+     ">
+
+                    <div style="
+                        text-align:center;
+                        padding:20px;
+                        font-size:14px;
+                        color:#6b2d00;
+                    ">
+
+                        ⚔️ Támadó seregek vizsgálata folyamatban...
+
+<div style="
+    margin-top:14px;
+    font-size:12px;
+    font-style:italic;
+    opacity:0.95;
+">
+
+    <span style="
+        font-weight:bold;
+        color:#555;
+    ">
+        By
+    </span>
+
+    <span style="
+        font-weight:bold;
+        color:#8b0000;
+    ">
+        Crytek
+    </span>
+
+</div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        `;
+
+        $('#bdScannerButtonWrap')
+            .after(scannerPanel);
+
+        await start();
+
+// =====================================
+// INFO BUTTON
+// =====================================
+
+$(document)
+    .off('click', '#infoNukeScanner')
+    .on('click', '#infoNukeScanner', function () {
+
+        alert(
+
+`⚔️ NUKE SZÁMÍTÁS
+
+Nuke:
+18000 vagy több tanyahely
+
+3/4 Nuke:
+15000 - 17999 tanyahely
+
+1/2 Nuke:
+10000 - 14999 tanyahely
+
+1/4 Nuke:
+5000 - 9999 tanyahely
+
+A számítás ezekből az egységekből történik:
+
+• Bárdos
+• Kém
+• Könnyűlovas
+• Lovasíjász
+• Kos
+• Katapult
+• Lovag
+• Nemes`
+
+        );
+    });
+// =====================================
+// CLOSE BUTTON
+// =====================================
+
+$(document)
+    .off('click', '#closeNukeScanner')
+    .on('click', '#closeNukeScanner', function () {
+
+        $('#bdScanner').remove();
+
+$('#startNukeScan').show();
+$('#startDefenseScan').show();
+    });
+    });
+
+// =====================================
+// RENDER
+// =====================================
+
+function render() {
+
+    let html = `
+        <table class="vis"
+               width="100%"
+               style="
+                    border-collapse:separate;
+                    border-spacing:0 6px;
+               ">
+    `;
+
+    Object.entries(result)
+        .forEach(([cat, villages]) => {
+
+            let categoryIcon = '';
+
+            if (cat === 'Nuke') {
+                categoryIcon =
+                    'https://help.klanhaboru.hu/images/6/6e/Attack_large.png';
+            }
+
+            if (cat === '3/4 Nuke') {
+                categoryIcon =
+                    'https://help.klanhaboru.hu/images/d/d3/Attack_medium.png';
+            }
+
+            if (cat === '1/2 Nuke') {
+                categoryIcon =
+                    'https://help.klanhaboru.hu/images/d/d3/Attack_medium.png';
+            }
+
+            if (cat === '1/4 Nuke') {
+                categoryIcon =
+                    'https://help.klanhaboru.hu/images/d/de/Attack_small.png';
+            }
+
+            let players = {};
+
+            villages.forEach(v => {
+
+                if (!players[v.player]) {
+                    players[v.player] = [];
+                }
+
+                players[v.player].push(v);
+            });
+
+            let total =
+                villages.length;
+
+            let catId =
+                cat
+                .replace(/\s/g, '_')
+                .replace(/\//g, '_');
+
+            html += `
+                <tr class="nukeToggle"
+                    data-id="${catId}"
+                    style="
+                        cursor:pointer;
+                        background:linear-gradient(
+                            to right,
+                            #c7a96b,
+                            #ecd7aa
+                        );
+                        height:32px;
+                    ">
+
+                    <td style="
+                        padding-left:10px;
+                        border-top:2px solid #8b6b33;
+                        border-bottom:2px solid #8b6b33;
+                    ">
+
+                        <strong style="
+                            font-size:13px;
+                            color:#4b2300;
+                            display:flex;
+                            align-items:center;
+                            gap:6px;
+                        ">
+
+                            <img src="${categoryIcon}"
+                                 style="
+                                    width:18px;
+                                    height:18px;
+                                 ">
+
+                           ${cat}
+
+<span style="
+    color:#8b7d68;
+    font-size:11px;
+    font-weight:normal;
+">
+
+    ${
+        cat === 'Nuke'
+            ? '— 18000 vagy több tanyahely'
+
+        : cat === '3/4 Nuke'
+            ? '— 15000 - 17999 tanyahely'
+
+        : cat === '1/2 Nuke'
+            ? '— 10000 - 14999 tanyahely'
+
+        : '— 5000 - 9999 tanyahely'
+    }
+
+</span>
+
+                        </strong>
+
+                    </td>
+
+                    <td align="right"
+                        style="
+                            padding-right:12px;
+                            border-top:2px solid #8b6b33;
+                            border-bottom:2px solid #8b6b33;
+                        ">
+
+                        <strong style="
+                            color:#7a2100;
+                            font-size:13px;
+                        ">
+                            ${total}
+                        </strong>
+
+                    </td>
+
+                </tr>
+
+                <tr id="${catId}"
+                    style="display:none;">
+
+                    <td colspan="2">
+
+                        <table class="vis"
+                               width="100%"
+                               style="
+                                    border-collapse:collapse;
+                               ">
+            `;
+
+            let playerIndex = 0;
+
+            Object.entries(players)
+                .forEach(([playerName, playerVillages]) => {
+
+                    let playerId =
+                        `${catId}_${playerIndex}`;
+
+                    html += `
+
+                        <tr class="playerToggle"
+                            data-id="${playerId}"
+                            style="
+                                cursor:pointer;
+                                background:#f8f1df;
+                                border-bottom:1px solid #d2bc8c;
+                                height:28px;
+                            ">
+
+                            <td style="
+                                padding-left:12px;
+                                border-bottom:1px solid #d2bc8c;
+                            ">
+
+                                <strong style="
+                                    color:#6b2d00;
+                                    font-size:12px;
+                                ">
+
+                                    <img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/welcome/player_points.webp"
+                                         style="
+                                            width:14px;
+                                            height:14px;
+                                            vertical-align:middle;
+                                            margin-right:5px;
+                                         ">
+
+                                    ${playerName}
+
+                                </strong>
+
+                            </td>
+
+                            <td align="right"
+                                style="
+                                    padding-right:12px;
+                                    border-bottom:1px solid #d2bc8c;
+                                ">
+
+                                <strong style="
+                                    color:#7a2100;
+                                    font-size:12px;
+                                ">
+                                    ${playerVillages.length}
+                                </strong>
+
+                            </td>
+
+                        </tr>
+
+                        <tr id="${playerId}"
+                            style="display:none;">
+
+                            <td colspan="2"
+                                style="
+                                    padding:4px 0 8px 0;
+                                ">
+
+                                <table class="vis nukeVillageTable"
+                                       width="100%"
+                                       style="
+                                            background:#fffaf0;
+                                            border:1px solid #d9c28f;
+                                       ">
+
+                                    <tr style="
+                                        background:#c7a96b;
+                                    ">
+
+                                        <th style="
+                                            text-align:left;
+                                            padding-left:8px;
+                                            font-size:11px;
+                                        ">
+                                            Falu
+                                        </th>
+
+                                        <th><img src="/graphic/unit/unit_axe.png"></th>
+                                        <th><img src="/graphic/unit/unit_spy.png"></th>
+                                        <th><img src="/graphic/unit/unit_light.png"></th>
+                                        <th><img src="/graphic/unit/unit_marcher.png"></th>
+                                        <th><img src="/graphic/unit/unit_ram.png"></th>
+                                        <th><img src="/graphic/unit/unit_catapult.png"></th>
+                                        <th><img src="/graphic/unit/unit_knight.png"></th>
+                                        <th><img src="/graphic/unit/unit_snob.png"></th>
+
+                                        <th align="left">
+
+                                            <img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/overview/farm.webp"
+                                                 style="
+                                                    width:18px;
+                                                    height:18px;
+                                                 ">
+
+                                        </th>
+
+                                    </tr>
+                    `;
+
+                    playerVillages.forEach(v => {
+
+                        html += `
+
+                            <tr style="
+                                background:#fffaf0;
+                                border-bottom:1px solid #d9c28f;
+                                height:26px;
+                            ">
+
+                                <td style="
+                                    min-width:260px;
+                                    font-weight:bold;
+                                    padding-left:8px;
+                                    font-size:12px;
+                                ">
+                                    ${v.village}
+                                </td>
+
+                                <td style="padding-left:6px;"><strong>${v.units.axe}</strong></td>
+                                <td style="padding-left:6px;"><strong>${v.units.spy}</strong></td>
+                                <td style="padding-left:6px;"><strong>${v.units.light}</strong></td>
+                                <td style="padding-left:6px;"><strong>${v.units.marcher}</strong></td>
+                                <td style="padding-left:6px;"><strong>${v.units.ram}</strong></td>
+                                <td style="padding-left:6px;"><strong>${v.units.catapult}</strong></td>
+                                <td style="padding-left:6px;"><strong>${v.units.knight}</strong></td>
+                                <td style="padding-left:6px;"><strong>${v.units.snob}</strong></td>
+
+                                <td align="center">
+
+                                    <strong style="
+                                        color:#7a2100;
+                                        font-size:12px;
+                                    ">
+                                        ${v.pop}
+                                    </strong>
+
+                                </td>
+
+                            </tr>
+
+                        `;
+                    });
+
+                    html += `
+
+                                </table>
+
+                            </td>
+
+                        </tr>
+
+                    `;
+
+                    playerIndex++;
+                });
+
+            html += `
+                        </table>
+                    </td>
+                </tr>
+            `;
+        });
+
+    let totalSnobs = 0;
+
+    Object.values(result)
+        .forEach(villages => {
+
+            villages.forEach(v => {
+
+                totalSnobs +=
+                    parseInt(v.units.snob || 0);
+            });
+        });
+
+    html += `
+        <tr style="
+            background:linear-gradient(
+                to right,
+                #c7a96b,
+                #ecd7aa
+            );
+            height:32px;
+        ">
+
+            <td style="
+                padding-left:10px;
+                border-top:2px solid #8b6b33;
+                border-bottom:2px solid #8b6b33;
+            ">
+
+                <strong style="
+                    font-size:13px;
+                    color:#4b2300;
+                    display:flex;
+                    align-items:center;
+                    gap:6px;
+                ">
+
+                    <img src="https://help.klanhaboru.hu/images/9/9f/Unit_snob.png"
+                         style="
+                            width:18px;
+                            height:18px;
+                         ">
+
+                    Nemes
+
+<span style="
+    color:#8b7d68;
+    font-size:11px;
+    font-weight:normal;
+">
+
+    — Leképzett nemesek száma a klánban
+
+</span>
+
+                </strong>
+
+            </td>
+
+            <td align="right"
+                style="
+                    padding-right:12px;
+                    border-top:2px solid #8b6b33;
+                    border-bottom:2px solid #8b6b33;
+                ">
+
+                <strong style="
+                    color:#7a2100;
+                    font-size:13px;
+                ">
+                    ${totalSnobs}
+                </strong>
+
+            </td>
+
+        </tr>
+    `;
+
+    html += `
+
+    </table>
+
+<div style="
+    margin-top:14px;
+    font-size:12px;
+    font-style:italic;
+    opacity:0.95;
+">
+
+    <span style="
+        font-weight:bold;
+        color:#555;
+    ">
+        By
+    </span>
+
+    <span style="
+        font-weight:bold;
+        color:#8b0000;
+    ">
+        Crytek
+    </span>
+
+</div>
+
+`;
+
+    $('#bdStatus').html(html);
+
+    $('.nukeToggle')
+        .off('click')
+        .on('click', function () {
+
+            $('#' + $(this).data('id'))
+                .toggle();
+        });
+
+    $('.playerToggle')
+        .off('click')
+        .on('click', function () {
+
+            $('#' + $(this).data('id'))
+                .toggle();
+        });
+}
+
+
+
+
+
+// =====================================
+// DEFENSE SYSTEM
+// =====================================
+
+let defenseResult = {
+
+    'VF': [],
+    '3/4 VF': [],
+    '1/2 VF': [],
+    '1/4 VF': [],
+    '1/6 VF': [],
+    '1/20 VF': [],
+    'Maradék': []
+};
+
+let movableDefense = {
+
+    spear: 0,
+    sword: 0,
+    archer: 0,
+    heavy: 0,
+    knight: 0
+};
+
+let travelingDefense = {
+
+    spear: 0,
+    sword: 0,
+    archer: 0,
+    heavy: 0,
+    knight: 0
+};
+
+function calcDefense(units) {
+
+    return (
+
+        units.spear * 1 +
+        units.sword * 1 +
+        units.archer * 1 +
+        units.heavy * 6 +
+        units.knight * 10
+    );
+}
+
+function defenseCategory(pop) {
+
+    if (pop >= 18000) {
+        return 'VF';
+    }
+
+    if (pop >= 15000) {
+        return '3/4 VF';
+    }
+
+    if (pop >= 10000) {
+        return '1/2 VF';
+    }
+
+    if (pop >= 5000) {
+        return '1/4 VF';
+    }
+
+    if (pop >= 3000) {
+        return '1/6 VF';
+    }
+
+    if (pop >= 1000) {
+        return '1/20 VF';
+    }
+
+    return 'Maradék';
+}
+
+// =====================================
+// START DEFENSE BUTTON
+// =====================================
+
+
+$('#startDefenseScan')
+.on('click', async function () {
+
+$('#bdScanner').remove();
+$('#defenseScanner').remove();
+
+$('#startNukeScan').hide();
+$('#startDefenseScan').hide();
+
+    let panel = `
+
+        <div class="vis"
+             id="defenseScanner"
+             style="margin-bottom:15px;">
+
+            <div style="
+                display:flex;
+                justify-content:space-between;
+                align-items:center;
+                padding:10px;
+            ">
+
+                <h3 style="
+                    margin:0;
+                    color:#2c4b66;
+                ">
+
+                    🛡️ A TAGOK VÉDŐ SEREGEINEK ÁTTEKINTÉSE
+
+                </h3>
+
+                <div style="
+                    display:flex;
+                    align-items:center;
+                    gap:6px;
+                ">
+
+                    <button id="infoDefenseScanner"
+                        style="
+                            background:linear-gradient(
+                                to bottom,
+                                #2d5b7d,
+                                #163047
+                            );
+                            border:2px solid #6ca5d6;
+                            border-radius:8px;
+                            padding:5px 12px 5px 12px;
+                            color:#e8f4ff;
+                            font-size:12px;
+                            font-weight:bold;
+                            cursor:pointer;
+                            display:flex;
+                            align-items:center;
+                            gap:5px;
+                            line-height:1.5;
+                        ">
+
+                        <img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/questionmark.png"
+                             style="
+                                width:14px;
+                                height:14px;
+                             ">
+
+                        Infó
+
+                    </button>
+
+                    <button id="closeDefenseScanner"
+                        style="
+                            background:linear-gradient(
+                                to bottom,
+                                #2d5b7d,
+                                #163047
+                            );
+                            border:2px solid #6ca5d6;
+                            border-radius:8px;
+                            padding:5px 12px 5px 8px;
+                            color:#e8f4ff;
+                            font-size:12px;
+                            font-weight:bold;
+                            cursor:pointer;
+                            display:flex;
+                            align-items:center;
+                            gap:5px;
+                            line-height:1.5;
+                        ">
+
+                        ❌ Bezárás
+
+                    </button>
+
+                </div>
+
+            </div>
+
+            <div id="defenseStatus"
+                 style="
+                    padding:10px;
+                    position:relative;
+                 ">
+
+                <div style="
+                    text-align:center;
+                    padding:20px;
+                    font-size:14px;
+                    color:#2c4b66;
+                ">
+
+                    🛡️ Védők vizsgálata folyamatban...
+
+                    <div style="
+                        margin-top:14px;
+                        font-size:12px;
+                        font-style:italic;
+                        opacity:0.95;
+                    ">
+
+                        <span style="
+                            font-weight:bold;
+                            color:#555;
+                        ">
+                            By
+                        </span>
+
+                        <span style="
+                            font-weight:bold;
+                            color:#8b0000;
+                        ">
+                            Crytek
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    `;
+
+    $('#bdScannerButtonWrap')
+        .after(panel);
+
+    $('#startDefenseScan').hide();
+$('#startNukeScan').hide();
+
+    for (let player of players) {
+
+        $('#defenseStatus').html(`
+
+            <div style="
+                text-align:center;
+                padding:20px;
+                font-size:14px;
+                color:#2c4b66;
+                line-height:24px;
+            ">
+
+                🛡️ Védők vizsgálata folyamatban...
+
+                <div style="
+                    margin-top:10px;
+                    font-size:15px;
+                ">
+
+                    <img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/welcome/player_points.webp"
+                         style="
+                            width:18px;
+                            height:18px;
+                            vertical-align:-3px;
+                            margin-right:0px;
+                         ">
+
+                    <strong>Vizsgálat:</strong>
+                    <strong>${player.name}</strong>
+
+                </div>
+
+                <div style="
+                    margin-top:14px;
+                    font-size:12px;
+                    font-style:italic;
+                    opacity:0.95;
+                ">
+
+                    <span style="
+                        font-weight:bold;
+                        color:#555;
+                    ">
+                        By
+                    </span>
+
+                    <span style="
+                        font-weight:bold;
+                        color:#8b0000;
+                    ">
+                        Crytek
+                    </span>
+
+                </div>
+
+            </div>
+
+        `);
+
+        let url =
+
+            `${location.origin}` +
+            `/game.php?village=${game_data.village.id}` +
+            `&screen=ally` +
+            `&mode=members_defense` +
+            `&player_id=${player.id}`;
+
+        let html =
+            await fetchPage(url);
+
+        let doc =
+            new DOMParser()
+            .parseFromString(
+                html,
+                'text/html'
+            );
+
+        let table = null;
+
+        doc.querySelectorAll('.vis')
+        .forEach(t => {
+
+            let headers =
+                Array.from(
+                    t.querySelectorAll('th')
+                )
+                .map(h =>
+                    h.innerText.trim()
+                );
+
+            if (
+                headers.includes('Falu') &&
+                headers.includes('Pont')
+            ) {
+                table = t;
+            }
+        });
+
+        if (!table) {
+            continue;
+        }
+
+        let rows =
+            table.querySelectorAll('tr');
+
+        for (let i = 0; i < rows.length; i++) {
+
+            let cols =
+                rows[i].querySelectorAll('td');
+
+if (cols.length < 5) {
+    continue;
+}
+
+            let village =
+                cols[0]?.innerHTML;
+
+            if (!village) {
+                continue;
+            }
+
+            if (
+                village.includes('faluban') ||
+                village.includes('Úton')
+            ) {
+                continue;
+            }
+
+let unitIndex =
+    getUnitIndexes(table);
+const OFFSET = 0;
+
+let inVillage = {
+
+    spear:
+        getCol(
+            cols,
+            unitIndex.spear + OFFSET
+        ),
+
+    sword:
+        getCol(
+            cols,
+            unitIndex.sword + OFFSET
+        ),
+
+    archer:
+        getCol(
+            cols,
+            unitIndex.archer + OFFSET
+        ),
+
+    heavy:
+        getCol(
+            cols,
+            unitIndex.heavy + OFFSET
+        ),
+
+    knight:
+        getCol(
+            cols,
+            unitIndex.knight + OFFSET
+        )
+};
+
+let roadCols =
+    rows[i + 1]?.querySelectorAll('td');
+
+let roadShift = 0;
+
+// Úton sorban hiányzik az első TD
+// ezért automatikusan korrigálunk
+
+if (
+    roadCols.length <
+    cols.length
+) {
+    roadShift = -2;
+}
+
+let onRoad = {
+
+    spear:
+        getCol(
+            roadCols,
+            unitIndex.spear + roadShift
+        ),
+
+    sword:
+        getCol(
+            roadCols,
+            unitIndex.sword + roadShift
+        ),
+
+    archer:
+        getCol(
+            roadCols,
+            unitIndex.archer + roadShift
+        ),
+
+    heavy:
+        getCol(
+            roadCols,
+            unitIndex.heavy + roadShift
+        ),
+
+    knight:
+        getCol(
+            roadCols,
+            unitIndex.knight + roadShift
+        )
+};
+
+            movableDefense.spear += inVillage.spear;
+            movableDefense.sword += inVillage.sword;
+            movableDefense.archer += inVillage.archer;
+            movableDefense.heavy += inVillage.heavy;
+            movableDefense.knight += inVillage.knight;
+
+            travelingDefense.spear += onRoad.spear;
+            travelingDefense.sword += onRoad.sword;
+            travelingDefense.archer += onRoad.archer;
+            travelingDefense.heavy += onRoad.heavy;
+            travelingDefense.knight += onRoad.knight;
+
+            let combined = {
+
+                spear:
+                    inVillage.spear + onRoad.spear,
+
+                sword:
+                    inVillage.sword + onRoad.sword,
+
+                archer:
+                    inVillage.archer + onRoad.archer,
+
+                heavy:
+                    inVillage.heavy + onRoad.heavy,
+
+                knight:
+                    inVillage.knight + onRoad.knight
+            };
+
+            let pop =
+                calcDefense(combined);
+
+            let cat =
+                defenseCategory(pop);
+
+            if (
+                cat === 'Maradék' &&
+                pop <= 0
+            ) {
+                continue;
+            }
+
+            defenseResult[cat].push({
+
+                player:
+                    player.name,
+
+                village,
+
+                inVillage,
+                onRoad,
+                combined,
+                pop
+            });
+
+            i++;
+        }
+    }
+
+    renderDefense();
+
+    $('#infoDefenseScanner')
+    .off('click')
+    .on('click', function () {
+
+        alert(
+
+`🛡️ VF SZÁMÍTÁS
+
+VF:
+18000 vagy több tanyahely
+
+3/4 VF:
+15000 - 17999 tanyahely
+
+1/2 VF:
+10000 - 14999 tanyahely
+
+1/4 VF:
+5000 - 9999 tanyahely
+
+1/6 VF:
+3000 - 4999 tanyahely
+
+1/20 VF:
+1000 - 2999 tanyahely
+
+Maradék:
+1000 alatti tanyahely
+
+A számítás ezekből az egységekből történik:
+
+• Lándzsás
+• Kardos
+• Íjász
+• Nehézlovas
+• Lovag`
+
+        );
+    });
+
+    $('#closeDefenseScanner')
+    .off('click')
+    .on('click', function () {
+
+        $('#defenseScanner').remove();
+
+        $('#startDefenseScan').show();
+        $('#startNukeScan').show();
+    });
+
+});
+
+
+// =====================================
+// RENDER DEFENSE
+// =====================================
+
+function renderDefense() {
+
+    let html = `
+        <table class="vis"
+               width="100%"
+               style="
+                    border-collapse:separate;
+                    border-spacing:0 6px;
+               ">
+    `;
+
+    Object.entries(defenseResult)
+    .forEach(([cat, villages]) => {
+
+        let categoryIcon =
+            'https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/unit/unit_spear.png';
+
+let categoryInfo = '';
+
+if (cat === 'VF') {
+    categoryInfo =
+        '18000 vagy több tanyahely';
+}
+
+if (cat === '3/4 VF') {
+    categoryInfo =
+        '15000 - 17999 tanyahely';
+}
+
+if (cat === '1/2 VF') {
+    categoryInfo =
+        '10000 - 14999 tanyahely';
+}
+
+if (cat === '1/4 VF') {
+    categoryInfo =
+        '5000 - 9999 tanyahely';
+}
+
+if (cat === '1/6 VF') {
+    categoryInfo =
+        '3000 - 4999 tanyahely';
+}
+
+if (cat === '1/20 VF') {
+    categoryInfo =
+        '1000 - 2999 tanyahely';
+}
+
+if (cat === 'Maradék') {
+    categoryInfo =
+        '1000 alatti tanyahely';
+}
+
+        let playersMap = {};
+
+        villages.forEach(v => {
+
+            if (!playersMap[v.player]) {
+                playersMap[v.player] = [];
+            }
+
+            playersMap[v.player].push(v);
+        });
+
+        let total =
+            villages.length;
+
+        let catId =
+            cat
+            .replace(/\s/g, '_')
+            .replace(/\//g, '_');
+
+        html += `
+
+            <tr class="${
+                total > 0
+                    ? 'defToggle'
+                    : ''
+            }"
+
+                data-id="${catId}"
+
+                style="
+                    cursor:${
+                        total > 0
+                            ? 'pointer'
+                            : 'default'
+                    };
+
+                    background:linear-gradient(
+                        to right,
+                        #6d8ea8,
+                        #d9e7f2
+                    );
+
+                    height:32px;
+                ">
+
+                <td style="
+                    padding-left:10px;
+                    border-top:2px solid #4b6880;
+                    border-bottom:2px solid #4b6880;
+                ">
+
+                    <strong style="
+                        font-size:13px;
+                        color:#1e3548;
+                        display:flex;
+                        align-items:center;
+                        gap:6px;
+                    ">
+
+                        <img src="${categoryIcon}"
+                             style="
+                                width:18px;
+                                height:18px;
+                             ">
+
+                       ${cat}
+
+<span style="
+    color:#6d7d8a;
+    font-size:11px;
+    font-weight:normal;
+">
+
+    — ${categoryInfo}
+
+</span>
+
+                    </strong>
+
+                </td>
+
+                <td align="right"
+                    style="
+                        padding-right:12px;
+                        border-top:2px solid #4b6880;
+                        border-bottom:2px solid #4b6880;
+                    ">
+
+                    <strong style="
+                        color:#1e3548;
+                        font-size:13px;
+                    ">
+
+                        ${total}
+
+                    </strong>
+
+                </td>
+
+            </tr>
+
+            <tr id="${catId}"
+                style="display:none;">
+
+                <td colspan="2">
+
+                    <table class="vis"
+                           width="100%"
+                           style="
+                                border-collapse:collapse;
+                           ">
+
+        `;
+
+        let playerIndex = 0;
+
+        Object.entries(playersMap)
+        .forEach(([playerName, playerVillages]) => {
+
+            let playerId =
+                `${catId}_${playerIndex}`;
+
+            html += `
+
+                <tr class="playerDefenseToggle"
+                    data-id="${playerId}"
+
+                    style="
+                        cursor:pointer;
+                        background:#eef4f8;
+                        border-bottom:1px solid #b9cddd;
+                        height:28px;
+                    ">
+
+                    <td style="
+                        padding-left:12px;
+                        border-bottom:1px solid #b9cddd;
+                    ">
+
+                        <strong style="
+                            color:#1e3548;
+                            font-size:12px;
+                        ">
+
+                            <img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/welcome/player_points.webp"
+                                 style="
+                                    width:14px;
+                                    height:14px;
+                                    vertical-align:middle;
+                                    margin-right:5px;
+                                 ">
+
+                            ${playerName}
+
+                        </strong>
+
+                    </td>
+
+                    <td align="right"
+                        style="
+                            padding-right:12px;
+                            border-bottom:1px solid #b9cddd;
+                        ">
+
+                        <strong style="
+                            color:#1e3548;
+                            font-size:12px;
+                        ">
+
+                            ${playerVillages.length}
+
+                        </strong>
+
+                    </td>
+
+                </tr>
+
+                <tr id="${playerId}"
+                    style="display:none;">
+
+                    <td colspan="2"
+                        style="
+                            padding:4px 0 8px 0;
+                        ">
+
+                        <table class="vis"
+                               width="100%"
+                               style="
+                                    background:#f7fbff;
+                                    border:1px solid #bfd2e2;
+                               ">
+
+                            <tr style="
+                                background:#9bb5ca;
+                            ">
+
+                                <th style="
+                                    text-align:left;
+                                    padding-left:8px;
+                                    font-size:11px;
+                                ">
+                                    Falu
+                                </th>
+
+                                <th><img src="/graphic/unit/unit_spear.png"></th>
+                                <th><img src="/graphic/unit/unit_sword.png"></th>
+                                <th><img src="/graphic/unit/unit_archer.png"></th>
+                                <th><img src="/graphic/unit/unit_heavy.png"></th>
+                                <th><img src="/graphic/unit/unit_knight.png"></th>
+
+                                <th align="left">
+
+                                    <img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/overview/farm.webp"
+                                         style="
+                                            width:18px;
+                                            height:18px;
+                                         ">
+
+                                </th>
+
+                            </tr>
+            `;
+
+            playerVillages.forEach(v => {
+
+                html += `
+
+                    <tr style="
+                        background:#f7fbff;
+                        border-bottom:1px solid #bfd2e2;
+                        height:26px;
+                    ">
+
+                        <td style="
+                            min-width:260px;
+                            font-weight:bold;
+                            padding-left:8px;
+                            font-size:12px;
+                        ">
+                            ${v.village}
+                        </td>
+
+                        <td style="padding-left:6px;"><strong>${v.combined.spear}</strong></td>
+                        <td style="padding-left:6px;"><strong>${v.combined.sword}</strong></td>
+                        <td style="padding-left:6px;"><strong>${v.combined.archer}</strong></td>
+                        <td style="padding-left:6px;"><strong>${v.combined.heavy}</strong></td>
+                        <td style="padding-left:6px;"><strong>${v.combined.knight}</strong></td>
+
+                        <td align="center">
+
+                            <strong style="
+                                color:#1e3548;
+                                font-size:12px;
+                            ">
+
+                                ${v.pop}
+
+                            </strong>
+
+                        </td>
+
+                    </tr>
+
+                    <tr style="
+                        background:#edf4fa;
+                    ">
+
+                        <td style="
+                            padding-left:16px;
+                            font-size:11px;
+                        ">
+
+                            <strong>Faluban</strong>
+
+                        </td>
+
+                        <td><strong>${v.inVillage.spear}</strong></td>
+                        <td><strong>${v.inVillage.sword}</strong></td>
+                        <td><strong>${v.inVillage.archer}</strong></td>
+                        <td><strong>${v.inVillage.heavy}</strong></td>
+                        <td><strong>${v.inVillage.knight}</strong></td>
+
+                        <td></td>
+
+                    </tr>
+
+                    <tr style="
+                        background:#e4eef7;
+                    ">
+
+                        <td style="
+                            padding-left:16px;
+                            font-size:11px;
+                        ">
+
+                            <strong>Úton</strong>
+
+                        </td>
+
+                        <td><strong>${v.onRoad.spear}</strong></td>
+                        <td><strong>${v.onRoad.sword}</strong></td>
+                        <td><strong>${v.onRoad.archer}</strong></td>
+                        <td><strong>${v.onRoad.heavy}</strong></td>
+                        <td><strong>${v.onRoad.knight}</strong></td>
+
+                        <td></td>
+
+                    </tr>
+
+                `;
+            });
+
+            html += `
+
+                        </table>
+
+                    </td>
+
+                </tr>
+
+            `;
+
+            playerIndex++;
+        });
+
+        html += `
+                    </table>
+                </td>
+            </tr>
+        `;
+    });
+
+   html += `
+
+        <tr class="defGlobalToggle"
+            data-id="movableDef">
+
+            <td style="
+                background:#dce9d4;
+                padding:8px;
+                cursor:pointer;
+                font-weight:bold;
+                border-top:2px solid #8bb38b;
+                border-bottom:2px solid #8bb38b;
+            ">
+
+                🟢 Mozgatható védők
+
+            </td>
+
+            <td align="right"
+                style="
+                    background:#dce9d4;
+                    padding-right:10px;
+                    border-top:2px solid #8bb38b;
+                    border-bottom:2px solid #8bb38b;
+                ">
+
+                ➜
+
+            </td>
+
+        </tr>
+
+        <tr id="movableDef"
+            style="display:none;">
+
+            <td colspan="2">
+
+                <table class="vis"
+                       width="100%">
+
+                    <tr style="
+                        background:#b7d3b7;
+                    ">
+
+                        <th align="left"><img src="/graphic/unit/unit_spear.png"></th>
+                        <th align="left"><img src="/graphic/unit/unit_sword.png"></th>
+                        <th align="left"><img src="/graphic/unit/unit_archer.png"></th>
+                        <th align="left"><img src="/graphic/unit/unit_heavy.png"></th>
+                        <th align="left"><img src="/graphic/unit/unit_knight.png"></th>
+
+                    </tr>
+
+                    <tr>
+
+                        <td style="padding-left:6px;"><strong>${movableDefense.spear}</strong></td>
+                        <td style="padding-left:6px;"><strong>${movableDefense.sword}</strong></td>
+                        <td style="padding-left:6px;"><strong>${movableDefense.archer}</strong></td>
+                        <td style="padding-left:6px;"><strong>${movableDefense.heavy}</strong></td>
+                        <td style="padding-left:6px;"><strong>${movableDefense.knight}</strong></td>
+
+                    </tr>
+
+                </table>
+
+            </td>
+
+        </tr>
+
+        <tr class="defGlobalToggle"
+            data-id="roadDef">
+
+            <td style="
+                background:#ddd2d2;
+                padding:8px;
+                cursor:pointer;
+                font-weight:bold;
+                border-top:2px solid #b09c9c;
+                border-bottom:2px solid #b09c9c;
+            ">
+
+                🚚 Úton levő védők
+
+            </td>
+
+            <td align="right"
+                style="
+                    background:#ddd2d2;
+                    padding-right:10px;
+                    border-top:2px solid #b09c9c;
+                    border-bottom:2px solid #b09c9c;
+                ">
+
+                ➜
+
+            </td>
+
+        </tr>
+
+        <tr id="roadDef"
+            style="display:none;">
+
+            <td colspan="2">
+
+                <table class="vis"
+                       width="100%">
+
+                    <tr style="
+                        background:#c8b7b7;
+                    ">
+
+                        <th align="left"><img src="/graphic/unit/unit_spear.png"></th>
+                        <th align="left"><img src="/graphic/unit/unit_sword.png"></th>
+                        <th align="left"><img src="/graphic/unit/unit_archer.png"></th>
+                        <th align="left"><img src="/graphic/unit/unit_heavy.png"></th>
+                        <th align="left"><img src="/graphic/unit/unit_knight.png"></th>
+
+                    </tr>
+
+                    <tr>
+
+                        <td style="padding-left:6px;"><strong>${travelingDefense.spear}</strong></td>
+                        <td style="padding-left:6px;"><strong>${travelingDefense.sword}</strong></td>
+                        <td style="padding-left:6px;"><strong>${travelingDefense.archer}</strong></td>
+                        <td style="padding-left:6px;"><strong>${travelingDefense.heavy}</strong></td>
+                        <td style="padding-left:6px;"><strong>${travelingDefense.knight}</strong></td>
+
+                    </tr>
+
+                </table>
+
+            </td>
+
+        </tr>
+
+    </table>
+
+<div style="
+    margin-top:14px;
+    font-size:12px;
+    font-style:italic;
+    opacity:0.95;
+">
+
+    <span style="
+        font-weight:bold;
+        color:#555;
+    ">
+        By
+    </span>
+
+    <span style="
+        font-weight:bold;
+        color:#8b0000;
+    ">
+        Crytek
+    </span>
+
+</div>
+`;
+
+    $('#defenseStatus')
+        .html(html);
+
+    $('.defToggle')
+        .off('click')
+        .on('click', function () {
+
+            $('#' + $(this).data('id'))
+                .toggle();
+        });
+
+    $('.playerDefenseToggle')
+        .off('click')
+        .on('click', function () {
+
+            $('#' + $(this).data('id'))
+                .toggle();
+        });
+
+$('.defGlobalToggle')
+    .off('click')
+    .on('click', function () {
+
+        $('#' + $(this).data('id'))
+            .toggle();
+    });
+
+    $('#closeDefenseScanner')
+        .off('click')
+        .on('click', function () {
+
+            location.reload();
+        });
+}
+
+
+
+
+})();
