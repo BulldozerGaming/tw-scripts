@@ -2808,46 +2808,13 @@ html,
 'text/html'
 );
 
-const tables =
-doc.querySelectorAll('.vis');
-
-let table = null;
-
-tables.forEach(t=>{
+const table =
+doc.querySelector(
+'#support_sum'
+);
 
 if(
-t.innerText.includes(
-'Érkező erősítés'
-)
-){
-table=t;
-}
-
-});
-
-if(!table){
-
-return {
-
-spear:0,
-sword:0,
-archer:0,
-heavy:0
-
-};
-
-}
-
-const rows =
-table.querySelectorAll('tr');
-
-const dataRow =
-rows[
-rows.length-1
-];
-
-if(
-!dataRow
+!table
 ){
 
 return {
@@ -2862,7 +2829,9 @@ heavy:0
 }
 
 const cells =
-dataRow.querySelectorAll('td');
+table.querySelectorAll(
+'tbody td'
+);
 
 return {
 
@@ -2883,11 +2852,10 @@ cells[3]?.innerText
 
 heavy:
 parseInt(
-cells[8]?.innerText
+cells[7]?.innerText
 )||0
 
 };
-
 }
 
 function renderIncoming(){
