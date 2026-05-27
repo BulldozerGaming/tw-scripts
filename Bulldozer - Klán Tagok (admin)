@@ -2838,12 +2838,17 @@ heavy:0
 
 }
 
-const row =
-table.querySelector(
-'tr:nth-child(2)'
-);
+const rows =
+table.querySelectorAll('tr');
 
-if(!row){
+const dataRow =
+rows[
+rows.length-1
+];
+
+if(
+!dataRow
+){
 
 return {
 
@@ -2857,7 +2862,7 @@ heavy:0
 }
 
 const cells =
-row.querySelectorAll('td');
+dataRow.querySelectorAll('td');
 
 return {
 
@@ -2878,7 +2883,7 @@ cells[3]?.innerText
 
 heavy:
 parseInt(
-cells[7]?.innerText
+cells[8]?.innerText
 )||0
 
 };
