@@ -1,0 +1,918 @@
+// ==UserScript==
+// @name         Bulldozer - Falunézet információk
+// @namespace    tw-village-tools
+// @version      2.0
+// @description  Védelem összesítő + egység távolság kalkulátor
+// @match        https://*.klanhaboru.hu/game.php*screen=info_village*
+// @grant        none
+// ==/UserScript==
+
+(function () {
+
+    'use strict';
+
+    // =========================================
+    // KONTINENS A KOORDINÁTA ALÁ
+    // =========================================
+
+    function addContinentRow() {
+
+        document
+            .querySelectorAll('table.vis')
+            .forEach(table => {
+
+                const rows =
+                    [...table.querySelectorAll('tr')];
+
+                rows.forEach(row => {
+
+                    const first =
+                        row.querySelector('td');
+
+                    if (!first) return;
+
+                    if (
+                        first.innerText.trim() ===
+                        'Koordináták:'
+                    ) {
+
+                        if (
+                            table.dataset.twContinentAdded
+                        ) return;
+
+                        const coordCell =
+                            row.querySelectorAll('td')[1];
+
+                        if (!coordCell) return;
+
+                        const coord =
+                            coordCell.innerText.trim();
+
+                        const parts =
+                            coord.split('|');
+
+                        if (parts.length !== 2) return;
+
+                        const x =
+                            parseInt(parts[0]);
+
+                        const y =
+                            parseInt(parts[1]);
+
+                        const continent =
+                            Math.floor(y / 100).toString() +
+                            Math.floor(x / 100).toString();
+
+                        const newRow =
+                            document.createElement('tr');
+
+                        newRow.innerHTML = `
+                            <td>
+                                Kontinens:
+                            </td>
+
+                            <td>
+                                K${continent}
+                            </td>
+                        `;
+
+                        row.after(newRow);
+
+                        table.dataset.twContinentAdded = '1';
+                    }
+                });
+            });
+    }
+
+    addContinentRow();
+
+    // =========================================
+    // VÉDEKEZÉS TÁBLA
+    // =========================================
+
+    let defenseTable = null;
+
+    document
+        .querySelectorAll('table.vis')
+        .forEach(table => {
+
+            const txt =
+                table.innerText;
+
+            if (
+                txt.includes('Ebből a faluból')
+            ) {
+
+                defenseTable = table;
+            }
+        });
+
+    // =========================================
+    // VÉDELEM ÖSSZESÍTŐ
+    // CSAK HA LÁTSZIK A VÉDELEM
+    // =========================================
+
+    if (defenseTable) {
+
+        const rows =
+            [...defenseTable.querySelectorAll('tr')];
+
+        const headerRow =
+            rows[0];
+
+        const headerCells =
+            [...headerRow.querySelectorAll('th,td')];
+
+        const units = [];
+const defenseOnly = [
+
+    'spear',
+    'sword',
+    'archer',
+    'heavy',
+    'knight'
+
+];
+
+        headerCells.forEach((cell, index) => {
+
+            const img =
+                cell.querySelector('img');
+
+            if (!img) return;
+
+            const src =
+                img.src;
+
+            const match =
+                src.match(/unit_(.+?)\./);
+
+            if (!match) return;
+
+if (
+    defenseOnly.includes(match[1])
+) {
+
+    units.push({
+
+        name: match[1],
+        index: index
+    });
+}
+        });
+
+        const totalAll = {};
+        const totalSupport = {};
+
+        units.forEach(unit => {
+
+            totalAll[unit.name] = 0;
+            totalSupport[unit.name] = 0;
+        });
+
+        rows.forEach((row, rowIndex) => {
+
+            if (rowIndex === 0) return;
+
+            const cells =
+                [...row.querySelectorAll('td')];
+
+            if (!cells.length) return;
+
+            const text =
+                row.innerText;
+
+            const ownVillage =
+                text.includes('Ebből a faluból');
+
+            units.forEach(unit => {
+
+                const cell =
+                    cells[unit.index];
+
+                if (!cell) return;
+
+                const value =
+                    parseInt(
+                        cell.innerText
+                            .replace(/\./g, '')
+                    ) || 0;
+
+                totalAll[unit.name] += value;
+
+                if (!ownVillage) {
+
+                    totalSupport[unit.name] += value;
+                }
+            });
+        });
+
+        // =====================================
+        // HTML
+        // =====================================
+
+        function buildRow(title, data) {
+
+            let html = `
+
+            <tr>
+
+                <th style="
+                    text-align:left;
+                    font-size:12px;
+                    padding:4px 6px;
+                ">
+                    ${title}
+                </th>
+            `;
+
+            units.forEach(unit => {
+
+                html += `
+
+                <th style="
+                    text-align:center;
+                    width:40px;
+                    padding:2px;
+                ">
+
+                    <img
+                        src="/graphic/unit/unit_${unit.name}.png"
+                        style="
+                            vertical-align:middle;
+                        "
+                    >
+
+                </th>
+                `;
+            });
+
+            html += '</tr>';
+
+            html += '<tr>';
+
+            html += '<td></td>';
+
+            units.forEach(unit => {
+
+                html += `
+
+                <td style="
+                    text-align:center;
+                    font-size:11px;
+                    font-weight:bold;
+                    padding:3px;
+                ">
+
+                    ${data[unit.name]
+                        .toLocaleString('hu-HU')}
+
+                </td>
+                `;
+            });
+
+            html += '</tr>';
+
+            return html;
+        }
+
+        const wrapper =
+            document.createElement('table');
+
+        wrapper.className = 'vis';
+
+        wrapper.style.width = '100%';
+
+        wrapper.style.marginTop = '8px';
+
+        wrapper.innerHTML =
+
+            buildRow(
+                '<span style="display:flex;align-items:center;gap:5px;"><img src="/graphic/unit/unit_spear.png"> <span>Összes védelem a faluban</span></span>',
+                totalAll
+            ) +
+
+            buildRow(
+                '<span style="display:flex;align-items:center;gap:5px;"><img src="https://dshu.innogamescdn.com/asset/c1c7057d/graphic/command/support.webp" style="width:18px;"> <span>Összes erősítés a faluban</span></span>',
+                totalSupport
+            );
+
+        defenseTable.after(wrapper);
+    }
+
+    // =========================================
+    // PARANCSOK BLOKK
+    // =========================================
+
+    let commandTable = null;
+
+    document
+        .querySelectorAll('table.vis')
+        .forEach(table => {
+
+            if (
+                table.innerText.includes('Parancsok')
+            ) {
+
+                commandTable = table;
+            }
+        });
+
+    if (!commandTable) return;
+
+    // =========================================
+    // AKTUÁLIS FALU KOORDINÁTA
+    // =========================================
+
+// =========================================
+// AKTUÁLIS FALU KOORDINÁTA
+// =========================================
+
+let targetX = 0;
+let targetY = 0;
+
+document
+    .querySelectorAll('table.vis tr')
+    .forEach(row => {
+
+        const first =
+            row.querySelector('td');
+
+        if (!first) return;
+
+        if (
+            first.innerText.trim() ===
+            'Koordináták:'
+        ) {
+
+            const value =
+                row.querySelectorAll('td')[1];
+
+            if (!value) return;
+
+            const coord =
+                value.innerText.trim();
+
+            const parts =
+                coord.split('|');
+
+            if (parts.length !== 2) return;
+
+            targetX =
+                parseInt(parts[0]);
+
+            targetY =
+                parseInt(parts[1]);
+        }
+    });
+
+if (!targetX || !targetY) return;
+
+    const ownX =
+        game_data.village.x;
+
+    const ownY =
+        game_data.village.y;
+
+    // =========================================
+    // TÁVOLSÁG
+    // =========================================
+
+    const distance =
+        Math.sqrt(
+            Math.pow(targetX - ownX, 2) +
+            Math.pow(targetY - ownY, 2)
+        );
+
+    // =========================================
+    // EGYSÉG SEBESSÉGEK
+    // =========================================
+
+    const unitSpeeds = {
+
+        spear: 18,
+        sword: 22,
+        axe: 18,
+        archer: 18,
+        spy: 9,
+        light: 10,
+        marcher: 10,
+        heavy: 11,
+        ram: 30,
+        catapult: 30,
+        knight: 10,
+        snob: 35
+
+    };
+
+const unitNames = {
+
+    spear: 'Lándzsás',
+    sword: 'Kardforgató',
+    axe: 'Bárdos',
+    archer: 'Íjász',
+    spy: 'Kém',
+    light: 'Könnyűlovas',
+    marcher: 'Lovas íjász',
+    heavy: 'Nehézlovas',
+    ram: 'Kos',
+    catapult: 'Katapult',
+    knight: 'Lovag',
+    snob: 'Nemes'
+
+};
+
+    // =========================================
+    // AKTÍV EGYSÉGEK
+    // =========================================
+
+    const activeUnits =
+        game_data.units.filter(unit =>
+            unitSpeeds[unit]
+        );
+
+    // =========================================
+    // TÁVOLSÁG HTML
+    // =========================================
+
+    let rowsHtml = `
+
+    <tr>
+
+        <td style="
+            padding:4px;
+        ">
+            📍 Mezőtávolság
+        </td>
+
+        <td style="
+            text-align:right;
+            font-weight:bold;
+            padding-right:6px;
+        ">
+            ${distance.toFixed(2)}
+        </td>
+
+    </tr>
+    `;
+
+    activeUnits.forEach(unit => {
+
+        const speed =
+            unitSpeeds[unit];
+
+        const totalMinutes =
+            distance * speed;
+
+        const totalSeconds =
+            Math.floor(totalMinutes * 60);
+
+        const hours =
+            Math.floor(totalSeconds / 3600);
+
+        const minutes =
+            Math.floor(
+                (totalSeconds % 3600) / 60
+            );
+
+        const seconds =
+            totalSeconds % 60;
+
+        const formatted =
+            [
+                hours,
+                minutes,
+                seconds
+            ]
+            .map(v =>
+                String(v).padStart(2, '0')
+            )
+            .join(':');
+
+        rowsHtml += `
+
+        <tr>
+
+            <td style="
+                padding:4px;
+            ">
+
+                <img
+                    src="/graphic/unit/unit_${unit}.png"
+                    style="
+                        vertical-align:middle;
+                        margin-right:5px;
+                    "
+                >
+
+               ${unitNames[unit] || unit}
+
+            </td>
+
+            <td style="
+                text-align:right;
+                font-weight:bold;
+                padding-right:6px;
+            ">
+
+                ${formatted}
+
+            </td>
+
+        </tr>
+        `;
+    });
+
+    // =========================================
+    // TÁVOLSÁG BLOKK
+    // =========================================
+
+    const box =
+        document.createElement('div');
+
+    box.style.marginTop = '10px';
+
+    box.innerHTML = `
+
+    <table class="vis" style="width:100%">
+
+        <tbody>
+
+            <tr>
+
+                <th
+                    id="distanceToggle"
+                    style="
+                        cursor:pointer;
+                        padding:6px;
+                        user-select:none;
+                    "
+                >
+
+                    📏 Távolság
+
+                    <span style="float:right">
+                        ▼
+                    </span>
+
+                </th>
+
+            </tr>
+
+        </tbody>
+
+    </table>
+
+    <div
+        id="distanceContent"
+        style="
+            display:none;
+            border:1px solid #c7a55b;
+            border-top:none;
+            background:#f4e4bc;
+            padding:6px;
+        "
+    >
+
+<div style="
+    margin-bottom:6px;
+    font-size:12px;
+">
+
+    Távolság számítása a jelenlegi falvadból
+
+</div>
+
+        <table
+            class="vis"
+            style="
+                width:100%;
+                margin-top:0;
+            "
+        >
+
+            <tr>
+
+                <th>
+                    Egység
+                </th>
+
+                <th>
+                    Idő
+                </th>
+
+            </tr>
+
+            ${rowsHtml}
+
+        </table>
+
+    </div>
+    `;
+
+    commandTable.after(box);
+
+    // =========================================
+    // TOGGLE
+    // =========================================
+
+    const toggle =
+        document.getElementById(
+            'distanceToggle'
+        );
+
+    const content =
+        document.getElementById(
+            'distanceContent'
+        );
+
+    toggle.addEventListener(
+        'click',
+        () => {
+
+            const opened =
+                content.style.display ===
+                'block';
+
+            content.style.display =
+                opened
+                    ? 'none'
+                    : 'block';
+
+            toggle.querySelector('span')
+                .innerText =
+                    opened
+                        ? '▼'
+                        : '▲';
+        }
+    );
+
+
+
+
+
+
+// =========================================
+// INLINE REPORT PREVIEW FIXED
+// =========================================
+
+(function inlineReportPreview() {
+
+const reportRows =
+    [...document.querySelectorAll(
+        '#report_list tr, table.vis tr'
+    )];
+
+reportRows.forEach(row => {
+
+    // csak valódi jelentés sor
+const text =
+    row.innerText || '';
+
+if (
+    !(
+        text.includes('támadja') ||
+        text.includes('meghódította') ||
+        text.includes('kikémelte') ||
+        text.includes('faluját')
+    )
+) {
+    return;
+}
+
+    const link =
+        row.querySelector(
+            'a[href*="view="]'
+        );
+
+    if (!link) return;
+
+    // már van nyíl?
+    if (
+        row.dataset.twPreviewAdded
+    ) return;
+
+    row.dataset.twPreviewAdded = '1';
+
+        // =====================================
+        // NYÍL
+        // =====================================
+
+        const firstCell =
+            row.querySelector('td');
+
+        if (!firstCell) return;
+
+        const toggle =
+            document.createElement('span');
+
+        toggle.innerText = '▶';
+
+        toggle.style.cursor = 'pointer';
+        toggle.style.marginRight = '6px';
+        toggle.style.color = '#7d510f';
+        toggle.style.fontWeight = 'bold';
+
+        firstCell.prepend(toggle);
+
+        // =====================================
+        // PREVIEW ROW
+        // =====================================
+
+        const previewRow =
+            document.createElement('tr');
+
+        previewRow.style.display = 'none';
+
+        const previewCell =
+            document.createElement('td');
+
+        previewCell.colSpan = 50;
+
+        previewCell.style.padding = '0';
+        previewCell.style.border = 'none';
+        previewCell.style.background = 'transparent';
+
+
+        previewRow.appendChild(previewCell);
+
+        row.after(previewRow);
+
+toggle.addEventListener(
+    'click',
+    async function (e) {
+
+        e.preventDefault();
+
+        const opened =
+            previewRow.style.display !==
+            'none';
+
+        if (opened) {
+
+            previewRow.style.display =
+                'none';
+
+            toggle.innerText = '▶';
+
+            return;
+        }
+
+        previewRow.style.display =
+            'table-row';
+
+        toggle.innerText = '▼';
+
+        if (
+            previewRow.dataset.loaded
+        ) return;
+
+        previewCell.innerHTML =
+            'Betöltés...';
+
+        try {
+
+            const res =
+                await fetch(link.href);
+
+            const html =
+                await res.text();
+
+            const doc =
+                new DOMParser()
+                .parseFromString(
+                    html,
+                    'text/html'
+                );
+
+            let report =
+
+                doc.querySelector('#report_preview') ||
+
+                doc.querySelector('.report_Report') ||
+
+                [...doc.querySelectorAll('table.vis')]
+                .find(t => {
+
+                    const txt =
+                        t.innerText;
+
+                    return (
+
+                        txt.includes('Támadó:') ||
+                        txt.includes('Védelmező:') ||
+                        txt.includes('Morál:') ||
+                        txt.includes('Kémkedés') ||
+                        txt.includes('Segítség:')
+                    );
+                });
+
+            if (!report) {
+
+                previewCell.innerHTML =
+                    'Nem sikerült betölteni';
+
+                return;
+            }
+
+            report
+                .querySelectorAll('script')
+                .forEach(el =>
+                    el.remove()
+                );
+
+            const wrapper =
+                document.createElement('div');
+
+            wrapper.className =
+                'tw-report-wrapper';
+
+wrapper.style.display =
+    'inline-block';
+
+wrapper.style.width =
+    'fit-content';
+
+wrapper.style.maxWidth =
+    'none';
+
+
+            wrapper.style.display =
+                'inline-block';
+
+            wrapper.style.background =
+                '#f8f1dd';
+
+            wrapper.style.border =
+                '1px solid #c7a55b';
+
+            wrapper.style.padding =
+                '0';
+
+            wrapper.innerHTML =
+    report.outerHTML;
+
+// =====================================
+// REPORT FIX
+// =====================================
+
+wrapper
+    .querySelectorAll('table.vis')
+    .forEach(t => {
+
+        t.style.width = 'auto';
+        t.style.maxWidth = 'none';
+        t.style.tableLayout = 'auto';
+    });
+
+wrapper
+    .querySelectorAll('table')
+    .forEach(t => {
+
+        t.style.width = 'auto';
+        t.style.maxWidth = 'none';
+        t.style.tableLayout = 'auto';
+    });
+
+wrapper.style.width =
+    'auto';
+
+wrapper.style.maxWidth =
+    'none';
+
+previewCell.style.whiteSpace =
+    'normal';
+
+previewCell.style.width =
+    'auto';
+
+
+
+            previewCell.innerHTML = '';
+
+            previewCell.appendChild(
+                wrapper
+            );
+
+            previewRow.dataset.loaded =
+                '1';
+
+        } catch (err) {
+
+            previewCell.innerHTML =
+                'Jelentés betöltési hiba';
+
+            console.error(err);
+        }
+    }
+);
+    });
+
+})();
+
+
+
+
+
+
+})();
