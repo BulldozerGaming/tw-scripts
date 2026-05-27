@@ -2406,12 +2406,17 @@ $('.defGlobalToggle')
             .toggle();
     });
 
-    $('#closeDefenseScanner')
-        .off('click')
-        .on('click', function () {
+ $('#closeDefenseScanner')
+    .off('click')
+    .on('click', function () {
 
-            location.reload();
-        });
+        $('#defenseScanner').remove();
+
+        $('#startDefenseScan').show();
+        $('#startNukeScan').show();
+        $('#startIncomingScan').show();
+
+    });
 }
 
 
