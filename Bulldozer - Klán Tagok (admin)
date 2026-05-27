@@ -2448,16 +2448,21 @@ margin-bottom:15px;
 ">
 
 <div style="
-display:grid;
-grid-template-columns: 1fr 470px;
-align-items:flex-start;
-gap:20px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:12px 18px;
 width:100%;
+box-sizing:border-box;
 ">
 
 <h3 style="
 margin:0;
 color:#7a0000;
+font-size:18px;
+font-weight:bold;
+display:flex;
+align-items:center;
 ">
 
 <img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/command/attack.png"
@@ -2465,8 +2470,7 @@ color:#7a0000;
 style="
 width:16px;
 height:16px;
-vertical-align:-3px;
-margin-right:8px;
+margin-right:10px;
 ">
 
 A TAGOK BEÉRKEZŐ TÁMADÁSAI
@@ -2486,7 +2490,7 @@ border:2px solid #d86b6b;
 
 border-radius:8px;
 
-padding:5px 12px;
+padding:6px 14px;
 
 color:#fff;
 
@@ -2495,6 +2499,11 @@ font-size:12px;
 font-weight:bold;
 
 cursor:pointer;
+
+height:34px;
+
+white-space:nowrap;
+
 ">
 
 ❌ Bezárás
@@ -2504,6 +2513,7 @@ cursor:pointer;
 </div>
 
 <div id="incomingStatus"
+
 style="
 padding:15px;
 ">
