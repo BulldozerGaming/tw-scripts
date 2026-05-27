@@ -2425,6 +2425,185 @@ $('.defGlobalToggle')
 // INCOMING SCANNER
 // =====================================
 
+async function scanIncomingPlayer(player){
+
+let url =
+`${location.origin}`+
+`/game.php?village=${game_data.village.id}`+
+`&screen=ally`+
+`&mode=members_defense`+
+`&player_id=${player.id}`;
+
+let html=
+await fetchPage(url);
+
+let doc=
+new DOMParser()
+.parseFromString(
+html,
+'text/html'
+);
+
+let table=null;
+
+doc.querySelectorAll('.vis')
+.forEach(t=>{
+
+let headers=
+Array.from(
+t.querySelectorAll('th')
+)
+.map(x=>x.innerText);
+
+if(
+headers.includes('Falu') &&
+headers.includes('Pont')
+){
+
+table=t;
+
+}
+
+});
+
+if(!table)return;
+
+let rows=
+table.querySelectorAll('tr');
+
+let unitIndex=
+getUnitIndexes(table);
+
+for(let i=0;i<rows.length;i++){
+
+let cols=
+rows[i].querySelectorAll('td');
+
+if(cols.length<5)
+continue;
+
+let village=
+cols[0]?.innerText?.trim();
+
+if(
+!village ||
+village.includes('faluban') ||
+village.includes('Úton')
+){
+continue;
+}
+
+let roadCols=
+rows[i+1]
+? rows[i+1].querySelectorAll('td')
+: [];
+
+const roadShift=
+(
+roadCols.length &&
+roadCols.length < cols.length
+)
+? -2
+: 0;
+
+let incoming=
+0;
+
+let attackImg=
+rows[i]
+.querySelector(
+'img[src*="attack"]'
+);
+
+if(attackImg){
+
+let txt=
+rows[i].innerText;
+
+let m=
+txt.match(/(\d+)/);
+
+incoming=
+m
+? parseInt(m[1])
+: 0;
+
+}
+
+incomingResult.push({
+
+player:
+player.name,
+
+village,
+
+incoming,
+
+units:{
+
+spear:
+getCol(
+cols,
+unitIndex.spear
+),
+
+sword:
+getCol(
+cols,
+unitIndex.sword
+),
+
+archer:
+getCol(
+cols,
+unitIndex.archer
+),
+
+heavy:
+getCol(
+cols,
+unitIndex.heavy
+)
+
+},
+
+moving:{
+
+spear:
+getCol(
+roadCols,
+unitIndex.spear + roadShift
+),
+
+sword:
+getCol(
+roadCols,
+unitIndex.sword + roadShift
+),
+
+archer:
+getCol(
+roadCols,
+unitIndex.archer + roadShift
+),
+
+heavy:
+getCol(
+roadCols,
+unitIndex.heavy + roadShift
+)
+
+}
+
+});
+
+i++;
+
+}
+
+}
+
+
 let incomingResult = [];
 
 $('#startIncomingScan').off().on('click', async function(){
@@ -2527,7 +2706,7 @@ ${player.name}
 
 `);
 
-await scanPlayer(player);
+await scanIncomingPlayer(player);
 
 }
 
