@@ -2905,10 +2905,12 @@ ${v.village}
 <td>
 
 <table class="vis"
-width="100%"
 style="
 background:#fff9f9;
 border:1px solid #d9aaaa;
+width:460px;
+table-layout:fixed;
+margin-left:auto;
 ">
 
 <tr style="
