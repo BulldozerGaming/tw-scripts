@@ -1669,19 +1669,17 @@ let inVillage = {
 };
 
 let roadCols =
-    rows[i + 1]?.querySelectorAll('td');
+    rows[i + 1]
+    ? rows[i + 1].querySelectorAll('td')
+    : [];
 
-let roadShift = 0;
-
-// Úton sorban hiányzik az első TD
-// ezért automatikusan korrigálunk
-
-if (
-    roadCols.length <
-    cols.length
-) {
-    roadShift = -2;
-}
+const roadShift =
+(
+    roadCols.length &&
+    roadCols.length < cols.length
+)
+? -2
+: 0;
 
 let onRoad = {
 
@@ -2663,11 +2661,10 @@ continue;
 let travelRow=
 rows[i+1];
 
-let travelCols=
+let travelCols =
 travelRow
-?.querySelectorAll(
-'td'
-);
+? travelRow.querySelectorAll('td')
+: [];
 
 let incoming=
 parseInt(
@@ -2684,14 +2681,13 @@ incoming<=0
 ){
 continue;
 }
-let roadShift = 0;
-
-if(
-travelCols &&
+const roadShift =
+(
+travelCols.length &&
 travelCols.length < cols.length
-){
-roadShift = -2;
-}
+)
+? -2
+: 0;
 incomingResult.push({
 
 player:
