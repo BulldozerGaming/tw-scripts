@@ -2425,16 +2425,12 @@ $('.defGlobalToggle')
 // INCOMING SCANNER
 // =====================================
 
-let incomingResult = [];
+let incomingResult=[];
 
 async function scanIncomingPlayer(player){
 
 let url=
-`${location.origin}`+
-`/game.php?village=${game_data.village.id}`+
-`&screen=ally`+
-`&mode=members_defense`+
-`&player_id=${player.id}`;
+`${location.origin}/game.php?village=${game_data.village.id}&screen=ally&mode=members_defense&player_id=${player.id}`;
 
 let html=
 await fetchPage(url);
@@ -2454,8 +2450,7 @@ doc.querySelectorAll('.vis')
 let headers=
 Array.from(
 t.querySelectorAll('th')
-)
-.map(x=>x.innerText);
+).map(x=>x.innerText);
 
 if(
 headers.includes('Falu') &&
@@ -2496,37 +2491,28 @@ continue;
 let roadCols=
 rows[i+1]
 ? rows[i+1].querySelectorAll('td')
-: [];
+:[];
 
 const roadShift=
 (
 roadCols.length &&
-roadCols.length < cols.length
+roadCols.length<cols.length
 )
-? -2
-: 0;
-
-let incoming=0;
-
-let attackText=
-rows[i].innerText;
+?-2:0;
 
 let attackMatch=
-attackText.match(/(\d+)\s*támadás/i);
-
-if(attackMatch){
-
-incoming=
-parseInt(
-attackMatch[1]
+rows[i].innerText.match(
+/(\d+)\s*támadás/i
 );
 
-}
+let incoming=
+attackMatch
+? parseInt(attackMatch[1])
+:0;
 
 incomingResult.push({
 
-player:
-player.name,
+player:player.name,
 
 village,
 
@@ -2534,54 +2520,34 @@ incoming,
 
 units:{
 
-spear:
-getCol(
-cols,
-unitIndex.spear
-),
+spear:getCol(cols,unitIndex.spear),
 
-sword:
-getCol(
-cols,
-unitIndex.sword
-),
+sword:getCol(cols,unitIndex.sword),
 
-archer:
-getCol(
-cols,
-unitIndex.archer
-),
+archer:getCol(cols,unitIndex.archer),
 
-heavy:
-getCol(
-cols,
-unitIndex.heavy
-)
+heavy:getCol(cols,unitIndex.heavy)
 
 },
 
-moving:{
+road:{
 
-spear:
-getCol(
+spear:getCol(
 roadCols,
 unitIndex.spear+roadShift
 ),
 
-sword:
-getCol(
+sword:getCol(
 roadCols,
 unitIndex.sword+roadShift
 ),
 
-archer:
-getCol(
+archer:getCol(
 roadCols,
 unitIndex.archer+roadShift
 ),
 
-heavy:
-getCol(
+heavy:getCol(
 roadCols,
 unitIndex.heavy+roadShift
 )
@@ -2604,27 +2570,26 @@ async function(){
 
 $('#incomingScanner').remove();
 
-$('#startIncomingScan').hide();
-$('#startNukeScan').hide();
-$('#startDefenseScan').hide();
-
 $('#bdScanner').remove();
+
 $('#defenseScanner').remove();
+
+$('#startIncomingScan').hide();
+$('#startDefenseScan').hide();
+$('#startNukeScan').hide();
 
 $('#bdScannerButtonWrap')
 .after(`
 
 <div class="vis"
 id="incomingScanner"
-style="
-margin-bottom:15px;
-">
+style="margin-bottom:15px;">
 
 <div style="
-padding:10px;
 display:flex;
 justify-content:space-between;
 align-items:center;
+padding:10px;
 ">
 
 <h3 style="
@@ -2632,13 +2597,33 @@ margin:0;
 color:#7d0000;
 ">
 
-⚔ A TAGOK BEÉRKEZŐ TÁMADÁSAI
+<img
+src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/command/attack.png"
+style="
+width:18px;
+vertical-align:-3px;
+margin-right:8px;
+">
+
+A TAGOK BEÉRKEZŐ TÁMADÁSAI
 
 </h3>
 
 <button
 id="closeIncomingScanner"
-class="btn">
+style="
+background:linear-gradient(
+to bottom,
+#7d1d1d,
+#470d0d
+);
+border:2px solid #d86b6b;
+border-radius:8px;
+padding:5px 12px;
+color:white;
+font-weight:bold;
+cursor:pointer;
+">
 
 ❌ Bezárás
 
@@ -2648,8 +2633,7 @@ class="btn">
 
 <div id="incomingContent"
 style="
-padding:20px;
-text-align:center;
+padding:15px;
 ">
 
 Betöltés...
@@ -2666,11 +2650,18 @@ for(let player of players){
 
 $('#incomingContent').html(`
 
+<div style="
+text-align:center;
+padding:20px;
+">
+
 Beérkező támadások vizsgálata...
 
 <br><br>
 
 <b>${player.name}</b>
+
+</div>
 
 `);
 
@@ -2683,6 +2674,197 @@ player
 renderIncoming();
 
 });
+
+function renderIncoming(){
+
+let grouped={};
+
+incomingResult.forEach(v=>{
+
+if(!grouped[v.player])
+grouped[v.player]=[];
+
+grouped[v.player].push(v);
+
+});
+
+let html='';
+
+Object.entries(grouped)
+.forEach(([player,list])=>{
+
+let total=
+list.reduce(
+(a,b)=>
+a+b.incoming,
+0
+);
+
+let pid=
+player
+.replace(/\W/g,'');
+
+html+=`
+
+<div style="
+border-top:2px solid #a52a2a;
+margin-top:12px;
+">
+
+<div class="incomingPlayer"
+
+data-id="${pid}"
+
+style="
+display:flex;
+justify-content:space-between;
+padding:8px;
+cursor:pointer;
+font-weight:bold;
+color:#7d0000;
+">
+
+<span>
+
+👤 ${player}
+
+</span>
+
+<span>
+
+${total}
+
+</span>
+
+</div>
+
+<div id="${pid}"
+
+style="display:none;">
+
+`;
+
+list.forEach(v=>{
+
+html+=`
+
+<div style="
+display:flex;
+justify-content:space-between;
+padding:10px;
+border-top:1px solid #d9bcbc;
+">
+
+<div>
+
+<div style="
+font-weight:bold;
+color:#8b0000;
+">
+
+⚔ ${v.incoming} támadás
+
+</div>
+
+<div>
+
+${v.village}
+
+</div>
+
+</div>
+
+<table class="vis"
+
+style="
+width:450px;
+table-layout:fixed;
+">
+
+<tr>
+
+<th></th>
+
+<th>
+<img src="/graphic/unit/unit_spear.png">
+</th>
+
+<th>
+<img src="/graphic/unit/unit_sword.png">
+</th>
+
+<th>
+<img src="/graphic/unit/unit_archer.png">
+</th>
+
+<th>
+<img src="/graphic/unit/unit_heavy.png">
+</th>
+
+</tr>
+
+<tr>
+
+<td><b>Faluban</b></td>
+
+<td>${v.units.spear}</td>
+
+<td>${v.units.sword}</td>
+
+<td>${v.units.archer}</td>
+
+<td>${v.units.heavy}</td>
+
+</tr>
+
+<tr>
+
+<td><b>Úton</b></td>
+
+<td>${v.road.spear}</td>
+
+<td>${v.road.sword}</td>
+
+<td>${v.road.archer}</td>
+
+<td>${v.road.heavy}</td>
+
+</tr>
+
+</table>
+
+</div>
+
+`;
+
+});
+
+html+=`
+
+</div>
+
+</div>
+
+`;
+
+});
+
+$('#incomingContent')
+.html(html);
+
+$('.incomingPlayer')
+.off()
+.on(
+'click',
+function(){
+
+$('#'+$(this)
+.data('id'))
+.toggle();
+
+});
+
+}
 
 $(document)
 .off(
@@ -2700,119 +2882,14 @@ $('#incomingScanner')
 $('#startIncomingScan')
 .show();
 
-$('#startNukeScan')
-.show();
-
 $('#startDefenseScan')
 .show();
 
-});
-
-function renderIncoming(){
-
-let grouped={};
-
-incomingResult.forEach(v=>{
-
-if(
-!grouped[v.player]
-){
-
-grouped[v.player]=[];
-
-}
-
-grouped[v.player]
-.push(v);
+$('#startNukeScan')
+.show();
 
 });
 
-let html='';
-
-Object.entries(grouped)
-.forEach(([player,list])=>{
-
-let total=
-list.reduce(
-(a,b)=>
-a+b.incoming,
-0
-);
-
-html+=`
-
-<table class="vis"
-width="100%"
-style="
-margin-bottom:12px;
-">
-
-<tr>
-
-<th>
-
-${player}
-
-</th>
-
-<th width="70">
-
-${total}
-
-</th>
-
-</tr>
-
-`;
-
-list.forEach(v=>{
-
-html+=`
-
-<tr>
-
-<td>
-
-<b>
-
-${v.incoming}
-támadás
-
-</b>
-
-<br>
-
-${v.village}
-
-</td>
-
-<td>
-
-${v.units.spear}
-
-/
-
-${v.units.sword}
-
-/
-
-${v.units.heavy}
-
-</td>
-
-</tr>
-
-`;
-
-});
-
-html+=`</table>`;
-
-});
-
-$('#incomingContent')
-.html(html);
-
-}
+})();
 
 })();
