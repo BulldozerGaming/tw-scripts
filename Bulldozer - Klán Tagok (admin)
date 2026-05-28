@@ -2499,6 +2499,8 @@ player
 
 // render
 
+// render
+
 render();
 
 $('#attSection')
@@ -2515,13 +2517,68 @@ $('#defenseStatus').html()
 );
 
 
-renderIncoming();
+// incoming render
+
+let incomingHtml=`
+
+<table class="vis" width="100%">
+
+<tr>
+
+<th>Játékos</th>
+
+<th>Falu</th>
+
+<th>Beérkező</th>
+
+</tr>
+
+`;
+
+incomingResult.forEach(v=>{
+
+incomingHtml+=`
+
+<tr>
+
+<td>
+
+${v.player}
+
+</td>
+
+<td>
+
+${v.village}
+
+</td>
+
+<td>
+
+<strong>
+
+${v.incoming}
+
+</strong>
+
+</td>
+
+</tr>
+
+`;
+
+});
+
+incomingHtml+=`
+
+</table>
+
+`;
 
 $('#incSection')
 .html(
-$('#incomingStatus').html()
+incomingHtml
 );
-
 
 $('#fullClanStatus')
 .hide();
