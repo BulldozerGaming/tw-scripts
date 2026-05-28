@@ -2655,7 +2655,7 @@ let incomingUrl=
 `${location.origin}`+
 `/game.php?village=${game_data.village.id}`+
 `&screen=ally`+
-`&mode=members_defense`+
+`&mode=members_troops`+
 `&player_id=${player.id}`;
 
 let incomingHtml=
