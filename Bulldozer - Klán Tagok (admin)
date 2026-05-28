@@ -1460,7 +1460,7 @@ $('#startIncomingScan').hide();
 
     $('#startDefenseScan').hide();
 $('#startNukeScan').hide();
-});
+
    async function processDefensePlayer(doc,player){
 
         $('#defenseStatus').html(`
@@ -2474,7 +2474,7 @@ $('#bdScannerButtonWrap')
 
 
 incomingResult=[];
-});
+
 async function processIncomingPlayer(doc,player){
 
 $('#incomingStatus').html(`
