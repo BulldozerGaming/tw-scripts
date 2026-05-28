@@ -2654,17 +2654,12 @@ renderDefense();
 
 
 
-renderIncoming();
-
 $('#incSection')
 .html(`
 <div id="incomingStatus"></div>
 `);
 
-$('#incomingStatus')
-.html(
-$('#incomingStatus').html()
-);
+renderIncoming();
 
 
 // újrakötjük az eventeket
