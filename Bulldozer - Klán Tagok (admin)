@@ -2530,7 +2530,6 @@ margin:12px 0;
 <div id="incSection"
 class="vis"
 style="
-display:none;
 padding:8px;
 ">
 </div>
@@ -2664,8 +2663,29 @@ $('#incSection')
 `);
 
 renderIncoming();
+
+if(incomingResult.length===0){
+
+$('#incomingStatus').html(`
+
+<div style="
+padding:15px;
+font-weight:bold;
+color:#8b0000;
+">
+
+Nincs beérkező támadás
+
+</div>
+
+`);
+
+}
+else{
+
 $('#incSection').show();
-$('#incSection').hide();
+
+}
 
 
 // újrakötjük az eventeket
