@@ -2259,8 +2259,6 @@ player
 
 }
 
-renderIncoming();
-
 });
 
 
