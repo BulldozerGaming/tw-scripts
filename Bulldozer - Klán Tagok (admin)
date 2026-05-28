@@ -2146,18 +2146,23 @@ let incomingResult=[];
 
 async function processIncomingPlayer(doc,player){
 
-let table=null;
-
+let table =
+Array.from(
 doc.querySelectorAll('.vis')
-.forEach(t=>{
+).find(t=>{
 
-if(
-t.innerText.includes('Faluban')
-||
-t.innerText.includes('Úton')
-){
-table=t;
-}
+const headers =
+Array.from(
+t.querySelectorAll('th')
+).map(
+x=>x.innerText.trim()
+);
+
+return (
+headers.includes('Falu')
+&&
+headers.includes('Pont')
+);
 
 });
 
@@ -2165,10 +2170,7 @@ if(!table){
 return;
 }
 
-let indexes=
-getUnitIndexes(table);
-
-let rows=
+let rows =
 table.querySelectorAll('tr');
 
 for(
@@ -2177,17 +2179,15 @@ i<rows.length;
 i++
 ){
 
-let cols=
+let cols =
 rows[i]
 .querySelectorAll('td');
 
-if(
-cols.length<5
-){
+if(cols.length<5){
 continue;
 }
 
-let village=
+let village =
 cols[0]
 ?.querySelector('a')
 ?.textContent
@@ -2197,30 +2197,14 @@ if(!village){
 continue;
 }
 
-let travelRow=
-rows[i+1];
-
-let travelCols =
-travelRow
-? travelRow.querySelectorAll('td')
-: [];
-
-
-/*
-EZ A LÉNYEG
-backup logika:
-utolsó előtti oszlop
-nem utolsó
-*/
-
-let incomingCol =
+const incomingCol =
 cols[cols.length-2];
 
 if(!incomingCol){
 continue;
 }
 
-let incoming =
+const incoming =
 parseInt(
 incomingCol
 .textContent
@@ -2228,24 +2212,19 @@ incomingCol
 .trim()
 )||0;
 
-if(
-incoming<=0
-){
+if(incoming<=0){
 continue;
 }
 
 incomingResult.push({
 
-player:
-player.name,
+player:player.name,
 
 incoming,
 
 village
 
 });
-
-i++;
 
 }
 
