@@ -85,6 +85,10 @@ if (!isHighRank) {
 // PANEL
 // =========================================
 
+// =========================================
+// PANEL
+// =========================================
+
 let panel = `
 
 <div id="bdScannerButtonWrap"
@@ -106,7 +110,7 @@ border:2px solid #d0a45b;
 
 border-radius:12px;
 
-padding:10px 22px;
+padding:10px 24px;
 
 color:#fff6d5;
 
@@ -127,7 +131,7 @@ inset 0 1px 0 #f7d28b,
 0 2px 5px rgba(0,0,0,.4);
 ">
 
-<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/unit/unit_sword.png"
+<img src="/graphic/unit/unit_sword.png"
 
 style="
 width:18px;
@@ -136,14 +140,14 @@ height:18px;
 
 KLÁN ELEMZÉS
 
-<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/unit/unit_spear.png"
+<img src="/graphic/unit/unit_spear.png"
 
 style="
 width:18px;
 height:18px;
 ">
 
-<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/command/attack.png"
+<img src="/graphic/command/attack.png"
 
 style="
 width:18px;
@@ -159,6 +163,12 @@ height:18px;
 $('.vis')
 .first()
 .before(panel);
+
+/* régi gombok elrejtése */
+
+$('#startNukeScan').remove();
+$('#startDefenseScan').remove();
+$('#startIncomingScan').remove();
 
 // =========================================
 // HELPERS
