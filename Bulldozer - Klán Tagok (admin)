@@ -2363,12 +2363,12 @@ display:none;
 ">
 
 <h3 class="fullToggle"
-
 data-target="attSection"
-
 style="
 cursor:pointer;
 color:#7a3b00;
+font-size:34px;
+margin:12px 0;
 ">
 
 ⚔️ Támadók
@@ -2376,17 +2376,23 @@ color:#7a3b00;
 </h3>
 
 <div id="attSection"
-style="display:none;">
+class="vis"
+style="
+display:none;
+padding:8px;
+margin-bottom:10px;
+">
 </div>
 
 
+
 <h3 class="fullToggle"
-
 data-target="defSection"
-
 style="
 cursor:pointer;
 color:#1e4c72;
+font-size:34px;
+margin:12px 0;
 ">
 
 🛡️ Védők
@@ -2394,17 +2400,23 @@ color:#1e4c72;
 </h3>
 
 <div id="defSection"
-style="display:none;">
+class="vis"
+style="
+display:none;
+padding:8px;
+margin-bottom:10px;
+">
 </div>
 
 
+
 <h3 class="fullToggle"
-
 data-target="incSection"
-
 style="
 cursor:pointer;
 color:#8b0000;
+font-size:34px;
+margin:12px 0;
 ">
 
 🚩 Beérkező támadások
@@ -2412,7 +2424,11 @@ color:#8b0000;
 </h3>
 
 <div id="incSection"
-style="display:none;">
+class="vis"
+style="
+display:none;
+padding:8px;
+">
 </div>
 
 </div>
@@ -2499,32 +2515,101 @@ player
 render();
 
 $('#attSection')
-.empty()
-.append(
-$('#bdStatus').children().clone(true,true)
+.html(
+'<div id="tmpAttack"></div>'
 );
+
+$('#tmpAttack')
+.html(
+$('#bdStatus').html()
+);
+
 
 
 renderDefense();
 
 $('#defSection')
-.empty()
-.append(
-$('#defenseStatus').children().clone(true,true)
+.html(
+'<div id="tmpDefense"></div>'
+);
+
+$('#tmpDefense')
+.html(
+$('#defenseStatus').html()
 );
 
 
-// incoming ugyanúgy mint régen
 
 renderIncoming();
 
 $('#incSection')
-.empty()
-.append(
-$('#incomingStatus')
-.children()
-.clone(true,true)
+.html(
+'<div id="tmpIncoming"></div>'
 );
+
+$('#tmpIncoming')
+.html(
+$('#incomingStatus').html()
+);
+
+
+
+// újrakötjük az eventeket
+
+$('.nukeToggle')
+.off()
+.on(
+'click',
+function(){
+
+$('#'+$(this).data('id'))
+.toggle();
+
+});
+
+$('.playerToggle')
+.off()
+.on(
+'click',
+function(){
+
+$('#'+$(this).data('id'))
+.toggle();
+
+});
+
+$('.defToggle')
+.off()
+.on(
+'click',
+function(){
+
+$('#'+$(this).data('id'))
+.toggle();
+
+});
+
+$('.playerDefenseToggle')
+.off()
+.on(
+'click',
+function(){
+
+$('#'+$(this).data('id'))
+.toggle();
+
+});
+
+$('.defGlobalToggle')
+.off()
+.on(
+'click',
+function(){
+
+$('#'+$(this).data('id'))
+.toggle();
+
+});
 
 
 $('#fullClanStatus')
