@@ -1213,7 +1213,7 @@ function render() {
 
 `;
 
-    $('#bdStatus').html(html);
+   $('#fullAttackStatus').html(html);
 
     $('.nukeToggle')
         .off('click')
@@ -2083,8 +2083,7 @@ if (cat === 'Maradék') {
 </div>
 `;
 
-    $('#defenseStatus')
-        .html(html);
+   $('#fullDefenseStatus').html(html);
 
     $('.defToggle')
         .off('click')
@@ -2513,19 +2512,22 @@ player
 
 $('#bdStatus').remove();
 
+$('#bdScanner').remove();
+$('#defenseScanner').remove();
+
+
+
 $('#attSection').html(`
-<div id="bdStatus"></div>
+<div id="fullAttackStatus"></div>
 `);
-
-render();
-
-
-
-$('#defenseStatus').remove();
 
 $('#defSection').html(`
-<div id="defenseStatus"></div>
+<div id="fullDefenseStatus"></div>
 `);
+
+
+
+render();
 
 renderDefense();
 
