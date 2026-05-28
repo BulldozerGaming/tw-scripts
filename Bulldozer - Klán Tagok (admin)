@@ -2496,89 +2496,36 @@ player
 
 }
 
-
-// render
-
-// render
-
 render();
 
 $('#attSection')
-.html(
-$('#bdStatus').html()
+.empty()
+.append(
+$('#bdStatus').children().clone(true,true)
 );
 
 
 renderDefense();
 
 $('#defSection')
-.html(
-$('#defenseStatus').html()
+.empty()
+.append(
+$('#defenseStatus').children().clone(true,true)
 );
 
 
-// incoming render
+// incoming ugyanúgy mint régen
 
-let incomingHtml=`
-
-<table class="vis" width="100%">
-
-<tr>
-
-<th>Játékos</th>
-
-<th>Falu</th>
-
-<th>Beérkező</th>
-
-</tr>
-
-`;
-
-incomingResult.forEach(v=>{
-
-incomingHtml+=`
-
-<tr>
-
-<td>
-
-${v.player}
-
-</td>
-
-<td>
-
-${v.village}
-
-</td>
-
-<td>
-
-<strong>
-
-${v.incoming}
-
-</strong>
-
-</td>
-
-</tr>
-
-`;
-
-});
-
-incomingHtml+=`
-
-</table>
-
-`;
+renderIncoming();
 
 $('#incSection')
-.html(
-incomingHtml
+.empty()
+.append(
+$('#incomingStatus')
+.children()
+.clone(true,true)
 );
+
 
 $('#fullClanStatus')
 .hide();
