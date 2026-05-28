@@ -3055,9 +3055,11 @@ $('#startClanScan')
 'click',
 function(){
 
-$('#startClanScan').hide();
+$(this).hide();
 
-$('#startNukeScan').trigger('click');
+$('#startNukeScan').click();
+
+/* később ide rakjuk defense+incoming chain-t */
 
 }
 );
