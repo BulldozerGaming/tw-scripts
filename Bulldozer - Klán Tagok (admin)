@@ -2540,6 +2540,8 @@ $('#defenseStatus').html()
 
 
 
+if(typeof renderIncoming==="function"){
+
 renderIncoming();
 
 $('#incSection')
@@ -2551,6 +2553,56 @@ $('#tmpIncoming')
 .html(
 $('#incomingStatus').html()
 );
+
+}
+else{
+
+let incomingHTML=`
+
+<table class="vis" width="100%">
+
+<tr>
+
+<th>Játékos</th>
+
+<th>Falu</th>
+
+<th>Beérkező</th>
+
+</tr>
+
+${incomingResult.map(v=>`
+
+<tr>
+
+<td>${v.player}</td>
+
+<td>${v.village}</td>
+
+<td>
+
+<strong style="color:#8b0000">
+
+${v.incoming}
+
+</strong>
+
+</td>
+
+</tr>
+
+`).join('')}
+
+</table>
+
+`;
+
+$('#incSection')
+.html(
+incomingHTML
+);
+
+}
 
 
 
