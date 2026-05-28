@@ -2538,23 +2538,6 @@ $('#defenseStatus').html()
 
 
 
-if(typeof renderIncoming==="function"){
-
-renderIncoming();
-
-$('#incSection')
-.html(
-'<div id="tmpIncoming"></div>'
-);
-
-$('#tmpIncoming')
-.html(
-$('#incomingStatus').html()
-);
-
-}
-else{
-
 let incomingHTML=`
 
 <table class="vis" width="100%">
@@ -2579,7 +2562,10 @@ ${incomingResult.map(v=>`
 
 <td>
 
-<strong style="color:#8b0000">
+<strong style="
+color:#8b0000;
+font-size:13px;
+">
 
 ${v.incoming}
 
@@ -2599,8 +2585,6 @@ $('#incSection')
 .html(
 incomingHTML
 );
-
-}
 
 
 
