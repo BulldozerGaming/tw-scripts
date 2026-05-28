@@ -2548,8 +2548,28 @@ player
 );
 
 
+let incomingUrl =
+
+`${location.origin}`+
+`/game.php?village=${game_data.village.id}`+
+`&screen=ally`+
+`&mode=members_defense`+
+`&player_id=${player.id}`;
+
+let incomingHtml =
+await fetchPage(
+incomingUrl
+);
+
+let incomingDoc =
+new DOMParser()
+.parseFromString(
+incomingHtml,
+'text/html'
+);
+
 await processIncomingPlayer(
-doc,
+incomingDoc,
 player
 );
 
@@ -2586,28 +2606,6 @@ $('#incSection')
 
 renderIncoming();
 
-if(incomingResult.length===0){
-
-$('#incomingStatus').html(`
-
-<div style="
-padding:15px;
-font-weight:bold;
-color:#8b0000;
-">
-
-Nincs beérkező támadás
-
-</div>
-
-`);
-$('#incSection').hide();
-}
-else{
-
-$('#incSection').show();
-
-}
 
 
 // újrakötjük az eventeket
