@@ -1461,7 +1461,7 @@ $('#startIncomingScan').hide();
     $('#startDefenseScan').hide();
 $('#startNukeScan').hide();
 
-    for (let player of players) {
+   async function processDefensePlayer(doc,player){
 
         $('#defenseStatus').html(`
 
@@ -1731,7 +1731,7 @@ let onRoad = {
             i++;
         }
     }
-
+}
     renderDefense();
 
     $('#infoDefenseScanner')
@@ -2491,7 +2491,7 @@ $('#bdScannerButtonWrap')
 
 incomingResult=[];
 
-for(const player of players){
+async function processIncomingPlayer(doc,player){
 
 $('#incomingStatus').html(`
 
@@ -2715,7 +2715,7 @@ i++;
 }
 
 }
-
+}
 renderIncoming();
 
 }
@@ -3049,22 +3049,302 @@ location.reload();
 });
 
 
+
+// =====================================
+// FULL CLAN SCAN
+// =====================================
+
 $('#startClanScan')
 .off('click')
+.on('click', async function(){
+
+const btn=$(this);
+
+btn.prop(
+'disabled',
+true
+);
+
+btn.html(`
+⏳ KLÁN ELEMZÉS FUT...
+`);
+
+$('#bdScanner').remove();
+$('#defenseScanner').remove();
+$('#incomingScanner').remove();
+
+
+// támadók
+
+result={
+'Nuke':[],
+'3/4 Nuke':[],
+'1/2 Nuke':[],
+'1/4 Nuke':[]
+};
+
+
+// védők
+
+defenseResult={
+'VF':[],
+'3/4 VF':[],
+'1/2 VF':[],
+'1/4 VF':[],
+'1/6 VF':[],
+'1/20 VF':[],
+'Maradék':[]
+};
+
+movableDefense={
+spear:0,
+sword:0,
+archer:0,
+heavy:0,
+knight:0
+};
+
+travelingDefense={
+spear:0,
+sword:0,
+archer:0,
+heavy:0,
+knight:0
+};
+
+
+// incoming
+
+incomingResult=[];
+
+
+
+let wrapper=`
+
+<div class="vis"
+
+id="fullClanPanel"
+
+style="
+margin-top:15px;
+padding:15px;
+">
+
+<div id="fullClanStatus"
+
+style="
+text-align:center;
+padding:20px;
+font-size:14px;
+">
+
+Klán elemzés indul...
+
+</div>
+
+<div id="fullClanContent"
+
+style="
+display:none;
+">
+
+<h3 class="fullToggle"
+
+data-target="attSection"
+
+style="
+cursor:pointer;
+color:#7a3b00;
+">
+
+⚔️ Támadók
+
+</h3>
+
+<div id="attSection"
+style="display:none;">
+</div>
+
+
+<h3 class="fullToggle"
+
+data-target="defSection"
+
+style="
+cursor:pointer;
+color:#1e4c72;
+">
+
+🛡️ Védők
+
+</h3>
+
+<div id="defSection"
+style="display:none;">
+</div>
+
+
+<h3 class="fullToggle"
+
+data-target="incSection"
+
+style="
+cursor:pointer;
+color:#8b0000;
+">
+
+🚩 Beérkező támadások
+
+</h3>
+
+<div id="incSection"
+style="display:none;">
+</div>
+
+</div>
+
+</div>
+
+`;
+
+$('#bdScannerButtonWrap')
+.after(wrapper);
+
+
+
+for(
+const player
+of players
+){
+
+$('#fullClanStatus')
+.html(`
+
+Vizsgálat:
+
+<strong>
+
+${player.name}
+
+</strong>
+
+`);
+
+
+// NUKE
+
+await scanPlayer(
+player
+);
+
+
+// DEFENSE
+
+let defenseUrl=
+
+`${location.origin}`+
+`/game.php?village=${game_data.village.id}`+
+`&screen=ally`+
+`&mode=members_defense`+
+`&player_id=${player.id}`;
+
+let html=
+await fetchPage(
+defenseUrl
+);
+
+let doc=
+new DOMParser()
+.parseFromString(
+html,
+'text/html'
+);
+
+
+// ide meghívjuk a meglévő defense feldolgozót
+
+await processDefensePlayer(
+doc,
+player
+);
+
+
+// incoming ugyanebből a htmlből
+
+await processIncomingPlayer(
+doc,
+player
+);
+
+}
+
+
+// render
+
+render();
+
+$('#attSection')
+.html(
+$('#bdStatus').html()
+);
+
+
+renderDefense();
+
+$('#defSection')
+.html(
+$('#defenseStatus').html()
+);
+
+
+renderIncoming();
+
+$('#incSection')
+.html(
+$('#incomingStatus').html()
+);
+
+
+$('#fullClanStatus')
+.hide();
+
+$('#fullClanContent')
+.show();
+
+
+$('.fullToggle')
+
+.off('click')
+
 .on(
 'click',
 function(){
 
-$(this).hide();
+$('#'+
+$(this)
+.data(
+'target'
+))
 
-$('#startNukeScan').click();
+.toggle();
 
-/* később ide rakjuk defense+incoming chain-t */
+});
 
-}
+
+btn.html(`
+⚔️ KLÁN ELEMZÉS
+🛡️ 🚩
+`);
+
+btn.prop(
+'disabled',
+false
 );
 
+});
 
 
+
+// lezárás
 
 })();
