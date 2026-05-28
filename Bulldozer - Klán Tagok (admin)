@@ -2647,28 +2647,8 @@ player
 );
 
 
-let incomingUrl=
-
-`${location.origin}`+
-`/game.php?village=${game_data.village.id}`+
-`&screen=ally`+
-`&mode=members_troops`+
-`&player_id=${player.id}`;
-
-let incomingHtml=
-await fetchPage(
-incomingUrl
-);
-
-let incomingDoc=
-new DOMParser()
-.parseFromString(
-incomingHtml,
-'text/html'
-);
-
 await processIncomingPlayer(
-incomingDoc,
+doc,
 player
 );
 
