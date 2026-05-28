@@ -1389,13 +1389,14 @@ async function processDefensePlayer(doc,player){
             continue;
         }
 
-        let village=
-        cols[0]
-        ?.innerHTML;
+let village=
+cols[0]
+?.querySelector('a')
+?.innerHTML;
 
-        if(!village){
-            continue;
-        }
+if(!village){
+continue;
+}
 
         if(
             village.includes('faluban')
