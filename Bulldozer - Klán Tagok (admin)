@@ -2133,22 +2133,38 @@ let incomingResult=[];
 
 async function processIncomingPlayer(doc,player){
 
-let table = null;
+let table=null;
 
 doc.querySelectorAll('.vis').forEach(t=>{
 
-const txt=t.innerText;
+const headers=
+Array.from(
+t.querySelectorAll('th')
+)
+.map(
+x=>x.innerText.trim()
+);
 
 if(
-txt.includes('Falu')
+
+headers.includes('Falu')
+
 &&
-(
-txt.includes('Beérkező')
+
+headers.some(h=>
+
+h.includes('Beérkező')
+
 ||
-txt.includes('támadás')
+
+h.includes('támadás')
+
 )
+
 ){
+
 table=t;
+
 }
 
 });
@@ -2206,7 +2222,7 @@ incomingIndex=i;
 });
 
 if(incomingIndex<0){
-return;
+continue;
 }
 
 let incoming =
