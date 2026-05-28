@@ -813,14 +813,16 @@ A számítás ezekből az egységekből történik:
 // =====================================
 
 $(document)
-    .off('click', '#closeNukeScanner')
-    .on('click', '#closeNukeScanner', function () {
+.off('click', '#closeNukeScanner')
+.on('click', '#closeNukeScanner', function () {
 
-        $('#bdScanner').remove();
+    $('#bdScanner').remove();
 
-$('#startNukeScan').show();
-$('#startDefenseScan').show();
-    });
+    $('#startNukeScan').show();
+    $('#startDefenseScan').show();
+    $('#startIncomingScan').show();
+
+});
     });
 
 // =====================================
@@ -1816,15 +1818,17 @@ A számítás ezekből az egységekből történik:
         );
     });
 
-    $('#closeDefenseScanner')
-    .off('click')
-    .on('click', function () {
+$('#closeDefenseScanner')
+.off('click')
+.on('click', function () {
 
-        $('#defenseScanner').remove();
+    $('#defenseScanner').remove();
 
-        $('#startDefenseScan').show();
-        $('#startNukeScan').show();
-    });
+    $('#startDefenseScan').show();
+    $('#startNukeScan').show();
+    $('#startIncomingScan').show();
+
+});
 
 });
 
@@ -3082,15 +3086,15 @@ $('#'+$(this).data('id'))
 
 }
 
-$(document)
-.off('click','#closeIncomingScanner')
-.on('click','#closeIncomingScanner',function(){
+$('#closeIncomingScanner')
+.off('click')
+.on('click',function(){
 
-    $('#incomingScanner').remove();
+$('#incomingScanner').remove();
 
-    $('#startNukeScan').show();
-    $('#startDefenseScan').show();
-    $('#startIncomingScan').show();
+$('#startNukeScan').show();
+$('#startDefenseScan').show();
+$('#startIncomingScan').show();
 
 });
 
