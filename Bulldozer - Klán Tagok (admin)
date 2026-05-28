@@ -2137,30 +2137,12 @@ let table=null;
 
 doc.querySelectorAll('.vis').forEach(t=>{
 
-const headers=
-Array.from(
-t.querySelectorAll('th')
-)
-.map(
-x=>x.innerText.trim().toLowerCase()
-);
-
-const hasVillage=
-headers.some(
-h=>h.includes('falu')
-);
-
-const hasIncoming=
-headers.some(
-h=>
-h.includes('beérkező')
-||
-h.includes('beér')
-);
+const text=t.innerText;
 
 if(
-hasVillage &&
-hasIncoming
+text.includes('Falu')
+&&
+text.includes('Pont')
 ){
 table=t;
 }
@@ -2205,12 +2187,18 @@ const td
 of cols
 ){
 
-const value=
+const incomingCol=
+cols[
+cols.length-1
+];
+
+const incoming=
 parseInt(
-td.innerText
+incomingCol
+?.innerText
 .replace(/\./g,'')
 .trim()
-);
+) || 0;
 
 if(
 !isNaN(value)
