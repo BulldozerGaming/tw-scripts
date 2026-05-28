@@ -1460,7 +1460,7 @@ $('#startIncomingScan').hide();
 
     $('#startDefenseScan').hide();
 $('#startNukeScan').hide();
-
+});
    async function processDefensePlayer(doc,player){
 
         $('#defenseStatus').html(`
@@ -1767,7 +1767,7 @@ A számítás ezekből az egységekből történik:
         $('#startDefenseScan').show();
         $('#startNukeScan').show();
     });
-
+/* defense click már fent lezárva */
 });
 
 
@@ -2474,7 +2474,7 @@ $('#bdScannerButtonWrap')
 
 
 incomingResult=[];
-
+});
 async function processIncomingPlayer(doc,player){
 
 $('#incomingStatus').html(`
@@ -3015,7 +3015,7 @@ $('#closeIncomingScanner')
 location.reload();
 
 });
-
+/* incoming click már fent lezárva */
 
 
 // =====================================
