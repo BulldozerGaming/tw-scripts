@@ -2510,31 +2510,24 @@ player
 
 }
 
+
+$('#bdStatus').remove();
+
+$('#attSection').html(`
+<div id="bdStatus"></div>
+`);
+
 render();
 
-$('#attSection')
-.html(
-'<div id="tmpAttack"></div>'
-);
-
-$('#tmpAttack')
-.html(
-$('#bdStatus').html()
-);
 
 
+$('#defenseStatus').remove();
+
+$('#defSection').html(`
+<div id="defenseStatus"></div>
+`);
 
 renderDefense();
-
-$('#defSection')
-.html(
-'<div id="tmpDefense"></div>'
-);
-
-$('#tmpDefense')
-.html(
-$('#defenseStatus').html()
-);
 
 
 
