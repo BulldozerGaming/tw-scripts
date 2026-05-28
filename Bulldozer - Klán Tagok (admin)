@@ -2139,19 +2139,13 @@ async function processIncomingPlayer(doc,player){
 
 let table=null;
 
-doc.querySelectorAll('.vis').forEach(t=>{
-
-const headers=
-Array.from(
-t.querySelectorAll('th')
-).map(
-x=>x.innerText.trim()
-);
+doc.querySelectorAll('.vis')
+.forEach(t=>{
 
 if(
-headers.includes('Falu')
-&&
-headers.includes('Pont')
+t.innerText.includes('Faluban')
+||
+t.innerText.includes('Úton')
 ){
 table=t;
 }
@@ -2162,13 +2156,21 @@ if(!table){
 return;
 }
 
-const rows=
+let indexes=
+getUnitIndexes(table);
+
+let rows=
 table.querySelectorAll('tr');
 
-for(let row of rows){
+for(
+let i=0;
+i<rows.length;
+i++
+){
 
-const cols=
-row.querySelectorAll('td');
+let cols=
+rows[i]
+.querySelectorAll('td');
 
 if(
 cols.length<5
@@ -2176,26 +2178,47 @@ cols.length<5
 continue;
 }
 
-const village=
-cols[0]?.innerHTML;
+let village=
+cols[0]
+?.innerHTML;
 
-if(!village){
+if(
+!village
+){
 continue;
 }
 
-const incoming =
+let travelRow=
+rows[i+1];
+
+let travelCols =
+travelRow
+? travelRow.querySelectorAll('td')
+: [];
+
+
+/*
+EZ A LÉNYEG
+backup logika:
+utolsó előtti oszlop
+nem utolsó
+*/
+
+let incoming=
 parseInt(
 cols[
-cols.length-1
+cols.length-2
 ]
 ?.innerText
 .replace(/\./g,'')
 .trim()
-) || 0;
+)||0;
 
 if(
-incoming>0
+incoming<=0
 ){
+continue;
+}
 
 incomingResult.push({
 
@@ -2207,6 +2230,8 @@ incoming,
 village
 
 });
+
+i++;
 
 }
 
