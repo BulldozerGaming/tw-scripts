@@ -2129,6 +2129,10 @@ $('.defGlobalToggle')
 // INCOMING SCANNER
 // =====================================
 
+// =====================================
+// INCOMING SCANNER
+// =====================================
+
 let incomingResult=[];
 
 async function processIncomingPlayer(doc,player){
@@ -2161,14 +2165,10 @@ return;
 const rows=
 table.querySelectorAll('tr');
 
-for(
-let i=0;
-i<rows.length;
-i++
-){
+for(let row of rows){
 
 const cols=
-rows[i].querySelectorAll('td');
+row.querySelectorAll('td');
 
 if(
 cols.length<5
@@ -2179,30 +2179,23 @@ continue;
 const village=
 cols[0]?.innerHTML;
 
-if(
-!village
-){
+if(!village){
 continue;
 }
 
-const incomingCol =
-cols[
-cols.length-1
-];
-
 const incoming =
 parseInt(
-incomingCol
+cols[
+cols.length-1
+]
 ?.innerText
 .replace(/\./g,'')
 .trim()
 ) || 0;
 
 if(
-incoming<=0
+incoming>0
 ){
-continue;
-}
 
 incomingResult.push({
 
@@ -2219,16 +2212,9 @@ village
 
 }
 
-function renderIncoming(){
+}
 
-let html=`
-<table class="vis"
-width="100%"
-style="
-border-collapse:separate;
-border-spacing:0 6px;
-">
-`;
+function renderIncoming(){
 
 let grouped={};
 
@@ -2242,43 +2228,38 @@ grouped[v.player].push(v);
 
 });
 
-let playerIndex=0;
+let html='';
 
 Object.entries(grouped)
-.forEach(([player,villages])=>{
-
-let playerId=
-`incoming_${playerIndex}`;
+.forEach(([player,villages],index)=>{
 
 html+=`
 
-<tr class="playerIncomingToggle"
-data-id="${playerId}"
-style="
-cursor:pointer;
-background:#f4d7d7;
+<div style="
+margin-bottom:10px;
 ">
 
-<td colspan="3"
+<div
+class="playerIncomingToggle"
+data-id="inc_${index}"
+
 style="
+cursor:pointer;
 padding:8px;
+background:#e8d8b0;
 font-weight:bold;
 ">
 
 👤 ${player}
-
 (${villages.length})
 
-</td>
+</div>
 
-</tr>
-
-<tr
-id="${playerId}"
-style="display:none;"
->
-
-<td colspan="3">
+<div
+id="inc_${index}"
+style="
+display:none;
+">
 
 `;
 
@@ -2288,16 +2269,11 @@ html+=`
 
 <div style="
 padding:8px;
+border:1px solid #d2c2a0;
 margin:4px;
-border:1px solid #d4b1b1;
-background:#fff5f5;
 ">
 
-<strong>
-
 📥 ${v.incoming}
-
-</strong>
 
 <br>
 
@@ -2309,79 +2285,28 @@ ${v.village}
 
 });
 
-html+=`
-
-</td>
-
-</tr>
-
-`;
-
-playerIndex++;
+html+=`</div></div>`;
 
 });
 
-html+=`</table>`;
-
-$('#incomingStatus')
-.html(html);
-
-setTimeout(()=>{
+$('#incomingStatus').html(html);
 
 $('.playerIncomingToggle')
 
-.off('click')
+.off()
 
 .on(
 'click',
 function(){
 
-$('#'+$(this).data('id'))
-.toggle();
+$('#'+
+$(this)
+.data('id')
+).toggle();
 
 });
 
-},50);
-
 }
-
-$('#startIncomingScan')
-.off('click')
-.on(
-'click',
-async function(){
-
-incomingResult=[];
-
-for(const player of players){
-
-let url=
-
-`${location.origin}`+
-`/game.php?village=${game_data.village.id}`+
-`&screen=ally`+
-`&mode=members_defense`+
-`&player_id=${player.id}`;
-
-let html=
-await fetchPage(url);
-
-let doc=
-new DOMParser()
-.parseFromString(
-html,
-'text/html'
-);
-
-await processIncomingPlayer(
-doc,
-player
-);
-
-}
-
-});
-
 
 // =====================================
 // FULL CLAN SCAN
