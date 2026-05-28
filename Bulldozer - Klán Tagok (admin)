@@ -433,7 +433,7 @@ $('#bdStatus').html(`
             'text/html'
         );
 
-    let table = null;
+
 
 let table = Array.from(
 doc.querySelectorAll('.vis')
