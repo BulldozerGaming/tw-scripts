@@ -435,16 +435,24 @@ $('#bdStatus').html(`
 
     let table = null;
 
-    doc.querySelectorAll('.vis')
-        .forEach(t => {
+let table = Array.from(
+doc.querySelectorAll('.vis')
+).find(t=>{
 
-            if (
-                t.innerText.includes('Falu') &&
-                t.innerText.includes('Pont')
-            ) {
-                table = t;
-            }
-        });
+const headers=
+Array.from(
+t.querySelectorAll('th')
+).map(
+x=>x.innerText.trim()
+);
+
+return (
+headers.includes('Falu')
+&&
+headers.includes('Pont')
+);
+
+});
 
     if (!table) {
         return;
@@ -2205,12 +2213,17 @@ utolsó előtti oszlop
 nem utolsó
 */
 
-let incoming=
+let incomingCol =
+cols[cols.length-2];
+
+if(!incomingCol){
+continue;
+}
+
+let incoming =
 parseInt(
-cols[
-cols.length-2
-]
-?.innerText
+incomingCol
+.textContent
 .replace(/\./g,'')
 .trim()
 )||0;
