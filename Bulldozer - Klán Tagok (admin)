@@ -724,8 +724,12 @@ padding:10px;
 
         `;
 
-        $('#bdScannerButtonWrap')
-            .after(scannerPanel);
+       document
+.getElementById('bdScannerButtonWrap')
+.insertAdjacentHTML(
+'afterend',
+scannerPanel
+);
 
         await start();
 
@@ -1455,8 +1459,12 @@ $('#startIncomingScan').hide();
 
     `;
 
-    $('#bdScannerButtonWrap')
-        .after(panel);
+    document
+.getElementById('bdScannerButtonWrap')
+.insertAdjacentHTML(
+'afterend',
+panel
+);
 
     $('#startDefenseScan').hide();
 $('#startNukeScan').hide();
@@ -2468,8 +2476,12 @@ Vizsgálat...
 
 `;
 
-$('#bdScannerButtonWrap')
-.after(incomingPanel);
+document
+.getElementById('bdScannerButtonWrap')
+.insertAdjacentHTML(
+'afterend',
+incomingPanel
+);
 
 
 
@@ -3175,8 +3187,12 @@ style="display:none;">
 
 `;
 
-$('#bdScannerButtonWrap')
-.after(wrapper);
+document
+.getElementById('bdScannerButtonWrap')
+.insertAdjacentHTML(
+'afterend',
+wrapper
+);
 
 
 
