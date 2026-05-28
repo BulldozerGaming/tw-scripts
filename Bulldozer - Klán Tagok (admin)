@@ -633,20 +633,23 @@ $('#startNukeScan')
 
         $('#startDefenseScan').hide();
 $('#startNukeScan').hide();
-$('#startIncomingScan').hide();
-$('#incomingScanner').remove();
 
-   let scannerPanel = `
+        let scannerPanel = `
 
-<div class="vis"
-id="bdScanner"
-style="margin-bottom:15px;">
+            <div class="vis"
+                 id="bdScanner"
+                 style="margin-bottom:15px;">
 
-<div style="
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:10px;
+                <h3 style="
+                    margin:0;
+                    padding:10px;
+                    color:#5a3515;
+                ">
+                 <div style="
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:10px;
 ">
 
     <h3 style="
@@ -719,8 +722,9 @@ padding:10px;
     </div>
 
 </div>
+                </h3>
 
-<div id="bdStatus"
+                <div id="bdStatus"
      style="
         padding:10px;
         position:relative;
@@ -1359,11 +1363,8 @@ $('#startDefenseScan')
 $('#bdScanner').remove();
 $('#defenseScanner').remove();
 
-$('#incomingScanner').remove();
-
 $('#startNukeScan').hide();
 $('#startDefenseScan').hide();
-$('#startIncomingScan').hide();
 
     let panel = `
 
@@ -1669,17 +1670,19 @@ let inVillage = {
 };
 
 let roadCols =
-    rows[i + 1]
-    ? rows[i + 1].querySelectorAll('td')
-    : [];
+    rows[i + 1]?.querySelectorAll('td');
 
-const roadShift =
-(
-    roadCols.length &&
-    roadCols.length < cols.length
-)
-? -2
-: 0;
+let roadShift = 0;
+
+// Úton sorban hiányzik az első TD
+// ezért automatikusan korrigálunk
+
+if (
+    roadCols.length <
+    cols.length
+) {
+    roadShift = -2;
+}
 
 let onRoad = {
 
@@ -2406,17 +2409,12 @@ $('.defGlobalToggle')
             .toggle();
     });
 
- $('#closeDefenseScanner')
-    .off('click')
-    .on('click', function () {
+    $('#closeDefenseScanner')
+        .off('click')
+        .on('click', function () {
 
-        $('#defenseScanner').remove();
-
-        $('#startDefenseScan').show();
-        $('#startNukeScan').show();
-        $('#startIncomingScan').show();
-
-    });
+            location.reload();
+        });
 }
 
 
@@ -2451,29 +2449,15 @@ margin-bottom:15px;
 display:flex;
 justify-content:space-between;
 align-items:center;
-padding:12px 18px;
-width:100%;
-box-sizing:border-box;
+padding:10px;
 ">
 
 <h3 style="
 margin:0;
 color:#7a0000;
-font-size:18px;
-font-weight:bold;
-display:flex;
-align-items:center;
 ">
 
-<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/command/attack.png"
-
-style="
-width:16px;
-height:16px;
-margin-right:10px;
-">
-
-A TAGOK BEÉRKEZŐ TÁMADÁSAI
+📥 A TAGOK BEÉRKEZŐ TÁMADÁSAI
 
 </h3>
 
@@ -2490,7 +2474,7 @@ border:2px solid #d86b6b;
 
 border-radius:8px;
 
-padding:6px 14px;
+padding:5px 12px;
 
 color:#fff;
 
@@ -2499,11 +2483,6 @@ font-size:12px;
 font-weight:bold;
 
 cursor:pointer;
-
-height:34px;
-
-white-space:nowrap;
-
 ">
 
 ❌ Bezárás
@@ -2513,7 +2492,6 @@ white-space:nowrap;
 </div>
 
 <div id="incomingStatus"
-
 style="
 padding:15px;
 ">
@@ -2545,7 +2523,7 @@ color:#7a0000;
 line-height:24px;
 ">
 
-Beérkező támadások vizsgálata folyamatban...
+📥 Beérkező támadások vizsgálata folyamatban...
 
 <div style="
 margin-top:10px;
@@ -2677,10 +2655,11 @@ continue;
 let travelRow=
 rows[i+1];
 
-let travelCols =
+let travelCols=
 travelRow
-? travelRow.querySelectorAll('td')
-: [];
+?.querySelectorAll(
+'td'
+);
 
 let incoming=
 parseInt(
@@ -2697,13 +2676,6 @@ incoming<=0
 ){
 continue;
 }
-const roadShift =
-(
-travelCols.length &&
-travelCols.length < cols.length
-)
-? -2
-: 0;
 
 incomingResult.push({
 
@@ -2716,36 +2688,56 @@ village,
 
 villageUnits:{
 
-spear:getCol(cols,indexes.spear),
+spear:
+getCol(
+cols,
+indexes.spear
+),
 
-sword:getCol(cols,indexes.sword),
+sword:
+getCol(
+cols,
+indexes.sword
+),
 
-archer:getCol(cols,indexes.archer),
+archer:
+getCol(
+cols,
+indexes.archer
+),
 
-heavy:getCol(cols,indexes.heavy)
+heavy:
+getCol(
+cols,
+indexes.heavy
+)
 
 },
 
 travelUnits:{
 
-spear:getCol(
+spear:
+getCol(
 travelCols,
-indexes.spear + roadShift
+indexes.spear
 ),
 
-sword:getCol(
+sword:
+getCol(
 travelCols,
-indexes.sword + roadShift
+indexes.sword
 ),
 
-archer:getCol(
+archer:
+getCol(
 travelCols,
-indexes.archer + roadShift
+indexes.archer
 ),
 
-heavy:getCol(
+heavy:
+getCol(
 travelCols,
-indexes.heavy + roadShift
+indexes.heavy
 )
 
 }
@@ -2762,8 +2754,6 @@ renderIncoming();
 
 }
 );
-
-
 
 function renderIncoming(){
 
@@ -2916,11 +2906,10 @@ ${v.village}
 <td>
 
 <table class="vis"
+width="100%"
 style="
 background:#fff9f9;
 border:1px solid #d9aaaa;
-width:100%;
-table-layout:fixed;
 ">
 
 <tr style="
@@ -3008,8 +2997,6 @@ font-size:11px;
 </td>
 
 </tr>
-
-
 
 </table>
 
