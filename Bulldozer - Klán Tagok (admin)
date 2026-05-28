@@ -2125,17 +2125,12 @@ $('.defGlobalToggle')
 
 
 
-```js
+
 // =====================================
 // INCOMING SCANNER
 // =====================================
 
 let incomingResult=[];
-
-
-// -------------------------------------
-// INCOMING PROCESSOR
-// -------------------------------------
 
 async function processIncomingPlayer(doc,player){
 
@@ -2156,8 +2151,7 @@ table=t;
 
 if(!table)return;
 
-let indexes=
-getUnitIndexes(table);
+let indexes=getUnitIndexes(table);
 
 let rows=
 table.querySelectorAll('tr');
@@ -2186,18 +2180,14 @@ travelRow
 
 let incoming=
 parseInt(
-cols[
-cols.length-1
-].innerText
+cols[cols.length-1]
+.innerText
 .replace(/\./g,'')
 .trim()
 )||0;
 
-if(
-incoming<=0
-){
+if(incoming<=0)
 continue;
-}
 
 const roadShift=
 (
@@ -2208,44 +2198,22 @@ travelCols.length<cols.length
 
 incomingResult.push({
 
-player:
-player.name,
-
+player:player.name,
 incoming,
-
 village,
 
 villageUnits:{
-
 spear:getCol(cols,indexes.spear),
 sword:getCol(cols,indexes.sword),
 archer:getCol(cols,indexes.archer),
 heavy:getCol(cols,indexes.heavy)
-
 },
 
 travelUnits:{
-
-spear:getCol(
-travelCols,
-indexes.spear+roadShift
-),
-
-sword:getCol(
-travelCols,
-indexes.sword+roadShift
-),
-
-archer:getCol(
-travelCols,
-indexes.archer+roadShift
-),
-
-heavy:getCol(
-travelCols,
-indexes.heavy+roadShift
-)
-
+spear:getCol(travelCols,indexes.spear+roadShift),
+sword:getCol(travelCols,indexes.sword+roadShift),
+archer:getCol(travelCols,indexes.archer+roadShift),
+heavy:getCol(travelCols,indexes.heavy+roadShift)
 }
 
 });
@@ -2256,11 +2224,6 @@ i++;
 
 }
 
-
-// -------------------------------------
-// INCOMING CLICK
-// -------------------------------------
-
 $('#startIncomingScan')
 .off('click')
 .on(
@@ -2269,10 +2232,7 @@ async function(){
 
 incomingResult=[];
 
-for(
-const player
-of players
-){
+for(const player of players){
 
 let url=
 
@@ -2302,7 +2262,6 @@ player
 renderIncoming();
 
 });
-```
 
 
 // =====================================
