@@ -2137,12 +2137,17 @@ let table=null;
 
 doc.querySelectorAll('.vis').forEach(t=>{
 
-const text=t.innerText;
+const headers=
+Array.from(
+t.querySelectorAll('th')
+).map(
+x=>x.innerText.trim()
+);
 
 if(
-text.includes('Falu')
+headers.includes('Falu')
 &&
-text.includes('Pont')
+headers.includes('Pont')
 ){
 table=t;
 }
@@ -2181,7 +2186,9 @@ continue;
 }
 
 const incomingCol =
-cols[cols.length - 1];
+cols[
+cols.length-1
+];
 
 const incoming =
 parseInt(
@@ -2190,23 +2197,6 @@ incomingCol
 .replace(/\./g,'')
 .trim()
 ) || 0;
-
-if(
-incoming <= 0
-){
-continue;
-}
-
-incomingResult.push({
-
-player:
-player.name,
-
-incoming,
-
-village
-
-});
 
 if(
 incoming<=0
