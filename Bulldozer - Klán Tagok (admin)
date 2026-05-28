@@ -1543,9 +1543,9 @@ $('#startNukeScan').hide();
             }
         });
 
-        if (!table) {
-            continue;
-        }
+       if (!table) {
+    return;
+}
 
         let rows =
             table.querySelectorAll('tr');
@@ -1714,7 +1714,7 @@ let onRoad = {
 
             i++;
         }
-    }
+    
 }
     renderDefense();
 
@@ -2565,7 +2565,7 @@ table=t;
 });
 
 if(!table){
-continue;
+return;
 }
 
 let indexes=
@@ -2683,7 +2683,7 @@ i++;
 }
 
 }
-}
+
 renderIncoming();
 
 }
