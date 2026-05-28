@@ -2686,15 +2686,16 @@ travelRow
 ? travelRow.querySelectorAll('td')
 : [];
 
-let incoming=
+let incoming =
 parseInt(
-cols[
-cols.length-1
-]
-.innerText
+(
+cols[cols.length-1]
+?.innerText || '0'
+)
 .replace(/\./g,'')
-.trim()
-)||0;
+.trim(),
+10
+) || 0;
 
 if(
 incoming<=0
