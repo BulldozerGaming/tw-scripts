@@ -1314,470 +1314,224 @@ function defenseCategory(pop) {
 // START DEFENSE BUTTON
 // =====================================
 
+async function processDefensePlayer(doc,player){
 
-$('#startDefenseScan')
-.on('click', async function () {
+    $('#defenseStatus').html(`
 
-$('#bdScanner').remove();
-$('#defenseScanner').remove();
+        <div style="
+            text-align:center;
+            padding:20px;
+            font-size:14px;
+            color:#2c4b66;
+            line-height:24px;
+        ">
 
-$('#incomingScanner').remove();
-
-$('#startNukeScan').hide();
-$('#startDefenseScan').hide();
-$('#startIncomingScan').hide();
-
-    let panel = `
-
-        <div class="vis"
-             id="defenseScanner"
-             style="margin-bottom:15px;">
+            🛡️ Védők vizsgálata folyamatban...
 
             <div style="
-                display:flex;
-                justify-content:space-between;
-                align-items:center;
-                padding:10px;
+                margin-top:10px;
+                font-size:15px;
             ">
 
-                <h3 style="
-                    margin:0;
-                    color:#2c4b66;
-                ">
+                <strong>Vizsgálat:</strong>
 
-                    🛡️ A TAGOK VÉDŐ SEREGEINEK ÁTTEKINTÉSE
-
-                </h3>
-
-                <div style="
-                    display:flex;
-                    align-items:center;
-                    gap:6px;
-                ">
-
-                    <button id="infoDefenseScanner"
-                        style="
-                            background:linear-gradient(
-                                to bottom,
-                                #2d5b7d,
-                                #163047
-                            );
-                            border:2px solid #6ca5d6;
-                            border-radius:8px;
-                            padding:5px 12px 5px 12px;
-                            color:#e8f4ff;
-                            font-size:12px;
-                            font-weight:bold;
-                            cursor:pointer;
-                            display:flex;
-                            align-items:center;
-                            gap:5px;
-                            line-height:1.5;
-                        ">
-
-                        <img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/questionmark.png"
-                             style="
-                                width:14px;
-                                height:14px;
-                             ">
-
-                        Infó
-
-                    </button>
-
-                    <button id="closeDefenseScanner"
-                        style="
-                            background:linear-gradient(
-                                to bottom,
-                                #2d5b7d,
-                                #163047
-                            );
-                            border:2px solid #6ca5d6;
-                            border-radius:8px;
-                            padding:5px 12px 5px 8px;
-                            color:#e8f4ff;
-                            font-size:12px;
-                            font-weight:bold;
-                            cursor:pointer;
-                            display:flex;
-                            align-items:center;
-                            gap:5px;
-                            line-height:1.5;
-                        ">
-
-                        ❌ Bezárás
-
-                    </button>
-
-                </div>
-
-            </div>
-
-            <div id="defenseStatus"
-                 style="
-                    padding:10px;
-                    position:relative;
-                 ">
-
-                <div style="
-                    text-align:center;
-                    padding:20px;
-                    font-size:14px;
-                    color:#2c4b66;
-                ">
-
-                    🛡️ Védők vizsgálata folyamatban...
-
-                    <div style="
-                        margin-top:14px;
-                        font-size:12px;
-                        font-style:italic;
-                        opacity:0.95;
-                    ">
-
-                        <span style="
-                            font-weight:bold;
-                            color:#555;
-                        ">
-                            By
-                        </span>
-
-                        <span style="
-                            font-weight:bold;
-                            color:#8b0000;
-                        ">
-                            Crytek
-                        </span>
-
-                    </div>
-
-                </div>
+                <strong>${player.name}</strong>
 
             </div>
 
         </div>
 
-    `;
+    `);
 
-    document
-.getElementById('bdScannerButtonWrap')
-.insertAdjacentHTML(
-'afterend',
-panel
-);
+    let table=null;
 
-    $('#startDefenseScan').hide();
-$('#startNukeScan').hide();
+    doc.querySelectorAll('.vis')
+    .forEach(t=>{
 
-   async function processDefensePlayer(doc,player){
+        let headers=
+        Array.from(
+            t.querySelectorAll('th')
+        )
+        .map(
+            h=>h.innerText.trim()
+        );
 
-        $('#defenseStatus').html(`
+        if(
+            headers.includes('Falu')
+            &&
+            headers.includes('Pont')
+        ){
+            table=t;
+        }
 
-            <div style="
-                text-align:center;
-                padding:20px;
-                font-size:14px;
-                color:#2c4b66;
-                line-height:24px;
-            ">
+    });
 
-                🛡️ Védők vizsgálata folyamatban...
+    if(!table){
+        return;
+    }
 
-                <div style="
-                    margin-top:10px;
-                    font-size:15px;
-                ">
+    let rows=
+    table.querySelectorAll('tr');
 
-                    <img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/welcome/player_points.webp"
-                         style="
-                            width:18px;
-                            height:18px;
-                            vertical-align:-3px;
-                            margin-right:0px;
-                         ">
+    for(
+        let i=0;
+        i<rows.length;
+        i++
+    ){
 
-                    <strong>Vizsgálat:</strong>
-                    <strong>${player.name}</strong>
+        let cols=
+        rows[i]
+        .querySelectorAll('td');
 
-                </div>
+        if(
+            cols.length<5
+        ){
+            continue;
+        }
 
-                <div style="
-                    margin-top:14px;
-                    font-size:12px;
-                    font-style:italic;
-                    opacity:0.95;
-                ">
+        let village=
+        cols[0]
+        ?.innerHTML;
 
-                    <span style="
-                        font-weight:bold;
-                        color:#555;
-                    ">
-                        By
-                    </span>
+        if(!village){
+            continue;
+        }
 
-                    <span style="
-                        font-weight:bold;
-                        color:#8b0000;
-                    ">
-                        Crytek
-                    </span>
+        if(
+            village.includes('faluban')
+            ||
+            village.includes('Úton')
+        ){
+            continue;
+        }
 
-                </div>
+        let unitIndex=
+        getUnitIndexes(table);
 
-            </div>
+        let inVillage={
 
-        `);
+            spear:getCol(cols,unitIndex.spear),
+            sword:getCol(cols,unitIndex.sword),
+            archer:getCol(cols,unitIndex.archer),
+            heavy:getCol(cols,unitIndex.heavy),
+            knight:getCol(cols,unitIndex.knight)
 
-  
+        };
 
-        let table = null;
+        let roadCols=
+        rows[i+1]
+        ? rows[i+1].querySelectorAll('td')
+        : [];
 
-        doc.querySelectorAll('.vis')
-        .forEach(t => {
+        const roadShift=
+        (
+            roadCols.length &&
+            roadCols.length<cols.length
+        )
+        ? -2
+        : 0;
 
-            let headers =
-                Array.from(
-                    t.querySelectorAll('th')
-                )
-                .map(h =>
-                    h.innerText.trim()
-                );
+        let onRoad={
 
-            if (
-                headers.includes('Falu') &&
-                headers.includes('Pont')
-            ) {
-                table = t;
-            }
+            spear:getCol(
+                roadCols,
+                unitIndex.spear+roadShift
+            ),
+
+            sword:getCol(
+                roadCols,
+                unitIndex.sword+roadShift
+            ),
+
+            archer:getCol(
+                roadCols,
+                unitIndex.archer+roadShift
+            ),
+
+            heavy:getCol(
+                roadCols,
+                unitIndex.heavy+roadShift
+            ),
+
+            knight:getCol(
+                roadCols,
+                unitIndex.knight+roadShift
+            )
+
+        };
+
+        movableDefense.spear+=inVillage.spear;
+        movableDefense.sword+=inVillage.sword;
+        movableDefense.archer+=inVillage.archer;
+        movableDefense.heavy+=inVillage.heavy;
+        movableDefense.knight+=inVillage.knight;
+
+        travelingDefense.spear+=onRoad.spear;
+        travelingDefense.sword+=onRoad.sword;
+        travelingDefense.archer+=onRoad.archer;
+        travelingDefense.heavy+=onRoad.heavy;
+        travelingDefense.knight+=onRoad.knight;
+
+        let combined={
+
+            spear:
+            inVillage.spear+
+            onRoad.spear,
+
+            sword:
+            inVillage.sword+
+            onRoad.sword,
+
+            archer:
+            inVillage.archer+
+            onRoad.archer,
+
+            heavy:
+            inVillage.heavy+
+            onRoad.heavy,
+
+            knight:
+            inVillage.knight+
+            onRoad.knight
+
+        };
+
+        let pop=
+        calcDefense(combined);
+
+        let cat=
+        defenseCategory(pop);
+
+        if(
+            cat==='Maradék'
+            &&
+            pop<=0
+        ){
+            continue;
+        }
+
+        defenseResult[cat].push({
+
+            player:
+            player.name,
+
+            village,
+
+            inVillage,
+
+            onRoad,
+
+            combined,
+
+            pop
+
         });
 
-       if (!table) {
-    return;
+        i++;
+
+    }
+
 }
-
-        let rows =
-            table.querySelectorAll('tr');
-
-        for (let i = 0; i < rows.length; i++) {
-
-            let cols =
-                rows[i].querySelectorAll('td');
-
-if (cols.length < 5) {
-    continue;
-}
-
-            let village =
-                cols[0]?.innerHTML;
-
-            if (!village) {
-                continue;
-            }
-
-            if (
-                village.includes('faluban') ||
-                village.includes('Úton')
-            ) {
-                continue;
-            }
-
-let unitIndex =
-    getUnitIndexes(table);
-const OFFSET = 0;
-
-let inVillage = {
-
-    spear:
-        getCol(
-            cols,
-            unitIndex.spear + OFFSET
-        ),
-
-    sword:
-        getCol(
-            cols,
-            unitIndex.sword + OFFSET
-        ),
-
-    archer:
-        getCol(
-            cols,
-            unitIndex.archer + OFFSET
-        ),
-
-    heavy:
-        getCol(
-            cols,
-            unitIndex.heavy + OFFSET
-        ),
-
-    knight:
-        getCol(
-            cols,
-            unitIndex.knight + OFFSET
-        )
-};
-
-let roadCols =
-    rows[i + 1]
-    ? rows[i + 1].querySelectorAll('td')
-    : [];
-
-const roadShift =
-(
-    roadCols.length &&
-    roadCols.length < cols.length
-)
-? -2
-: 0;
-
-let onRoad = {
-
-    spear:
-        getCol(
-            roadCols,
-            unitIndex.spear + roadShift
-        ),
-
-    sword:
-        getCol(
-            roadCols,
-            unitIndex.sword + roadShift
-        ),
-
-    archer:
-        getCol(
-            roadCols,
-            unitIndex.archer + roadShift
-        ),
-
-    heavy:
-        getCol(
-            roadCols,
-            unitIndex.heavy + roadShift
-        ),
-
-    knight:
-        getCol(
-            roadCols,
-            unitIndex.knight + roadShift
-        )
-};
-
-            movableDefense.spear += inVillage.spear;
-            movableDefense.sword += inVillage.sword;
-            movableDefense.archer += inVillage.archer;
-            movableDefense.heavy += inVillage.heavy;
-            movableDefense.knight += inVillage.knight;
-
-            travelingDefense.spear += onRoad.spear;
-            travelingDefense.sword += onRoad.sword;
-            travelingDefense.archer += onRoad.archer;
-            travelingDefense.heavy += onRoad.heavy;
-            travelingDefense.knight += onRoad.knight;
-
-            let combined = {
-
-                spear:
-                    inVillage.spear + onRoad.spear,
-
-                sword:
-                    inVillage.sword + onRoad.sword,
-
-                archer:
-                    inVillage.archer + onRoad.archer,
-
-                heavy:
-                    inVillage.heavy + onRoad.heavy,
-
-                knight:
-                    inVillage.knight + onRoad.knight
-            };
-
-            let pop =
-                calcDefense(combined);
-
-            let cat =
-                defenseCategory(pop);
-
-            if (
-                cat === 'Maradék' &&
-                pop <= 0
-            ) {
-                continue;
-            }
-
-            defenseResult[cat].push({
-
-                player:
-                    player.name,
-
-                village,
-
-                inVillage,
-                onRoad,
-                combined,
-                pop
-            });
-
-            i++;
-        }
-    
-}
-    renderDefense();
-
-    $('#infoDefenseScanner')
-    .off('click')
-    .on('click', function () {
-
-        alert(
-
-`🛡️ VF SZÁMÍTÁS
-
-VF:
-18000 vagy több tanyahely
-
-3/4 VF:
-15000 - 17999 tanyahely
-
-1/2 VF:
-10000 - 14999 tanyahely
-
-1/4 VF:
-5000 - 9999 tanyahely
-
-1/6 VF:
-3000 - 4999 tanyahely
-
-1/20 VF:
-1000 - 2999 tanyahely
-
-Maradék:
-1000 alatti tanyahely
-
-A számítás ezekből az egységekből történik:
-
-• Lándzsás
-• Kardos
-• Íjász
-• Nehézlovas
-• Lovag`
-
-        );
-    });
-
-    $('#closeDefenseScanner')
-    .off('click')
-    .on('click', function () {
-
-        $('#defenseScanner').remove();
-
-        $('#startDefenseScan').show();
-        $('#startNukeScan').show();
-    });
-/* defense click már fent lezárva */
-});
-
 
 // =====================================
 // RENDER DEFENSE
