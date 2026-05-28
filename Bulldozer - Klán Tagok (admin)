@@ -2181,11 +2181,11 @@ continue;
 
 let village=
 cols[0]
-?.innerHTML;
+?.querySelector('a')
+?.textContent
+?.trim();
 
-if(
-!village
-){
+if(!village){
 continue;
 }
 
