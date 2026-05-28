@@ -3082,11 +3082,15 @@ $('#'+$(this).data('id'))
 
 }
 
-$('#closeIncomingScanner')
-.off('click')
-.on('click',function(){
+$(document)
+.off('click','#closeIncomingScanner')
+.on('click','#closeIncomingScanner',function(){
 
-location.reload();
+    $('#incomingScanner').remove();
+
+    $('#startNukeScan').show();
+    $('#startDefenseScan').show();
+    $('#startIncomingScan').show();
 
 });
 
