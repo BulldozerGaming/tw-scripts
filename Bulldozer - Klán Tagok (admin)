@@ -3084,8 +3084,6 @@ $('#'+$(this).data('id'))
 
 });
 
-}
-
 $('#closeIncomingScanner')
 .off('click')
 .on('click',function(){
@@ -3097,6 +3095,9 @@ $('#startDefenseScan').show();
 $('#startIncomingScan').show();
 
 });
+
+}
+
 
 
 })();
