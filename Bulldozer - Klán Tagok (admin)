@@ -2125,195 +2125,19 @@ $('.defGlobalToggle')
 
 
 
+```js
 // =====================================
 // INCOMING SCANNER
 // =====================================
 
-let incomingResult = [];
-
-$('#startIncomingScan').on(
-'click',
-async function(){
-
-$('#bdScanner').remove();
-$('#defenseScanner').remove();
-$('#incomingScanner').remove();
-
-$('#startNukeScan').hide();
-$('#startDefenseScan').hide();
-$('#startIncomingScan').hide();
-
-let incomingPanel = `
-
-<div class="vis"
-id="incomingScanner"
-style="
-margin-bottom:15px;
-">
-
-<div style="
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:12px 18px;
-width:100%;
-box-sizing:border-box;
-">
-
-<h3 style="
-margin:0;
-color:#7a0000;
-font-size:18px;
-font-weight:bold;
-display:flex;
-align-items:center;
-">
-
-<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/command/attack.png"
-
-style="
-width:16px;
-height:16px;
-margin-right:10px;
-">
-
-A TAGOK BEÉRKEZŐ TÁMADÁSAI
-
-</h3>
-
-<button id="closeIncomingScanner"
-
-style="
-background:linear-gradient(
-to bottom,
-#7d1d1d,
-#470d0d
-);
-
-border:2px solid #d86b6b;
-
-border-radius:8px;
-
-padding:6px 14px;
-
-color:#fff;
-
-font-size:12px;
-
-font-weight:bold;
-
-cursor:pointer;
-
-height:34px;
-
-white-space:nowrap;
-
-">
-
-❌ Bezárás
-
-</button>
-
-</div>
-
-<div id="incomingStatus"
-
-style="
-padding:15px;
-">
-
-Vizsgálat...
-
-</div>
-
-</div>
-
-`;
-
-document
-.getElementById('bdScannerButtonWrap')
-.insertAdjacentHTML(
-'afterend',
-incomingPanel
-);
+let incomingResult=[];
 
 
-
-incomingResult=[];
+// -------------------------------------
+// INCOMING PROCESSOR
+// -------------------------------------
 
 async function processIncomingPlayer(doc,player){
-
-$('#incomingStatus').html(`
-
-<div style="
-text-align:center;
-padding:20px;
-font-size:14px;
-color:#7a0000;
-line-height:24px;
-">
-
-Beérkező támadások vizsgálata folyamatban...
-
-<div style="
-margin-top:10px;
-font-size:15px;
-">
-
-<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/welcome/player_points.webp"
-
-style="
-width:18px;
-height:18px;
-vertical-align:-3px;
-">
-
-<strong>
-
-Vizsgálat:
-
-</strong>
-
-<strong>
-
-${player.name}
-
-</strong>
-
-</div>
-
-<div style="
-margin-top:14px;
-font-size:12px;
-font-style:italic;
-opacity:0.95;
-">
-
-<span style="
-font-weight:bold;
-color:#555;
-">
-
-By
-
-</span>
-
-<span style="
-font-weight:bold;
-color:#8b0000;
-">
-
-Crytek
-
-</span>
-
-</div>
-
-</div>
-
-`);
-
-
 
 let table=null;
 
@@ -2330,9 +2154,7 @@ table=t;
 
 });
 
-if(!table){
-return;
-}
+if(!table)return;
 
 let indexes=
 getUnitIndexes(table);
@@ -2340,46 +2162,33 @@ getUnitIndexes(table);
 let rows=
 table.querySelectorAll('tr');
 
-for(
-let i=0;
-i<rows.length;
-i++
-){
+for(let i=0;i<rows.length;i++){
 
 let cols=
-rows[i]
-.querySelectorAll('td');
+rows[i].querySelectorAll('td');
 
-if(
-cols.length<5
-){
+if(cols.length<5)
 continue;
-}
 
 let village=
-cols[0]
-?.innerHTML;
+cols[0]?.innerHTML;
 
-if(
-!village
-){
+if(!village)
 continue;
-}
 
 let travelRow=
 rows[i+1];
 
-let travelCols =
+let travelCols=
 travelRow
-? travelRow.querySelectorAll('td')
-: [];
+?travelRow.querySelectorAll('td')
+:[];
 
 let incoming=
 parseInt(
 cols[
 cols.length-1
-]
-.innerText
+].innerText
 .replace(/\./g,'')
 .trim()
 )||0;
@@ -2389,13 +2198,13 @@ incoming<=0
 ){
 continue;
 }
-const roadShift =
+
+const roadShift=
 (
 travelCols.length &&
-travelCols.length < cols.length
+travelCols.length<cols.length
 )
-? -2
-: 0;
+?-2:0;
 
 incomingResult.push({
 
@@ -2409,11 +2218,8 @@ village,
 villageUnits:{
 
 spear:getCol(cols,indexes.spear),
-
 sword:getCol(cols,indexes.sword),
-
 archer:getCol(cols,indexes.archer),
-
 heavy:getCol(cols,indexes.heavy)
 
 },
@@ -2422,22 +2228,22 @@ travelUnits:{
 
 spear:getCol(
 travelCols,
-indexes.spear + roadShift
+indexes.spear+roadShift
 ),
 
 sword:getCol(
 travelCols,
-indexes.sword + roadShift
+indexes.sword+roadShift
 ),
 
 archer:getCol(
 travelCols,
-indexes.archer + roadShift
+indexes.archer+roadShift
 ),
 
 heavy:getCol(
 travelCols,
-indexes.heavy + roadShift
+indexes.heavy+roadShift
 )
 
 }
@@ -2450,338 +2256,53 @@ i++;
 
 }
 
+
+// -------------------------------------
+// INCOMING CLICK
+// -------------------------------------
+
+$('#startIncomingScan')
+.off('click')
+.on(
+'click',
+async function(){
+
+incomingResult=[];
+
+for(
+const player
+of players
+){
+
+let url=
+
+`${location.origin}`+
+`/game.php?village=${game_data.village.id}`+
+`&screen=ally`+
+`&mode=members_defense`+
+`&player_id=${player.id}`;
+
+let html=
+await fetchPage(url);
+
+let doc=
+new DOMParser()
+.parseFromString(
+html,
+'text/html'
+);
+
+await processIncomingPlayer(
+doc,
+player
+);
+
+}
+
 renderIncoming();
 
-}
-);
-
-
-
-function renderIncoming(){
-
-let html=`
-<table class="vis"
-width="100%"
-style="
-border-collapse:separate;
-border-spacing:0 6px;
-">
-`;
-
-let grouped={};
-
-incomingResult.forEach(v=>{
-
-if(!grouped[v.player]){
-grouped[v.player]=[];
-}
-
-grouped[v.player].push(v);
-
 });
-
-let playerIndex=0;
-
-Object.entries(grouped)
-.forEach(([player,villages])=>{
-
-let playerId=
-`incoming_${playerIndex}`;
-
-html+=`
-
-<tr class="incomingPlayerToggle"
-
-data-id="${playerId}"
-
-style="
-cursor:pointer;
-background:linear-gradient(
-to right,
-#b54a4a,
-#efd0d0
-);
-height:32px;
-">
-
-<td style="
-padding-left:10px;
-border-top:2px solid #8f2c2c;
-border-bottom:2px solid #8f2c2c;
-">
-
-<strong style="
-font-size:13px;
-color:#5b0000;
-display:flex;
-align-items:center;
-gap:6px;
-">
-
-<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/welcome/player_points.webp"
-style="
-width:14px;
-height:14px;
-">
-
-${player}
-
-</strong>
-
-</td>
-
-<td align="right"
-
-style="
-padding-right:12px;
-border-top:2px solid #8f2c2c;
-border-bottom:2px solid #8f2c2c;
-">
-
-<strong>
-
-${
-villages.reduce(
-(sum,v)=>
-sum+v.incoming,
-0
-)
-}
-
-</strong>
-
-</td>
-
-</tr>
-
-<tr id="${playerId}"
-style="display:none;">
-
-<td colspan="2">
-
-<table class="vis"
-width="100%"
-style="
-border-collapse:collapse;
-">
-
-`;
-
-villages.forEach(v=>{
-
-html+=`
-
-<tr style="
-background:#fff6f6;
-border-bottom:1px solid #d6aaaa;
-">
-
-<td style="
-min-width:260px;
-font-weight:bold;
-padding-left:8px;
-font-size:12px;
-">
-
-<div style="
-margin-bottom:6px;
-color:#7d0000;
-font-size:13px;
-">
-
-<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/command/attack.png"
-style="
-width:14px;
-height:14px;
-vertical-align:-2px;
-margin-right:4px;
-">
-
-${v.incoming} támadás
-
-</div>
-
-${v.village}
-
-</td>
-
-<td>
-
-<table class="vis"
-style="
-background:#fff9f9;
-border:1px solid #d9aaaa;
-width:100%;
-table-layout:fixed;
-">
-
-<tr style="
-background:#cf8c8c;
-">
-
-<th></th>
-
-<th>
-<img src="/graphic/unit/unit_spear.png">
-</th>
-
-<th>
-<img src="/graphic/unit/unit_sword.png">
-</th>
-
-<th>
-<img src="/graphic/unit/unit_archer.png">
-</th>
-
-<th>
-<img src="/graphic/unit/unit_heavy.png">
-</th>
-
-</tr>
-
-<tr style="
-background:#f4dfdf;
-">
-
-<td style="
-padding-left:12px;
-font-size:11px;
-">
-
-<strong>Faluban</strong>
-
-</td>
-
-<td>
-<strong>${v.villageUnits.spear}</strong>
-</td>
-
-<td>
-<strong>${v.villageUnits.sword}</strong>
-</td>
-
-<td>
-<strong>${v.villageUnits.archer}</strong>
-</td>
-
-<td>
-<strong>${v.villageUnits.heavy}</strong>
-</td>
-
-</tr>
-
-<tr style="
-background:#edd0d0;
-">
-
-<td style="
-padding-left:12px;
-font-size:11px;
-">
-
-<strong>Úton</strong>
-
-</td>
-
-<td>
-<strong>${v.travelUnits.spear}</strong>
-</td>
-
-<td>
-<strong>${v.travelUnits.sword}</strong>
-</td>
-
-<td>
-<strong>${v.travelUnits.archer}</strong>
-</td>
-
-<td>
-<strong>${v.travelUnits.heavy}</strong>
-</td>
-
-</tr>
-
-
-
-</table>
-
-</td>
-
-</tr>
-
-`;
-
-});
-
-html+=`
-
-</table>
-
-</td>
-
-</tr>
-
-`;
-
-playerIndex++;
-
-});
-
-html+=`
-
-</table>
-
-<div style="
-margin-top:14px;
-font-size:12px;
-font-style:italic;
-opacity:0.95;
-">
-
-<span style="
-font-weight:bold;
-color:#555;
-">
-
-By
-
-</span>
-
-<span style="
-font-weight:bold;
-color:#8b0000;
-">
-
-Crytek
-
-</span>
-
-</div>
-
-`;
-
-$('#incomingStatus')
-.html(html);
-
-$('.incomingPlayerToggle')
-.off('click')
-.on('click',function(){
-
-$('#'+$(this).data('id'))
-.toggle();
-
-});
-
-}
-
-$('#closeIncomingScanner')
-.off('click')
-.on('click',function(){
-
-location.reload();
-
-});
-/* incoming click már fent lezárva */
+```
 
 
 // =====================================
