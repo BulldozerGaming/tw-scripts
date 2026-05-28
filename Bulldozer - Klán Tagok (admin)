@@ -87,130 +87,78 @@ if (!isHighRank) {
 
 let panel = `
 
-    <div id="bdScannerButtonWrap"
-         style="
-            margin-bottom:20px;
-         ">
+<div id="bdScannerButtonWrap"
 
-        <button id="startNukeScan"
-            style="
-                background:linear-gradient(
-                    to bottom,
-                    #7d4b14,
-                    #4b2b08
-                );
-                border:2px solid #c79b52;
-                border-radius:10px;
-                padding:8px 16px;
-                color:#fff6d5;
-                font-size:13px;
-                font-weight:bold;
-                cursor:pointer;
-                box-shadow:
-                    inset 0 1px 0 #f7d28b,
-                    0 2px 5px rgba(0,0,0,0.4);
-                display:inline-flex;
-                align-items:center;
-                gap:8px;
-            ">
+style="
+margin-bottom:20px;
+">
 
-            <img src="https://dsde.innogamescdn.com/asset/b206965d/graphic/unit/unit_sword.png"
-                 style="
-                    width:18px;
-                    height:18px;
-                 ">
+<button id="startClanScan"
 
-            Támadók
-
-            <img src="https://dsde.innogamescdn.com/asset/b206965d/graphic/unit/unit_sword.png"
-                 style="
-                    width:18px;
-                    height:18px;
-                 ">
-
-        </button>
-
-<button id="startDefenseScan"
-    style="
-        background:linear-gradient(
-            to bottom,
-            #2d5b7d,
-            #163047
-        );
-        border:2px solid #6ca5d6;
-        border-radius:10px;
-        padding:8px 16px;
-        color:#e8f4ff;
-        font-size:13px;
-        font-weight:bold;
-        cursor:pointer;
-        box-shadow:
-            inset 0 1px 0 #9ed0ff,
-            0 2px 5px rgba(0,0,0,0.4);
-        display:inline-flex;
-        align-items:center;
-        gap:8px;
-        margin-left:8px;
-    ">
-
-    <img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/unit/unit_spear.png"
-         style="
-            width:18px;
-            height:18px;
-         ">
-
-    Védők
-
-    <img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/unit/unit_spear.png"
-         style="
-            width:18px;
-            height:18px;
-         ">
-
-</button>
-<button id="startIncomingScan"
 style="
 background:linear-gradient(
 to bottom,
-#7d1d1d,
-#470d0d
+#6b3f11,
+#3f2406
 );
-border:2px solid #d86b6b;
-border-radius:10px;
-padding:8px 16px;
-color:#fff0f0;
-font-size:13px;
+
+border:2px solid #d0a45b;
+
+border-radius:12px;
+
+padding:10px 22px;
+
+color:#fff6d5;
+
+font-size:14px;
+
 font-weight:bold;
+
 cursor:pointer;
+
 display:inline-flex;
+
 align-items:center;
-gap:8px;
-margin-left:8px;
+
+gap:10px;
+
+box-shadow:
+inset 0 1px 0 #f7d28b,
+0 2px 5px rgba(0,0,0,.4);
 ">
 
-<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/command/attack.png"
+<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/unit/unit_sword.png"
+
 style="
 width:18px;
 height:18px;
 ">
 
-Beérkező támadások
+KLÁN ELEMZÉS
+
+<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/unit/unit_spear.png"
+
+style="
+width:18px;
+height:18px;
+">
 
 <img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/command/attack.png"
+
 style="
 width:18px;
 height:18px;
 ">
 
 </button>
-    </div>
 
-
+</div>
 
 `;
 
-
-$('.vis').first().before(panel);
+$('.vis')
+.first()
+.before(panel);
 
 // =========================================
 // HELPERS
@@ -3089,6 +3037,22 @@ $('#closeIncomingScanner')
 location.reload();
 
 });
+
+
+$('#startClanScan')
+.off('click')
+.on(
+'click',
+function(){
+
+$('#startClanScan').hide();
+
+$('#startNukeScan').trigger('click');
+
+}
+);
+
+
 
 
 })();
