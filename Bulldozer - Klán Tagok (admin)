@@ -2142,7 +2142,11 @@ const txt=t.innerText;
 if(
 txt.includes('Falu')
 &&
-txt.includes('Pont')
+(
+txt.includes('Beérkező')
+||
+txt.includes('támadás')
+)
 ){
 table=t;
 }
@@ -2635,7 +2639,7 @@ let incomingUrl=
 `${location.origin}`+
 `/game.php?village=${game_data.village.id}`+
 `&screen=ally`+
-`&mode=members_troops`+
+`&mode=members_defense`+
 `&player_id=${player.id}`;
 
 let incomingHtml=
