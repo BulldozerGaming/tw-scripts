@@ -2483,8 +2483,7 @@ data-target="incSection"
 style="
 cursor:pointer;
 color:#8b0000;
-font-size:18
-px;
+font-size:18px;
 margin:12px 0;
 ">
 
@@ -2607,27 +2606,20 @@ $('#defenseScanner').remove();
 
 
 
-$('#attSection').html(`
-<div id="fullAttackStatus"></div>
-`);
+$('#attSection').html(
+'<div id="fullAttackStatus"></div>'
+);
 
-$('#defSection').html(`
-<div id="fullDefenseStatus"></div>
-`);
+$('#defSection').html(
+'<div id="fullDefenseStatus"></div>'
+);
 
-
+$('#incSection').html(
+'<div id="incomingStatus"></div>'
+);
 
 render();
-
 renderDefense();
-
-
-
-$('#incSection')
-.html(`
-<div id="incomingStatus"></div>
-`);
-
 renderIncoming();
 
 
