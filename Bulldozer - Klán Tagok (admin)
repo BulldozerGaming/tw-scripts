@@ -2180,19 +2180,10 @@ if(
 continue;
 }
 
-let incoming=0;
+const incomingCol =
+cols[cols.length - 1];
 
-for(
-const td
-of cols
-){
-
-const incomingCol=
-cols[
-cols.length-1
-];
-
-const incoming=
+const incoming =
 parseInt(
 incomingCol
 ?.innerText
@@ -2201,14 +2192,21 @@ incomingCol
 ) || 0;
 
 if(
-!isNaN(value)
-&&
-value>incoming
+incoming <= 0
 ){
-incoming=value;
+continue;
 }
 
-}
+incomingResult.push({
+
+player:
+player.name,
+
+incoming,
+
+village
+
+});
 
 if(
 incoming<=0
