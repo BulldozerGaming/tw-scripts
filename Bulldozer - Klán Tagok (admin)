@@ -2180,14 +2180,36 @@ travelRow
 ?travelRow.querySelectorAll('td')
 :[];
 
-let incoming = parseInt(
-cols[
-cols.length-2
-]
-?.innerText
-?.replace(/\./g,'')
-?.trim()
-)||0;
+let incomingIndex = -1;
+
+table
+.querySelectorAll('th')
+.forEach((th,i)=>{
+
+const text =
+th.innerText
+.toLowerCase()
+.trim();
+
+if(
+text.includes('beér')
+||
+text.includes('támadás')
+){
+incomingIndex=i;
+}
+
+});
+
+if(incomingIndex<0){
+return;
+}
+
+let incoming =
+getCol(
+cols,
+incomingIndex
+);
 
 if(incoming<=0)
 continue;
@@ -2531,6 +2553,7 @@ margin:12px 0;
 <div id="incSection"
 class="vis"
 style="
+display:none;
 padding:8px;
 ">
 </div>
@@ -2680,7 +2703,7 @@ Nincs beérkező támadás
 </div>
 
 `);
-
+$('#incSection').hide();
 }
 else{
 
