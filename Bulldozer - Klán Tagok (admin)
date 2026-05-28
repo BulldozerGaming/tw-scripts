@@ -2142,7 +2142,7 @@ const txt=t.innerText;
 if(
 txt.includes('Falu')
 &&
-txt.includes('Beérkező')
+txt.includes('Pont')
 ){
 table=t;
 }
@@ -2180,12 +2180,13 @@ travelRow
 ?travelRow.querySelectorAll('td')
 :[];
 
-let incoming=
-parseInt(
-cols[cols.length-1]
-.innerText
-.replace(/\./g,'')
-.trim()
+let incoming = parseInt(
+cols[
+cols.length-2
+]
+?.innerText
+?.replace(/\./g,'')
+?.trim()
 )||0;
 
 if(incoming<=0)
@@ -2611,7 +2612,7 @@ let incomingUrl=
 `${location.origin}`+
 `/game.php?village=${game_data.village.id}`+
 `&screen=ally`+
-`&mode=members_defense`+
+`&mode=members_troops`+
 `&player_id=${player.id}`;
 
 let incomingHtml=
