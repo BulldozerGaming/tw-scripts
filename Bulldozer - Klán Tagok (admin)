@@ -2142,29 +2142,27 @@ Array.from(
 t.querySelectorAll('th')
 )
 .map(
-x=>x.innerText.trim()
+x=>x.innerText.trim().toLowerCase()
+);
+
+const hasVillage=
+headers.some(
+h=>h.includes('falu')
+);
+
+const hasIncoming=
+headers.some(
+h=>
+h.includes('beérkező')
+||
+h.includes('beér')
 );
 
 if(
-
-headers.includes('Falu')
-
-&&
-
-headers.some(h=>
-
-h.includes('Beérkező')
-
-||
-
-h.includes('támadás')
-
-)
-
+hasVillage &&
+hasIncoming
 ){
-
 table=t;
-
 }
 
 });
@@ -2173,72 +2171,71 @@ if(!table){
 return;
 }
 
-let indexes=getUnitIndexes(table);
-
-let rows=
+const rows=
 table.querySelectorAll('tr');
 
-for(let i=0;i<rows.length;i++){
+for(
+let i=0;
+i<rows.length;
+i++
+){
 
-let cols=
+const cols=
 rows[i].querySelectorAll('td');
 
-if(cols.length<5)
+if(
+cols.length<5
+){
 continue;
+}
 
-let village=
+const village=
 cols[0]?.innerHTML;
 
-if(!village)
-continue;
-
-let travelRow=
-rows[i+1];
-
-let travelCols=
-travelRow
-?travelRow.querySelectorAll('td')
-:[];
-
-let incomingIndex = -1;
-
-table
-.querySelectorAll('th')
-.forEach((th,i)=>{
-
-const text =
-th.innerText
-.toLowerCase()
-.trim();
-
 if(
-text.includes('beér')
-||
-text.includes('támadás')
+!village
 ){
-incomingIndex=i;
-}
-
-});
-
-if(incomingIndex<0){
 continue;
 }
 
-let incoming =
-getCol(
-cols,
-incomingIndex
+let incoming=0;
+
+for(
+const td
+of cols
+){
+
+const value=
+parseInt(
+td.innerText
+.replace(/\./g,'')
+.trim()
 );
 
-if(incoming<=0)
+if(
+!isNaN(value)
+&&
+value>incoming
+){
+incoming=value;
+}
+
+}
+
+if(
+incoming<=0
+){
 continue;
+}
 
 incomingResult.push({
 
-player: player.name,
-incoming: incoming,
-village: village
+player:
+player.name,
+
+incoming,
+
+village
 
 });
 
