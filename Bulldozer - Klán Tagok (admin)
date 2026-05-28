@@ -2223,6 +2223,126 @@ i++;
 
 }
 
+function renderIncoming(){
+
+let html=`
+<table class="vis"
+width="100%"
+style="
+border-collapse:separate;
+border-spacing:0 6px;
+">
+`;
+
+let grouped={};
+
+incomingResult.forEach(v=>{
+
+if(!grouped[v.player]){
+grouped[v.player]=[];
+}
+
+grouped[v.player].push(v);
+
+});
+
+let playerIndex=0;
+
+Object.entries(grouped)
+.forEach(([player,villages])=>{
+
+let playerId=
+`incoming_${playerIndex}`;
+
+html+=`
+
+<tr class="playerIncomingToggle"
+data-id="${playerId}"
+style="
+cursor:pointer;
+background:#f4d7d7;
+">
+
+<td colspan="3"
+style="
+padding:8px;
+font-weight:bold;
+">
+
+👤 ${player}
+
+(${villages.length})
+
+</td>
+
+</tr>
+
+<tr
+id="${playerId}"
+style="display:none;"
+>
+
+<td colspan="3">
+
+`;
+
+villages.forEach(v=>{
+
+html+=`
+
+<div style="
+padding:8px;
+margin:4px;
+border:1px solid #d4b1b1;
+background:#fff5f5;
+">
+
+<strong>
+
+📥 ${v.incoming}
+
+</strong>
+
+<br>
+
+${v.village}
+
+</div>
+
+`;
+
+});
+
+html+=`
+
+</td>
+
+</tr>
+
+`;
+
+playerIndex++;
+
+});
+
+html+=`</table>`;
+
+$('#incomingStatus')
+.html(html);
+
+$('.playerIncomingToggle')
+.off()
+.on(
+'click',
+function(){
+
+$('#'+$(this).data('id'))
+.toggle();
+
+});
+
+}
+
 $('#startIncomingScan')
 .off('click')
 .on(
@@ -2364,7 +2484,7 @@ data-target="attSection"
 style="
 cursor:pointer;
 color:#7a3b00;
-font-size:34px;
+font-size:18px;
 margin:12px 0;
 ">
 
@@ -2388,7 +2508,7 @@ data-target="defSection"
 style="
 cursor:pointer;
 color:#1e4c72;
-font-size:34px;
+font-size:18px;
 margin:12px 0;
 ">
 
@@ -2412,7 +2532,8 @@ data-target="incSection"
 style="
 cursor:pointer;
 color:#8b0000;
-font-size:34px;
+font-size:18
+px;
 margin:12px 0;
 ">
 
@@ -2533,54 +2654,17 @@ renderDefense();
 
 
 
-let incomingHTML=`
-
-<table class="vis" width="100%">
-
-<tr>
-
-<th>Játékos</th>
-
-<th>Falu</th>
-
-<th>Beérkező</th>
-
-</tr>
-
-${incomingResult.map(v=>`
-
-<tr>
-
-<td>${v.player}</td>
-
-<td>${v.village}</td>
-
-<td>
-
-<strong style="
-color:#8b0000;
-font-size:13px;
-">
-
-${v.incoming}
-
-</strong>
-
-</td>
-
-</tr>
-
-`).join('')}
-
-</table>
-
-`;
+renderIncoming();
 
 $('#incSection')
-.html(
-incomingHTML
-);
+.html(`
+<div id="incomingStatus"></div>
+`);
 
+$('#incomingStatus')
+.html(
+$('#incomingStatus').html()
+);
 
 
 // újrakötjük az eventeket
