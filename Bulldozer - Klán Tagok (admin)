@@ -3197,6 +3197,174 @@ $('#startSupportScan').show();
 }
 
 
+function renderSupport(){
+
+let grouped={};
+
+supportResult.forEach(v=>{
+
+if(!grouped[v.player]){
+
+grouped[v.player]=[];
+
+}
+
+grouped[v.player].push(v);
+
+});
+
+let html=`
+<table class="vis"
+width="100%">
+`;
+
+let playerIndex=0;
+
+Object.entries(grouped)
+.forEach(([player,villages])=>{
+
+let pid=
+`support_${playerIndex}`;
+
+html+=`
+
+<tr class="supportToggle"
+
+data-id="${pid}"
+
+style="
+cursor:pointer;
+background:linear-gradient(
+to right,
+#6cb07c,
+#dff2e3
+);
+height:32px;
+">
+
+<td style="padding-left:10px;">
+
+<strong>
+
+${player}
+
+</strong>
+
+</td>
+
+<td align="right"
+style="
+padding-right:12px;
+">
+
+<strong>
+
+${villages.length}
+
+</strong>
+
+</td>
+
+</tr>
+
+<tr id="${pid}"
+style="display:none;">
+
+<td colspan="2">
+
+<table class="vis"
+width="100%">
+
+`;
+
+villages.forEach(v=>{
+
+html+=`
+
+<tr>
+
+<td>
+
+${v.village}
+
+</td>
+
+<td>
+
+🛡️
+
+${v.support.spear}
+
+⚔️
+
+${v.support.sword}
+
+🏹
+
+${v.support.archer}
+
+🐴
+
+${v.support.heavy}
+
+👑
+
+${v.support.knight}
+
+</td>
+
+</tr>
+
+`;
+
+});
+
+html+=`
+
+</table>
+
+</td>
+
+</tr>
+
+`;
+
+playerIndex++;
+
+});
+
+html+=`</table>`;
+
+$('#supportStatus')
+.html(html);
+
+$('.supportToggle')
+.off('click')
+.on('click',function(){
+
+$('#'+$(this).data('id'))
+.toggle();
+
+});
+
+$('#closeSupportScanner')
+.off('click')
+.on('click',function(){
+
+$('#supportScanner').remove();
+
+$('#startNukeScan').show();
+
+$('#startDefenseScan').show();
+
+$('#startIncomingScan').show();
+
+$('#startSupportScan').show();
+
+});
+
+}
+
 // =====================================
 // SUPPORT SCANNER
 // =====================================
@@ -3277,6 +3445,194 @@ Erősítések vizsgálata...
 
 $('#bdScannerButtonWrap')
 .after(panel);
+
+supportResult=[];
+
+for(const player of players){
+
+$('#supportStatus').html(`
+
+<div style="
+text-align:center;
+padding:20px;
+font-size:14px;
+color:#1e5d2d;
+line-height:24px;
+">
+
+Erősítések vizsgálata...
+
+<div style="
+margin-top:10px;
+font-size:15px;
+">
+
+<strong>Vizsgálat:</strong>
+
+<strong>
+
+${player.name}
+
+</strong>
+
+</div>
+
+</div>
+
+`);
+
+let url=
+
+`${location.origin}`+
+`/game.php?village=${game_data.village.id}`+
+`&screen=ally`+
+`&mode=members_defense`+
+`&player_id=${player.id}`;
+
+let html=
+await fetchPage(url);
+
+let doc=
+new DOMParser()
+.parseFromString(
+html,
+'text/html'
+);
+
+let table=null;
+
+doc.querySelectorAll('.vis')
+.forEach(t=>{
+
+if(
+t.innerText.includes('Faluban')
+||
+t.innerText.includes('Úton')
+){
+table=t;
+}
+
+});
+
+if(!table){
+continue;
+}
+
+let rows=
+table.querySelectorAll('tr');
+
+let indexes=
+getUnitIndexes(table);
+
+for(
+let i=0;
+i<rows.length;
+i++
+){
+
+let cols=
+rows[i]
+.querySelectorAll('td');
+
+if(
+cols.length<5
+){
+continue;
+}
+
+let village=
+cols[0]
+?.innerHTML;
+
+if(
+!village
+){
+continue;
+}
+
+let roadRow=
+rows[i+1];
+
+let roadCols=
+roadRow
+? roadRow.querySelectorAll('td')
+: [];
+
+const roadShift =
+(
+roadCols.length &&
+roadCols.length < cols.length
+)
+? -2
+: 0;
+
+let support={
+
+spear:
+getCol(
+roadCols,
+indexes.spear + roadShift
+),
+
+sword:
+getCol(
+roadCols,
+indexes.sword + roadShift
+),
+
+archer:
+getCol(
+roadCols,
+indexes.archer + roadShift
+),
+
+heavy:
+getCol(
+roadCols,
+indexes.heavy + roadShift
+),
+
+knight:
+getCol(
+roadCols,
+indexes.knight + roadShift
+)
+
+};
+
+let total=
+
+support.spear+
+support.sword+
+support.archer+
+support.heavy+
+support.knight;
+
+if(
+total<=0
+){
+i++;
+continue;
+}
+
+supportResult.push({
+
+player:
+player.name,
+
+village,
+
+support
+
+});
+
+i++;
+
+}
+
+}
+
+renderSupport();
 
 });
 
