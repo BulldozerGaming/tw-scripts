@@ -3197,5 +3197,89 @@ $('#startSupportScan').show();
 }
 
 
+// =====================================
+// SUPPORT SCANNER
+// =====================================
+
+let supportResult = [];
+
+$('#startSupportScan').on(
+'click',
+async function(){
+
+$('#bdScanner').remove();
+$('#defenseScanner').remove();
+$('#incomingScanner').remove();
+$('#supportScanner').remove();
+
+$('#startNukeScan').hide();
+$('#startDefenseScan').hide();
+$('#startIncomingScan').hide();
+$('#startSupportScan').hide();
+
+let panel=`
+
+<div class="vis"
+id="supportScanner"
+style="margin-bottom:15px;">
+
+<div style="
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:12px;
+">
+
+<h3 style="
+margin:0;
+color:#1e5d2d;
+">
+
+🟢 A TAGOK ERŐSÍTÉSEI
+
+</h3>
+
+<button id="closeSupportScanner"
+
+style="
+background:linear-gradient(
+to bottom,
+#2d7a3a,
+#14401d
+);
+
+border:2px solid #63c77b;
+
+border-radius:8px;
+
+padding:6px 14px;
+
+color:white;
+
+cursor:pointer;
+">
+
+❌ Bezárás
+
+</button>
+
+</div>
+
+<div id="supportStatus">
+
+Erősítések vizsgálata...
+
+</div>
+
+</div>
+
+`;
+
+$('#bdScannerButtonWrap')
+.after(panel);
+
+});
+
+
 
 })();
