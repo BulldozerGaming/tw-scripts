@@ -3400,12 +3400,11 @@ Array.from(
 doc.querySelectorAll('table.vis')
 );
 
-let supportTable=
-tables.find(t=>{
+let supportTable =
+tables.find(t => {
 
-let txt=t.innerText;
-
-return (
+let txt =
+t.innerText;
 
 return txt.includes(
 'Összes erősítés a faluban'
