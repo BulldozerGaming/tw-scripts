@@ -3382,7 +3382,8 @@ let url=
 `${location.origin}`+
 `/game.php?village=${game_data.village.id}`+
 `&screen=info_village`+
-`&id=${villageId}`;
+`&id=${villageId}`+
+`&mode=defense`;
 
 let html=
 await fetchPage(url);
@@ -3406,19 +3407,8 @@ let txt=t.innerText;
 
 return (
 
-txt.includes('Lándzsás')
-||
-txt.includes('Lándzsások')
-)
-
-&&
-
-(
-txt.includes('Erősítés')
-||
-txt.includes('faluban')
-||
-txt.includes('védekezés')
+return txt.includes(
+'Összes erősítés a faluban'
 );
 
 });
@@ -3587,7 +3577,24 @@ href.includes('village=')
 
 });
 
-for(const link of villageLinks){
+const SUPPORT_BATCH_SIZE = 8;
+
+for(
+let i=0;
+i<villageLinks.length;
+i+=SUPPORT_BATCH_SIZE
+){
+
+const batch =
+villageLinks.slice(
+i,
+i+SUPPORT_BATCH_SIZE
+);
+
+const batchResults =
+await Promise.all(
+
+batch.map(async link=>{
 
 let match=
 link.href.match(
@@ -3595,26 +3602,21 @@ link.href.match(
 );
 
 if(!match){
-continue;
+return null;
 }
 
 let villageId =
-parseInt(match[1]);
+parseInt(
+match[1]
+);
 
-if(
-!villageId ||
-isNaN(villageId)
-){
-continue;
-}
-
-let support=
+let support =
 await fetchVillageSupport(
 villageId
 );
 
 if(!support){
-continue;
+return null;
 }
 
 let total=
@@ -3626,10 +3628,10 @@ support.heavy+
 support.knight;
 
 if(total<=0){
-continue;
+return null;
 }
 
-supportResult.push({
+return{
 
 player:
 player.name,
@@ -3639,7 +3641,17 @@ link.innerHTML,
 
 support
 
-});
+};
+
+})
+
+);
+
+supportResult.push(
+
+...batchResults.filter(Boolean)
+
+);
 
 }
 
