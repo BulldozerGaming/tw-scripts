@@ -3378,7 +3378,6 @@ async function fetchVillageSupport(villageId){
 try{
 
 let url=
-
 `${location.origin}`+
 `/game.php?village=${game_data.village.id}`+
 `&screen=info_village`+
@@ -3403,19 +3402,14 @@ doc.querySelectorAll('table.vis')
 let supportTable =
 tables.find(t => {
 
-let txt =
-t.innerText;
-
-return txt.includes(
+return t.innerText.includes(
 'Összes erősítés a faluban'
 );
 
 });
 
 if(!supportTable){
-
 return null;
-
 }
 
 let rows=
@@ -3433,13 +3427,15 @@ knight:0
 
 rows.forEach(row=>{
 
-let tds=row.querySelectorAll('td');
+let tds=
+row.querySelectorAll('td');
 
-if(tds.length<5){
+if(tds.length<6){
 return;
 }
 
-let txt=row.innerText;
+let txt=
+row.innerText;
 
 if(
 txt.includes('Összes')
@@ -3447,20 +3443,11 @@ txt.includes('Összes')
 txt.includes('faluban')
 ){
 
-support.spear=
-num(tds[1]?.innerText);
-
-support.sword=
-num(tds[2]?.innerText);
-
-support.archer=
-num(tds[3]?.innerText);
-
-support.heavy=
-num(tds[4]?.innerText);
-
-support.knight=
-num(tds[5]?.innerText);
+support.spear=num(tds[1]?.innerText);
+support.sword=num(tds[2]?.innerText);
+support.archer=num(tds[3]?.innerText);
+support.heavy=num(tds[4]?.innerText);
+support.knight=num(tds[5]?.innerText);
 
 }
 
