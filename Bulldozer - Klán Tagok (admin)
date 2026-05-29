@@ -3396,7 +3396,7 @@ html,
 
 let supportRows=
 Array.from(
-doc.querySelectorAll('.vis tr')
+doc.querySelectorAll('table.vis tr')
 );
 
 let support={
