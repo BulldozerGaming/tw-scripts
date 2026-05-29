@@ -3375,6 +3375,8 @@ let supportResult=[];
 
 async function fetchVillageSupport(villageId){
 
+try{
+
 let url=
 
 `${location.origin}`+
@@ -3446,6 +3448,12 @@ return null;
 }
 
 return support;
+
+}catch(e){
+
+return null;
+
+}
 
 }
 
@@ -3530,10 +3538,22 @@ html,
 'text/html'
 );
 
-let villageLinks=
-doc.querySelectorAll(
-'a[href*="village="]'
+let villageLinks =
+Array.from(
+doc.querySelectorAll('table.vis tr td:first-child a')
+)
+.filter(link=>{
+
+let href =
+link.getAttribute('href') || '';
+
+return (
+href.includes('village=')
+&&
+/village=\d+/.test(href)
 );
+
+});
 
 for(const link of villageLinks){
 
@@ -3546,8 +3566,15 @@ if(!match){
 continue;
 }
 
-let villageId=
-match[1];
+let villageId =
+parseInt(match[1]);
+
+if(
+!villageId ||
+isNaN(villageId)
+){
+continue;
+}
 
 let support=
 await fetchVillageSupport(
