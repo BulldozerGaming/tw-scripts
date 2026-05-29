@@ -494,25 +494,25 @@ $('#bdStatus').html(`
         return;
     }
 
-    table.querySelectorAll('tr')
-        .forEach(row => {
+let unitIndex =
+getUnitIndexes(table);
 
-            let cols =
-                row.querySelectorAll('td');
+table.querySelectorAll('tr')
+.forEach(row => {
+
+let cols =
+row.querySelectorAll('td');
 
 if (cols.length < 5) {
-    return;
+return;
 }
 
-            let village =
-                cols[0].innerHTML;
+let village =
+cols[0].innerHTML;
 
-            if (!village) {
-                return;
-            }
-
-let unitIndex =
-    getUnitIndexes(table);
+if (!village) {
+return;
+}
 
 
 let units = {
@@ -620,12 +620,25 @@ result[category].push({
 
 async function start() {
 
-    for (let player of players) {
+result = {
 
-        await scanPlayer(player);
-    }
+'Nuke':[],
+'3/4 Nuke':[],
+'1/2 Nuke':[],
+'1/4 Nuke':[]
 
-    render();
+};
+
+clanTotalSnobs = 0;
+
+for (let player of players) {
+
+    await scanPlayer(player);
+
+}
+
+render();
+
 }
 
 // =========================================
@@ -1352,6 +1365,38 @@ function defenseCategory(pop) {
 $('#startDefenseScan')
 .on('click', async function () {
 
+defenseResult = {
+
+'VF':[],
+'3/4 VF':[],
+'1/2 VF':[],
+'1/4 VF':[],
+'1/6 VF':[],
+'1/20 VF':[],
+'Maradék':[]
+
+};
+
+movableDefense = {
+
+spear:0,
+sword:0,
+archer:0,
+heavy:0,
+knight:0
+
+};
+
+travelingDefense = {
+
+spear:0,
+sword:0,
+archer:0,
+heavy:0,
+knight:0
+
+};
+
 $('#bdScanner').remove();
 $('#defenseScanner').remove();
 
@@ -1603,7 +1648,8 @@ $('#startNukeScan').hide();
 
         let rows =
             table.querySelectorAll('tr');
-
+let unitIndex =
+getUnitIndexes(table);
         for (let i = 0; i < rows.length; i++) {
 
             let cols =
@@ -1627,8 +1673,6 @@ if (cols.length < 5) {
                 continue;
             }
 
-let unitIndex =
-    getUnitIndexes(table);
 const OFFSET = 0;
 
 let inVillage = {
