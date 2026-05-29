@@ -3394,10 +3394,43 @@ html,
 'text/html'
 );
 
-let supportRows=
+let tables=
 Array.from(
-doc.querySelectorAll('table.vis tr')
+doc.querySelectorAll('table.vis')
 );
+
+let supportTable=
+tables.find(t=>{
+
+let txt=t.innerText;
+
+return (
+
+txt.includes('Lándzsás')
+||
+txt.includes('Lándzsások')
+)
+
+&&
+
+(
+txt.includes('Erősítés')
+||
+txt.includes('faluban')
+||
+txt.includes('védekezés')
+);
+
+});
+
+if(!supportTable){
+
+return null;
+
+}
+
+let rows=
+supportTable.querySelectorAll('tr');
 
 let support={
 
@@ -3409,21 +3442,21 @@ knight:0
 
 };
 
-let found=false;
+rows.forEach(row=>{
 
-supportRows.forEach(row=>{
+let tds=row.querySelectorAll('td');
 
-let txt=
-row.innerText;
+if(tds.length<5){
+return;
+}
+
+let txt=row.innerText;
 
 if(
-txt.includes('Összes erősítés a faluban')
+txt.includes('Összes')
+||
+txt.includes('faluban')
 ){
-
-found=true;
-
-let tds=
-row.querySelectorAll('td');
 
 support.spear=
 num(tds[1]?.innerText);
@@ -3444,13 +3477,11 @@ num(tds[5]?.innerText);
 
 });
 
-if(!found){
-return null;
-}
-
 return support;
 
 }catch(e){
+
+console.log(e);
 
 return null;
 
