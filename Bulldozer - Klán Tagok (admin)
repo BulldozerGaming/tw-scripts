@@ -203,6 +203,58 @@ height:18px;
 ">
 
 </button>
+
+<button id="startSupportScan"
+
+style="
+background:linear-gradient(
+to bottom,
+#2d7a3a,
+#14401d
+);
+
+border:2px solid #63c77b;
+
+border-radius:10px;
+
+padding:8px 16px;
+
+color:#f0fff4;
+
+font-size:13px;
+
+font-weight:bold;
+
+cursor:pointer;
+
+display:inline-flex;
+
+align-items:center;
+
+gap:8px;
+
+margin-left:8px;
+">
+
+<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/buildings/place.png"
+
+style="
+width:18px;
+height:18px;
+">
+
+Erősítések
+
+<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/buildings/place.png"
+
+style="
+width:18px;
+height:18px;
+">
+
+</button>
+
+
     </div>
 
 
@@ -648,9 +700,11 @@ render();
 $('#startNukeScan')
     .on('click', async function () {
 
-        $('#startDefenseScan').hide();
+       $('#startDefenseScan').hide();
 $('#startNukeScan').hide();
 $('#startIncomingScan').hide();
+$('#startSupportScan').hide();
+
 $('#incomingScanner').remove();
 
    let scannerPanel = `
@@ -837,7 +891,8 @@ $(document)
 
     $('#startNukeScan').show();
     $('#startDefenseScan').show();
-    $('#startIncomingScan').show();
+   $('#startIncomingScan').show();
+$('#startSupportScan').show();
 
 });
     });
@@ -1405,6 +1460,7 @@ $('#incomingScanner').remove();
 $('#startNukeScan').hide();
 $('#startDefenseScan').hide();
 $('#startIncomingScan').hide();
+$('#startSupportScan').hide();
 
     let panel = `
 
@@ -1865,6 +1921,7 @@ $('#closeDefenseScanner')
     $('#startDefenseScan').show();
     $('#startNukeScan').show();
     $('#startIncomingScan').show();
+$('#startSupportScan').show();
 
 });
 
@@ -2457,6 +2514,7 @@ $('.defGlobalToggle')
         $('#startDefenseScan').show();
         $('#startNukeScan').show();
         $('#startIncomingScan').show();
+$('#startSupportScan').show();
 
     });
 }
@@ -2480,6 +2538,7 @@ $('#incomingScanner').remove();
 $('#startNukeScan').hide();
 $('#startDefenseScan').hide();
 $('#startIncomingScan').hide();
+$('#startSupportScan').hide();
 
 let incomingPanel = `
 
@@ -3131,6 +3190,7 @@ $('#incomingScanner').remove();
 $('#startNukeScan').show();
 $('#startDefenseScan').show();
 $('#startIncomingScan').show();
+$('#startSupportScan').show();
 
 });
 
