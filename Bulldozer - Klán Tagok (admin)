@@ -372,6 +372,8 @@ let result = {
     '1/4 Nuke': []
 };
 
+let clanTotalSnobs = 0;
+
 // =========================================
 // REQUEST
 // =========================================
@@ -563,6 +565,8 @@ let units = {
             unitIndex.snob
         )
 };
+
+clanTotalSnobs += units.snob;
 
 let pop = (
 
@@ -1147,17 +1151,7 @@ function render() {
             `;
         });
 
-    let totalSnobs = 0;
 
-    Object.values(result)
-        .forEach(villages => {
-
-            villages.forEach(v => {
-
-                totalSnobs +=
-                    parseInt(v.units.snob || 0);
-            });
-        });
 
     html += `
         <tr style="
@@ -1216,7 +1210,7 @@ function render() {
                     color:#7a2100;
                     font-size:13px;
                 ">
-                    ${totalSnobs}
+                    ${clanTotalSnobs}
                 </strong>
 
             </td>
