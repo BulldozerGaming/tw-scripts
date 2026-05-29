@@ -3380,8 +3380,9 @@ try{
 let url=
 
 `${location.origin}`+
-`/game.php?village=${villageId}`+
-`&screen=place&mode=units`;
+`/game.php?village=${game_data.village.id}`+
+`&screen=info_village`+
+`&id=${villageId}`;
 
 let html=
 await fetchPage(url);
