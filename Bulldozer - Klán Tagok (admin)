@@ -3224,6 +3224,17 @@ $('#startSupportScan').show();
 
 function renderSupport(){
 
+const farmOrder=[
+'40k',
+'30k',
+'20k',
+'10k',
+'5k',
+'2.5k',
+'1k',
+'under1k'
+];
+
 const farmLabels={
 
 '40k':'40 ezer feletti populáció',
@@ -3237,16 +3248,18 @@ const farmLabels={
 
 };
 
-const groupedPlayers={};
+const grouped={};
 const farmGroups={};
+
+farmOrder.forEach(x=>farmGroups[x]=[]);
 
 supportResult.forEach(v=>{
 
-if(!groupedPlayers[v.player]){
-groupedPlayers[v.player]=[];
+if(!grouped[v.player]){
+grouped[v.player]=[];
 }
 
-groupedPlayers[v.player].push(v);
+grouped[v.player].push(v);
 
 const pop=
 
@@ -3266,15 +3279,7 @@ else if(pop>=5000) cat='5k';
 else if(pop>=2500) cat='2.5k';
 else if(pop>=1000) cat='1k';
 
-if(!farmGroups[cat]){
-farmGroups[cat]={};
-}
-
-if(!farmGroups[cat][v.player]){
-farmGroups[cat][v.player]=[];
-}
-
-farmGroups[cat][v.player].push({
+farmGroups[cat].push({
 
 ...v,
 pop
@@ -3283,13 +3288,22 @@ pop
 
 });
 
-function buildVillageTable(villages){
+function villageTable(villages){
 
-let table=`
+let h=`
 
-<table class="vis" width="100%">
+<table class="vis"
 
-<tr>
+width="100%"
+
+style="
+background:#f7fbf7;
+border:1px solid #bfd2c1;
+">
+
+<tr style="
+background:#a7c7ae;
+">
 
 <th>Falu</th>
 
@@ -3304,7 +3318,11 @@ let table=`
 <th><img src="/graphic/unit/unit_knight.png"></th>
 
 <th>
-<img src="/graphic/overview/farm.png">
+
+<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/overview/farm.webp"
+
+style="width:18px">
+
 </th>
 
 </tr>
@@ -3313,7 +3331,7 @@ let table=`
 
 villages.forEach(v=>{
 
-table+=`
+h+=`
 
 <tr>
 
@@ -3353,31 +3371,35 @@ v.support.archer+
 
 });
 
-table+=`</table>`;
+h+=`</table>`;
 
-return table;
+return h;
 
 }
 
 let html=`
 
-<div style="height:28px"></div>
+<div style="height:26px"></div>
 
-<table class="vis" width="100%">
+<table width="100%">
 
 <tr class="viewToggle"
 
 data-id="playerView"
 
-style="cursor:pointer">
+style="
+cursor:pointer;
+background:#dce6ef;
+height:34px;
+">
 
 <td>
 
-<b>
+<strong>
 
 👤 Játékos
 
-</b>
+</strong>
 
 </td>
 
@@ -3391,28 +3413,44 @@ style="display:none">
 
 `;
 
-Object.entries(groupedPlayers)
-.forEach(([player,villages],i)=>{
+let i=0;
 
-const id=`p_${i}`;
+Object.entries(grouped)
+.forEach(([player,villages])=>{
+
+const id=`player_${i++}`;
 
 html+=`
 
-<table class="vis"
+<table width="100%"
 
-width="100%"
-
-style="margin-bottom:8px">
+style="
+border-collapse:collapse;
+margin-bottom:8px;
+">
 
 <tr
 
-class="supportToggle"
+class="toggleRow"
 
 data-id="${id}"
 
-style="cursor:pointer">
+style="
+cursor:pointer;
+">
 
-<td>
+<td style="
+border-top:2px solid #4d7d58;
+border-bottom:2px solid #4d7d58;
+padding:8px;
+">
+
+<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/welcome/player_points.webp"
+
+style="
+width:14px;
+margin-right:6px;
+">
 
 <b>
 
@@ -3422,11 +3460,21 @@ ${player}
 
 </td>
 
-<td align="right">
+<td align="right"
+
+style="
+border-top:2px solid #4d7d58;
+border-bottom:2px solid #4d7d58;
+padding-right:12px;
+">
 
 Falvak:
 
+<b>
+
 ${villages.length}
+
+</b>
 
 </td>
 
@@ -3440,7 +3488,7 @@ style="display:none">
 
 <td colspan="2">
 
-${buildVillageTable(villages)}
+${villageTable(villages)}
 
 </td>
 
@@ -3462,15 +3510,19 @@ html+=`
 
 data-id="farmView"
 
-style="cursor:pointer">
+style="
+cursor:pointer;
+background:#d9eadb;
+height:34px;
+">
 
 <td>
 
-<b>
+<strong>
 
 🌾 Tanya
 
-</b>
+</strong>
 
 </td>
 
@@ -3484,32 +3536,46 @@ style="display:none">
 
 `;
 
-Object.entries(farmGroups)
-.forEach(([cat,players])=>{
+farmOrder.forEach(cat=>{
 
-const catId=`cat_${cat}`;
+const villages=
+farmGroups[cat];
+
+if(!villages.length)return;
+
+const catId=
+`farmcat_${cat}`;
 
 html+=`
 
-<table class="vis"
+<table width="100%"
 
-width="100%"
-
-style="margin-bottom:8px">
+style="
+margin-bottom:8px;
+border-collapse:collapse;
+">
 
 <tr
 
-class="farmCategoryToggle"
+class="toggleRow"
 
 data-id="${catId}"
 
-style="cursor:pointer">
+style="
+cursor:pointer;
+">
 
-<td>
+<td style="
+border-top:2px solid #4d7d58;
+border-bottom:2px solid #4d7d58;
+padding:8px;
+">
 
 <b>
 
 ${farmLabels[cat]}
+
+(${villages.length})
 
 </b>
 
@@ -3527,29 +3593,53 @@ style="display:none">
 
 `;
 
+const players={};
+
+villages.forEach(v=>{
+
+if(!players[v.player]){
+players[v.player]=[];
+}
+
+players[v.player].push(v);
+
+});
+
 Object.entries(players)
-.forEach(([player,villages])=>{
+.forEach(([player,pvill])=>{
 
 const pid=
 `${catId}_${player.replace(/\s/g,'')}`;
 
 html+=`
 
-<table class="vis"
+<table width="100%"
 
-width="100%"
-
-style="margin:4px 0">
+style="
+margin-bottom:6px;
+">
 
 <tr
 
-class="farmPlayerToggle"
+class="toggleRow"
 
 data-id="${pid}"
 
-style="cursor:pointer">
+style="
+cursor:pointer;
+">
 
-<td>
+<td style="
+padding-left:18px;
+border-bottom:1px solid #bfd2c1;
+">
+
+<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/welcome/player_points.webp"
+
+style="
+width:14px;
+margin-right:6px;
+">
 
 <b>
 
@@ -3569,7 +3659,7 @@ style="display:none">
 
 <td>
 
-${buildVillageTable(villages)}
+${villageTable(pvill)}
 
 </td>
 
@@ -3602,8 +3692,7 @@ html+=`
 </table>
 
 <div style="
-margin-top:25px;
-font-size:12px;
+margin-top:20px;
 font-style:italic;
 ">
 
@@ -3621,27 +3710,12 @@ Crytek
 
 $('#supportStatus').html(html);
 
-$('.viewToggle').off().on('click',function(){
+$('.viewToggle,.toggleRow')
+.off()
+.on('click',function(){
 
-$('#'+$(this).data('id')).toggle();
-
-});
-
-$('.supportToggle').off().on('click',function(){
-
-$('#'+$(this).data('id')).toggle();
-
-});
-
-$('.farmCategoryToggle').off().on('click',function(){
-
-$('#'+$(this).data('id')).toggle();
-
-});
-
-$('.farmPlayerToggle').off().on('click',function(){
-
-$('#'+$(this).data('id')).toggle();
+$('#'+$(this).data('id'))
+.toggle();
 
 });
 
