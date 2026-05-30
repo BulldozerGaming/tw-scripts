@@ -3389,9 +3389,20 @@ html+=`
 
 <tr>
 
-<td>
+<td style="
+min-width:260px;
+font-weight:bold;
+padding-left:8px;
+font-size:12px;
+">
+
+<span style="
+display:inline-block;
+">
 
 ${v.village}
+
+</span>
 
 </td>
 
