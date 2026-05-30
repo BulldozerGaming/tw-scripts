@@ -3205,149 +3205,94 @@ let grouped={};
 
 supportResult.forEach(v=>{
 
-let total =
-v.support.spear +
-v.support.sword +
-v.support.archer +
-v.support.heavy*6 +
-v.support.knight*10;
-
-let cat='Maradék';
-
-if(total>=18000) cat='VF';
-else if(total>=15000) cat='3/4 VF';
-else if(total>=10000) cat='1/2 VF';
-else if(total>=5000) cat='1/4 VF';
-else if(total>=3000) cat='1/6 VF';
-else if(total>=1000) cat='1/20 VF';
-
-if(!grouped[cat]){
-grouped[cat]={};
+if(!grouped[v.player]){
+grouped[v.player]=[];
 }
 
-if(!grouped[cat][v.player]){
-grouped[cat][v.player]=[];
-}
-
-grouped[cat][v.player].push(v);
+grouped[v.player].push(v);
 
 });
 
 let html=`
+
 <table class="vis"
 width="100%"
 style="
 border-collapse:separate;
 border-spacing:0 6px;
 ">
+
 `;
 
+let playerIndex=0;
+
 Object.entries(grouped)
-.forEach(([cat,players])=>{
+.forEach(([player,villages])=>{
 
-let catId=
-"sup_"+cat
-.replace(/\//g,'_')
-.replace(/\s/g,'_');
+let totalSupport=
+villages.reduce((sum,v)=>{
 
-let totalVillages=0;
+return sum+
 
-Object.values(players)
-.forEach(v=>
-totalVillages+=v.length
-);
+v.support.spear+
+v.support.sword+
+v.support.archer+
+v.support.heavy+
+v.support.knight;
+
+},0);
+
+let pid=
+`support_${playerIndex}`;
 
 html+=`
 
-<tr class="supportCat"
+<tr class="supportToggle"
 
-data-id="${catId}"
+data-id="${pid}"
 
 style="
 cursor:pointer;
 background:linear-gradient(
 to right,
-#6d8f71,
-#dceedd
+#5d9f6b,
+#dff0e3
 );
 height:32px;
 ">
 
 <td style="
 padding-left:10px;
-border-top:2px solid #507156;
-border-bottom:2px solid #507156;
+border-top:2px solid #4d7d58;
+border-bottom:2px solid #4d7d58;
 ">
 
-<strong>
+<strong style="
+color:#174024;
+display:flex;
+align-items:center;
+gap:6px;
+">
 
-🛡️ ${cat}
-
-</strong>
-
-</td>
-
-<td align="right">
-
-<strong>
-
-${totalVillages}
+🟢 ${player}
 
 </strong>
 
 </td>
 
-</tr>
-
-<tr id="${catId}"
-style="display:none;">
-
-<td colspan="2">
-
-<table class="vis"
-width="100%">
-`;
-
-let pIndex=0;
-
-Object.entries(players)
-.forEach(([player,villages])=>{
-
-let pid=
-`${catId}_${pIndex}`;
-
-html+=`
-
-<tr class="supportPlayer"
-
-data-id="${pid}"
+<td align="right"
 
 style="
-cursor:pointer;
-background:#eef6ef;
-">
-
-<td style="
-padding-left:12px;
-">
-
-<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/welcome/player_points.webp"
-style="
-width:14px;
-vertical-align:middle;
+padding-right:12px;
+border-top:2px solid #4d7d58;
+border-bottom:2px solid #4d7d58;
 ">
 
 <strong>
-
-${player}
-
-</strong>
-
-</td>
-
-<td align="right">
 
 ${villages.length}
+
+</strong>
 
 </td>
 
@@ -3359,31 +3304,38 @@ style="display:none;">
 <td colspan="2">
 
 <table class="vis"
-
 width="100%"
-
 style="
 background:#f8fff8;
-border:1px solid #bfd8c2;
 ">
 
 <tr style="
-background:#9fc2a4;
+background:#a7c7ae;
 ">
 
 <th>Falu</th>
 
-<th><img src="/graphic/unit/unit_spear.png"></th>
-<th><img src="/graphic/unit/unit_sword.png"></th>
-<th><img src="/graphic/unit/unit_archer.png"></th>
-<th><img src="/graphic/unit/unit_heavy.png"></th>
-<th><img src="/graphic/unit/unit_knight.png"></th>
+<th>
+<img src="/graphic/unit/unit_spear.png">
+</th>
 
 <th>
-
-<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/overview/farm.webp">
-
+<img src="/graphic/unit/unit_sword.png">
 </th>
+
+<th>
+<img src="/graphic/unit/unit_archer.png">
+</th>
+
+<th>
+<img src="/graphic/unit/unit_heavy.png">
+</th>
+
+<th>
+<img src="/graphic/unit/unit_knight.png">
+</th>
+
+<th>Össz</th>
 
 </tr>
 
@@ -3391,13 +3343,13 @@ background:#9fc2a4;
 
 villages.forEach(v=>{
 
-let pop=
+let total=
 
 v.support.spear+
 v.support.sword+
 v.support.archer+
-v.support.heavy*6+
-v.support.knight*10;
+v.support.heavy+
+v.support.knight;
 
 html+=`
 
@@ -3409,17 +3361,21 @@ ${v.village}
 
 </td>
 
-<td><strong>${v.support.spear}</strong></td>
-<td><strong>${v.support.sword}</strong></td>
-<td><strong>${v.support.archer}</strong></td>
-<td><strong>${v.support.heavy}</strong></td>
-<td><strong>${v.support.knight}</strong></td>
+<td>${v.support.spear}</td>
+
+<td>${v.support.sword}</td>
+
+<td>${v.support.archer}</td>
+
+<td>${v.support.heavy}</td>
+
+<td>${v.support.knight}</td>
 
 <td>
 
 <strong>
 
-${pop}
+${total}
 
 </strong>
 
@@ -3441,7 +3397,7 @@ html+=`
 
 `;
 
-pIndex++;
+playerIndex++;
 
 });
 
@@ -3449,29 +3405,42 @@ html+=`
 
 </table>
 
-</td>
+<div style="
+margin-top:14px;
+font-size:12px;
+font-style:italic;
+">
 
-</tr>
+By
+<b style="color:#8b0000;">
+Crytek
+</b>
+
+</div>
 
 `;
 
-});
-
-html+=`</table>`;
-
 $('#supportStatus').html(html);
 
-$('.supportCat').click(function(){
+$('.supportToggle')
+.off('click')
+.on('click',function(){
 
 $('#'+$(this).data('id'))
 .toggle();
 
 });
 
-$('.supportPlayer').click(function(){
+$('#closeSupportScanner')
+.off('click')
+.on('click',function(){
 
-$('#'+$(this).data('id'))
-.toggle();
+$('#supportScanner').remove();
+
+$('#startNukeScan').show();
+$('#startDefenseScan').show();
+$('#startIncomingScan').show();
+$('#startSupportScan').show();
 
 });
 
