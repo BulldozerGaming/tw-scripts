@@ -430,10 +430,11 @@ const unitNames = {
     // AKTÍV EGYSÉGEK
     // =========================================
 
-    const activeUnits =
-        game_data.units.filter(unit =>
-            unitSpeeds[unit]
-        );
+   const activeUnits =
+(game_data.units || [])
+.filter(
+unit=>unitSpeeds[unit]
+);
 
     // =========================================
     // TÁVOLSÁG HTML
@@ -663,9 +664,11 @@ const unitNames = {
 (function inlineReportPreview() {
 
 const reportRows =
-    [...document.querySelectorAll(
-        '#report_list tr, table.vis tr'
-    )];
+[
+...document.querySelectorAll(
+'#report_list tr'
+)
+];
 
 reportRows.forEach(row => {
 
