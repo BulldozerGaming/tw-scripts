@@ -3942,7 +3942,7 @@ player:
 player.name,
 
 village:
-link.innerHTML,
+link.outerHTML,
 
 support
 
