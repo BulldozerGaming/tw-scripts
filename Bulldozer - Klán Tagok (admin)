@@ -3481,6 +3481,8 @@ height:34px;
 <td colspan="2"
 style="
 padding-left:10px;
+border-top: 2px solid red;
+    border-bottom: 2px solid red;
 ">
 
 <strong>
@@ -3650,7 +3652,8 @@ html+=`
 <div style="
 margin-top:24px;
 font-style:italic;
-padding-left:4px;
+    padding-left: 10px;
+    padding-bottom: 10px;
 ">
 
 By
