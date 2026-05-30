@@ -3289,21 +3289,26 @@ ${player}
 
 <td align="right"
 style="
-padding-right:12px;
+padding-right:14px;
 font-weight:bold;
+white-space:nowrap;
 ">
 
 <span style="
 color:#666;
 font-size:11px;
-margin-right:4px;
+margin-right:6px;
 ">
 
 Falvak:
 
 </span>
 
+<strong>
+
 ${villages.length}
+
+</strong>
 
 </td>
 
@@ -3427,9 +3432,14 @@ html+=`
 </table>
 
 <div style="
-margin-top:14px;
+height:32px;
+"></div>
+
+<div style="
+margin-top:0;
 font-size:12px;
 font-style:italic;
+padding-left:4px;
 ">
 
 By
@@ -3844,11 +3854,6 @@ link.closest('td')
 
 });
 
-console.log(
-player.name,
-'falvak:',
-villageLinks.length
-);
 
 const SUPPORT_BATCH_SIZE = 20;
 
