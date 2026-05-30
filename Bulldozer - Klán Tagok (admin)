@@ -3551,22 +3551,22 @@ html,
 let villageLinks =
 Array.from(
 doc.querySelectorAll(
-'table.vis tr td:first-child a'
+'a[href*="screen=info_village&id="]'
 )
 ).filter(link=>{
 
 let href =
-link.getAttribute('href') || '';
+link.href || '';
 
 return (
-href.includes('screen=info_village')
-||
-href.includes('id=')
+href.includes(
+'screen=info_village'
+)
 );
 
 });
 
-const SUPPORT_BATCH_SIZE = 8;
+const SUPPORT_BATCH_SIZE = 20;
 
 for(
 let i=0;
