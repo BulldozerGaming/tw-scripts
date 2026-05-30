@@ -3311,7 +3311,11 @@ background:#dce6ef;
 height:34px;
 ">
 
-<td>
+<td colspan="2"
+style="
+width:100%;
+padding-left:10px;
+">
 
 <strong>
 
@@ -3323,7 +3327,8 @@ height:34px;
 
 </tr>
 
-<tr id="playerView">
+<tr id="playerView"
+style="display:none;">
 
 <td>
 
@@ -3542,7 +3547,11 @@ background:#d9eadb;
 height:34px;
 ">
 
-<td>
+<td colspan="2"
+style="
+width:100%;
+padding-left:10px;
+">
 
 <strong>
 
@@ -3587,17 +3596,36 @@ Object.entries(farmGroups)
 
 if(!data.length)return;
 
+const catId =
+`farmcat_${cat}`;
+
 html+=`
 
-<div style="
+<div
+class="farmCategoryToggle"
+
+data-id="${catId}"
+
+style="
 margin:12px 0;
 padding:8px;
 background:#eef7ef;
+cursor:pointer;
 ">
 
 <strong>
 
 ${farmLabels[cat]}
+
+(${data.length})
+
+</strong>
+
+</div>
+
+<div id="${catId}"
+style="display:none;">
+`;
 
 (${data.length})
 
@@ -3624,16 +3652,37 @@ players[v.player].push(v);
 Object.entries(players)
 .forEach(([player,villages])=>{
 
+const playerId=
+`farmplayer_${cat}_${player}`;
+
 html+=`
 
-<div style="
+<div
+class="farmPlayerToggle"
+
+data-id="${playerId}"
+
+style="
 padding-left:15px;
 margin-bottom:8px;
+cursor:pointer;
 ">
 
 <strong>
 
 ${player}
+
+</strong>
+
+</div>
+
+<div id="${playerId}"
+
+style="
+display:none;
+padding-left:20px;
+">
+`;
 
 </strong>
 
@@ -3659,6 +3708,8 @@ ${v.village}
 });
 
 html+=`
+
+</div>
 
 </div>
 
@@ -3714,6 +3765,24 @@ $('#'+$(this).data('id'))
 
 
 $('.supportToggle')
+.off('click')
+.on('click',function(){
+
+$('#'+$(this).data('id'))
+.toggle();
+
+});
+
+$('.farmCategoryToggle')
+.off('click')
+.on('click',function(){
+
+$('#'+$(this).data('id'))
+.toggle();
+
+});
+
+$('.farmPlayerToggle')
 .off('click')
 .on('click',function(){
 
