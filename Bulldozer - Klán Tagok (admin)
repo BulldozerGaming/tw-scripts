@@ -3837,12 +3837,6 @@ html+=`
 
 html+=`
 
-</table>
-
-</td>
-
-</tr>
-
 <div style="
 height:32px;
 "></div>
