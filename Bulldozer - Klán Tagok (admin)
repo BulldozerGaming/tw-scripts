@@ -3451,7 +3451,7 @@ support.knight=num(tds[5]?.innerText);
 
 }
 
-});
+}); // EZ marad itt
 
 return support;
 
