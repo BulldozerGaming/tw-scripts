@@ -3415,15 +3415,21 @@ margin-bottom:8px;
 border-collapse:collapse;
 ">
 
-<tr class="toggleRow"
+<tr
+class="toggleRow"
+
 data-id="${id}"
-style="cursor:pointer;">
+
+style="
+cursor:pointer;
+height:34px;
+">
 
 <td style="
-padding:8px;
+padding-top:6px;
+padding-bottom:6px;
 
-padding-top:4px;
-padding-bottom:4px;
+padding-left:8px;
 
 border-bottom:
 2px solid #4d7d58;
@@ -3438,9 +3444,13 @@ style="width:14px;margin-right:6px;">
 
 <td align="right"
 style="
-border-top:2px solid #4d7d58;
-border-bottom:2px solid #4d7d58;
+padding-top:6px;
+padding-bottom:6px;
+
 padding-right:12px;
+
+border-bottom:
+2px solid #4d7d58;
 ">
 
 Falvak:
@@ -3548,13 +3558,16 @@ margin-bottom:8px;
 
 <tr class="toggleRow"
 data-id="${catId}"
-style="cursor:pointer">
+style="
+cursor:pointer;
+height:34px;
+">
 
 <td style="
-padding:8px;
+padding-top:6px;
+padding-bottom:6px;
 
-padding-top:4px;
-padding-bottom:4px;
+padding-left:8px;
 
 border-bottom:
 2px solid #4d7d58;
@@ -3614,10 +3627,10 @@ data-id="${pid}"
 style="cursor:pointer">
 
 <td style="
-padding:8px;
+padding-top:6px;
+padding-bottom:6px;
 
-padding-top:4px;
-padding-bottom:4px;
+padding-left:18px;
 
 border-bottom:
 2px solid #4d7d58;
