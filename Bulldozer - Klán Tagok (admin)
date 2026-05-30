@@ -3721,25 +3721,35 @@ border:none;
 
 </tr>
 
-<tr class="viewToggle"
+<table width="100%"
+style="
+margin-top:8px;
+border-collapse:collapse;
+">
+
+<tr
+class="toggleRow"
 
 data-id="totalSupportView"
 
 style="
 cursor:pointer;
-background:#2d7a3a;
 height:34px;
 ">
 
-<td colspan="2"
+<td style="
+padding-top:6px;
+padding-bottom:6px;
 
-style="
-padding-left:10px;
-color:white;
+padding-left:8px;
+
+background-color:#63c77b;
+
 text-transform:uppercase;
-">
 
-<strong>
+border-bottom:
+2px solid #4d7d58;
+">
 
 <img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/command/support.png"
 
@@ -3749,9 +3759,11 @@ margin-right:6px;
 vertical-align:-2px;
 ">
 
+<b>
+
 Összes erősítés a falvakban
 
-</strong>
+</b>
 
 </td>
 
@@ -3761,7 +3773,7 @@ vertical-align:-2px;
 
 style="display:none">
 
-<td colspan="2">
+<td>
 
 ${villageTable([{
 
@@ -3782,6 +3794,8 @@ totalSupport.archer+
 </td>
 
 </tr>
+
+</table>
 
 <div style="
 margin-top:24px;
