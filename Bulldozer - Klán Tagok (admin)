@@ -3548,17 +3548,18 @@ html,
 
 let villageLinks =
 Array.from(
-doc.querySelectorAll('table.vis tr td:first-child a')
+doc.querySelectorAll(
+'table.vis tr td:first-child a'
 )
-.filter(link=>{
+).filter(link=>{
 
 let href =
 link.getAttribute('href') || '';
 
 return (
-href.includes('village=')
-&&
-/village=\d+/.test(href)
+href.includes('screen=info_village')
+||
+href.includes('id=')
 );
 
 });
@@ -3584,7 +3585,7 @@ batch.map(async link=>{
 
 let match=
 link.href.match(
-/village=(\d+)/
+/id=(\d+)/
 );
 
 if(!match){
