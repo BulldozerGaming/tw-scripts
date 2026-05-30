@@ -264,8 +264,8 @@ if (
                     padding:3px;
                 ">
 
-                    ${data[unit.name]
-                        .toLocaleString('hu-HU')}
+                    ${(data[unit.name] || 0)
+.toLocaleString('hu-HU')}
 
                 </td>
                 `;
@@ -666,7 +666,7 @@ unit=>unitSpeeds[unit]
 const reportRows =
 [
 ...document.querySelectorAll(
-'table.vis tr'
+'#report_list tr, table.vis tr'
 )
 ].filter(row=>{
 
@@ -835,10 +835,6 @@ wrapper.style.width =
 
 wrapper.style.maxWidth =
     'none';
-
-
-            wrapper.style.display =
-                'inline-block';
 
             wrapper.style.background =
                 '#f8f1dd';
