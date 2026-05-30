@@ -3248,18 +3248,18 @@ const farmLabels={
 
 };
 
-const grouped={};
+const players={};
 const farmGroups={};
 
 farmOrder.forEach(x=>farmGroups[x]=[]);
 
 supportResult.forEach(v=>{
 
-if(!grouped[v.player]){
-grouped[v.player]=[];
+if(!players[v.player]){
+players[v.player]=[];
 }
 
-grouped[v.player].push(v);
+players[v.player].push(v);
 
 const pop=
 
@@ -3268,6 +3268,8 @@ v.support.sword+
 v.support.archer+
 (v.support.heavy*6)+
 (v.support.knight*10);
+
+v.pop=pop;
 
 let cat='under1k';
 
@@ -3279,121 +3281,96 @@ else if(pop>=5000) cat='5k';
 else if(pop>=2500) cat='2.5k';
 else if(pop>=1000) cat='1k';
 
-farmGroups[cat].push({
-
-...v,
-pop
-
-});
+farmGroups[cat].push(v);
 
 });
 
 function villageTable(villages){
 
-let h=`
+return `
 
 <table class="vis"
-
 width="100%"
-
 style="
 background:#f7fbf7;
 border:1px solid #bfd2c1;
 ">
 
-<tr style="
-background:#a7c7ae;
-">
+<tr style="background:#a7c7ae">
 
 <th>Falu</th>
 
 <th><img src="/graphic/unit/unit_spear.png"></th>
-
 <th><img src="/graphic/unit/unit_sword.png"></th>
-
 <th><img src="/graphic/unit/unit_archer.png"></th>
-
 <th><img src="/graphic/unit/unit_heavy.png"></th>
-
 <th><img src="/graphic/unit/unit_knight.png"></th>
 
 <th>
 
 <img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/overview/farm.webp"
-
 style="width:18px">
 
 </th>
 
 </tr>
 
-`;
-
-villages.forEach(v=>{
-
-h+=`
+${villages.map(v=>`
 
 <tr>
 
 <td>${v.village}</td>
 
 <td>${v.support.spear}</td>
-
 <td>${v.support.sword}</td>
-
 <td>${v.support.archer}</td>
-
 <td>${v.support.heavy}</td>
-
 <td>${v.support.knight}</td>
 
 <td>
 
-<b>
-
-${v.pop ||
-
-(v.support.spear+
-v.support.sword+
-v.support.archer+
-(v.support.heavy*6)+
-(v.support.knight*10))
-
-}
-
-</b>
+<b>${v.pop}</b>
 
 </td>
 
 </tr>
 
+`).join('')}
+
+</table>
+
 `;
-
-});
-
-h+=`</table>`;
-
-return h;
 
 }
 
 let html=`
 
-<div style="height:26px"></div>
+<div style="
+margin-bottom:12px;
+font-size:13px;
+font-weight:bold;
+color:#666;
+padding-left:4px;
+">
+
+Nézet
+
+</div>
 
 <table width="100%">
 
 <tr class="viewToggle"
-
 data-id="playerView"
-
 style="
 cursor:pointer;
 background:#dce6ef;
 height:34px;
 ">
 
-<td>
+<td colspan="2"
+style="
+padding-left:10px;
+">
 
 <strong>
 
@@ -3406,68 +3383,45 @@ height:34px;
 </tr>
 
 <tr id="playerView"
-
 style="display:none">
 
-<td>
+<td colspan="2">
 
 `;
 
 let i=0;
 
-Object.entries(grouped)
+Object.entries(players)
 .forEach(([player,villages])=>{
 
-const id=`player_${i++}`;
+const id=`pl_${i++}`;
 
 html+=`
 
 <table width="100%"
-
 style="
-border-collapse:collapse;
 margin-bottom:8px;
+border-collapse:collapse;
 ">
 
-<tr
-
-class="toggleRow"
-
+<tr class="toggleRow"
 data-id="${id}"
-
-style="
-cursor:pointer;
-">
+style="cursor:pointer;">
 
 <td style="
 border-top:2px solid #4d7d58;
 border-bottom:2px solid #4d7d58;
-
-padding:10px;
-
-background:#eef5ef;
-
-font-size:14px;
-font-weight:bold;
+padding:8px;
 ">
 
 <img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/welcome/player_points.webp"
+style="width:14px;margin-right:6px;">
 
-style="
-width:14px;
-margin-right:6px;
-">
-
-<b>
-
-${player}
-
-</b>
+<b>${player}</b>
 
 </td>
 
 <td align="right"
-
 style="
 border-top:2px solid #4d7d58;
 border-bottom:2px solid #4d7d58;
@@ -3476,20 +3430,13 @@ padding-right:12px;
 
 Falvak:
 
-<b>
-
-${villages.length}
-
-</b>
+<b>${villages.length}</b>
 
 </td>
 
 </tr>
 
-<tr
-
-id="${id}"
-
+<tr id="${id}"
 style="display:none">
 
 <td colspan="2">
@@ -3513,16 +3460,17 @@ html+=`
 </tr>
 
 <tr class="viewToggle"
-
 data-id="farmView"
-
 style="
 cursor:pointer;
 background:#d9eadb;
 height:34px;
 ">
 
-<td>
+<td colspan="2"
+style="
+padding-left:10px;
+">
 
 <strong>
 
@@ -3535,41 +3483,31 @@ height:34px;
 </tr>
 
 <tr id="farmView"
-
 style="display:none">
 
-<td>
+<td colspan="2">
 
 `;
 
 farmOrder.forEach(cat=>{
 
-const villages=
-farmGroups[cat];
+const data=farmGroups[cat];
 
-if(!villages.length)return;
+if(!data.length) return;
 
-const catId=
-`farmcat_${cat}`;
+const catId=`cat_${cat}`;
 
 html+=`
 
-<table width="100%"
-
+<table class="vis"
+width="100%"
 style="
 margin-bottom:8px;
-border-collapse:collapse;
 ">
 
-<tr
-
-class="toggleRow"
-
+<tr class="toggleRow"
 data-id="${catId}"
-
-style="
-cursor:pointer;
-">
+style="cursor:pointer">
 
 <td style="
 border-top:2px solid #4d7d58;
@@ -3581,7 +3519,7 @@ padding:8px;
 
 ${farmLabels[cat]}
 
-(${villages.length})
+(${data.length})
 
 </b>
 
@@ -3589,77 +3527,58 @@ ${farmLabels[cat]}
 
 </tr>
 
-<tr
-
-id="${catId}"
-
+<tr id="${catId}"
 style="display:none">
 
 <td>
 
 `;
 
-const players={};
+const grouped={};
 
-villages.forEach(v=>{
+data.forEach(v=>{
 
-if(!players[v.player]){
-players[v.player]=[];
+if(!grouped[v.player]){
+grouped[v.player]=[];
 }
 
-players[v.player].push(v);
+grouped[v.player].push(v);
 
 });
 
-Object.entries(players)
-.forEach(([player,pvill])=>{
+Object.entries(grouped)
+.forEach(([player,villages])=>{
 
-const pid=
-`${catId}_${player.replace(/\s/g,'')}`;
+const pid=`${cat}_${player}`;
 
 html+=`
 
 <table width="100%"
-
 style="
 margin-bottom:6px;
+border-collapse:collapse;
 ">
 
-<tr
-
-class="toggleRow"
-
+<tr class="toggleRow"
 data-id="${pid}"
-
-style="
-cursor:pointer;
-">
+style="cursor:pointer">
 
 <td style="
-padding-left:18px;
-padding-top:6px;
-padding-bottom:6px;
-
+padding:8px;
 border-top:2px solid #4d7d58;
 border-bottom:2px solid #4d7d58;
 ">
 
 <img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/welcome/player_points.webp"
+style="width:14px;margin-right:6px;">
 
-style="
-width:14px;
-margin-right:6px;
-">
+<b>${player}</b>
 
-<span style="
-float:right;
-padding-right:12px;
-font-weight:bold;
-">
+<span style="float:right">
 
 Falvak:
 
-${pvill.length}
+${villages.length}
 
 </span>
 
@@ -3667,15 +3586,12 @@ ${pvill.length}
 
 </tr>
 
-<tr
-
-id="${pid}"
-
+<tr id="${pid}"
 style="display:none">
 
 <td>
 
-${villageTable(pvill)}
+${villageTable(villages)}
 
 </td>
 
@@ -3708,8 +3624,9 @@ html+=`
 </table>
 
 <div style="
-margin-top:20px;
+margin-top:24px;
 font-style:italic;
+padding-left:4px;
 ">
 
 By
