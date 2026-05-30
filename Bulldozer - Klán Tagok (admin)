@@ -1326,21 +1326,31 @@ function render() {
 
     $('#bdStatus').html(html);
 
-    $('.nukeToggle')
-        .off('click')
-        .on('click', function () {
+$('.nukeToggle')
+.off('click')
+.on('click', function(e) {
 
-            $('#' + $(this).data('id'))
-                .toggle();
-        });
+    if ($(e.target).closest('a').length) {
+        return;
+    }
 
-    $('.playerToggle')
-        .off('click')
-        .on('click', function () {
+    $('#' + $(this).data('id'))
+        .toggle();
 
-            $('#' + $(this).data('id'))
-                .toggle();
-        });
+});
+
+$('.playerToggle')
+.off('click')
+.on('click', function(e) {
+
+    if ($(e.target).closest('a').length) {
+        return;
+    }
+
+    $('#' + $(this).data('id'))
+        .toggle();
+
+});
 }
 
 
