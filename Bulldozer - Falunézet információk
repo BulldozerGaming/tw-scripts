@@ -670,16 +670,8 @@ const reportRows =
 )
 ].filter(row=>{
 
-const text =
-row.innerText || '';
-
-return (
-
-text.includes('támadja') ||
-text.includes('meghódította') ||
-text.includes('kikémelte') ||
-text.includes('faluját')
-
+return row.querySelector(
+'a[href*="screen=report"]'
 );
 
 });
@@ -689,12 +681,9 @@ reportRows.forEach(row => {
 const link =
 row.querySelector(
 'a[href*="screen=report"]'
-) ||
-row.querySelector(
-'a'
 );
 
-if (!link){
+if(!link){
 return;
 }
 
