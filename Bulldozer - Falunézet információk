@@ -686,12 +686,17 @@ text.includes('faluját')
 
 reportRows.forEach(row => {
 
-    const link =
-        row.querySelector(
-            'a[href*="view="]'
-        );
+const link =
+row.querySelector(
+'a[href*="screen=report"]'
+) ||
+row.querySelector(
+'a'
+);
 
-    if (!link) return;
+if (!link){
+return;
+}
 
     // már van nyíl?
     if (
