@@ -3420,9 +3420,13 @@ data-id="${id}"
 style="cursor:pointer;">
 
 <td style="
-border-top:2px solid #4d7d58;
-border-bottom:2px solid #4d7d58;
 padding:8px;
+
+padding-top:4px;
+padding-bottom:4px;
+
+border-bottom:
+2px solid #4d7d58;
 ">
 
 <img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/welcome/player_points.webp"
@@ -3547,9 +3551,13 @@ data-id="${catId}"
 style="cursor:pointer">
 
 <td style="
-border-top:2px solid #4d7d58;
-border-bottom:2px solid #4d7d58;
 padding:8px;
+
+padding-top:4px;
+padding-bottom:4px;
+
+border-bottom:
+2px solid #4d7d58;
 ">
 
 <b>
@@ -3607,8 +3615,12 @@ style="cursor:pointer">
 
 <td style="
 padding:8px;
-border-top:2px solid #4d7d58;
-border-bottom:2px solid #4d7d58;
+
+padding-top:4px;
+padding-bottom:4px;
+
+border-bottom:
+2px solid #4d7d58;
 ">
 
 <img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/welcome/player_points.webp"
