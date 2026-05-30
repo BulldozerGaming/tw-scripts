@@ -3707,25 +3707,90 @@ html+=`
 
 </tr>
 
-</table>
-
 <tr>
 
 <td colspan="2"
 style="
 height:10px;
 border:none;
+padding:0;
 ">
 
 </td>
 
 </tr>
 
-<table width="100%"
+<tr class="toggleRow"
+
+data-id="totalSupportView"
+
 style="
-margin-top:8px;
-border-collapse:collapse;
+cursor:pointer;
+height:34px;
 ">
+
+<td colspan="2"
+
+style="
+padding-top:6px;
+padding-bottom:6px;
+
+padding-left:8px;
+
+background-color:#63c77b;
+
+text-transform:uppercase;
+
+border-bottom:
+2px solid #4d7d58;
+">
+
+<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/command/support.png"
+
+style="
+width:14px;
+margin-right:6px;
+vertical-align:-2px;
+">
+
+<b>
+
+Összes erősítés a falvakban
+
+</b>
+
+</td>
+
+</tr>
+
+<tr id="totalSupportView"
+
+style="display:none">
+
+<td colspan="2">
+
+${villageTable([{
+
+village:'Összes erősítés a falvakban',
+
+support:totalSupport,
+
+pop:
+
+totalSupport.spear+
+totalSupport.sword+
+totalSupport.archer+
+(totalSupport.heavy*6)+
+(totalSupport.knight*10)
+
+}])}
+
+</td>
+
+</tr>
+
+</table>
+`;
 
 <tr
 class="toggleRow"
