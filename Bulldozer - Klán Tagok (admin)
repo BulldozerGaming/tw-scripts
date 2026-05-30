@@ -168,41 +168,6 @@ let panel = `
          ">
 
 </button>
-<button id="startIncomingScan"
-style="
-background:linear-gradient(
-to bottom,
-#7d1d1d,
-#470d0d
-);
-border:2px solid #d86b6b;
-border-radius:10px;
-padding:8px 16px;
-color:#fff0f0;
-font-size:13px;
-font-weight:bold;
-cursor:pointer;
-display:inline-flex;
-align-items:center;
-gap:8px;
-margin-left:8px;
-">
-
-<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/command/attack.png"
-style="
-width:18px;
-height:18px;
-">
-
-Beérkező támadások
-
-<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/command/attack.png"
-style="
-width:18px;
-height:18px;
-">
-
-</button>
 
 <button id="startSupportScan"
 
@@ -247,6 +212,42 @@ Erősítések
 
 <img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/command/support.png"
 
+style="
+width:18px;
+height:18px;
+">
+
+</button>
+
+<button id="startIncomingScan"
+style="
+background:linear-gradient(
+to bottom,
+#7d1d1d,
+#470d0d
+);
+border:2px solid #d86b6b;
+border-radius:10px;
+padding:8px 16px;
+color:#fff0f0;
+font-size:13px;
+font-weight:bold;
+cursor:pointer;
+display:inline-flex;
+align-items:center;
+gap:8px;
+margin-left:8px;
+">
+
+<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/command/attack.png"
+style="
+width:18px;
+height:18px;
+">
+
+Beérkező támadások
+
+<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/command/attack.png"
 style="
 width:18px;
 height:18px;
