@@ -3253,11 +3253,9 @@ data-id="${pid}"
 
 style="
 cursor:pointer;
-background:linear-gradient(
-to right,
-#5d9f6b,
-#dff0e3
-);
+background:#eef4f0;
+
+border-bottom:1px solid #b8cfbe;
 height:32px;
 ">
 
@@ -3274,7 +3272,16 @@ align-items:center;
 gap:6px;
 ">
 
-🟢 ${player}
+<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/welcome/player_points.webp"
+
+style="
+width:14px;
+height:14px;
+vertical-align:middle;
+margin-right:5px;
+">
+
+${player}
 
 </strong>
 
@@ -3306,7 +3313,8 @@ style="display:none;">
 <table class="vis"
 width="100%"
 style="
-background:#f8fff8;
+background:#f7fbf7;
+border:1px solid #bfd2c1;
 ">
 
 <tr style="
@@ -3335,7 +3343,16 @@ background:#a7c7ae;
 <img src="/graphic/unit/unit_knight.png">
 </th>
 
-<th>Össz</th>
+<th>
+
+<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/overview/farm.webp"
+
+style="
+width:18px;
+height:18px;
+">
+
+</th>
 
 </tr>
 
@@ -3625,20 +3642,53 @@ style="margin-bottom:15px;">
 <div style="
 display:flex;
 justify-content:space-between;
-padding:12px;
+align-items:center;
+padding:10px;
 ">
 
 <h3 style="
 margin:0;
 color:#1e5d2d;
+font-size:18px;
+font-weight:bold;
+display:flex;
+align-items:center;
 ">
 
 🟢 A TAGOK ERŐSÍTÉSEI
 
 </h3>
 
-<button
-id="closeSupportScanner">
+<button id="closeSupportScanner"
+
+style="
+background:linear-gradient(
+to bottom,
+#2d7a3a,
+#14401d
+);
+
+border:2px solid #63c77b;
+
+border-radius:8px;
+
+padding:6px 14px;
+
+color:#fff;
+
+font-size:12px;
+
+font-weight:bold;
+
+cursor:pointer;
+
+display:flex;
+
+align-items:center;
+
+gap:5px;
+
+">
 
 ❌ Bezárás
 
@@ -3660,10 +3710,75 @@ supportResult=[];
 
 for(const player of players){
 
-$('#supportStatus')
-.html(
-`Vizsgálat: ${player.name}`
-);
+$('#supportStatus').html(`
+
+<div style="
+text-align:center;
+padding:20px;
+font-size:14px;
+color:#1e5d2d;
+line-height:24px;
+">
+
+🛡️ Erősítések vizsgálata folyamatban...
+
+<div style="
+margin-top:10px;
+font-size:15px;
+">
+
+<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/welcome/player_points.webp"
+
+style="
+width:18px;
+height:18px;
+vertical-align:-3px;
+">
+
+<strong>
+
+Vizsgálat:
+
+</strong>
+
+<strong>
+
+${player.name}
+
+</strong>
+
+</div>
+
+<div style="
+margin-top:14px;
+font-size:12px;
+font-style:italic;
+opacity:0.95;
+">
+
+<span style="
+font-weight:bold;
+color:#555;
+">
+
+By
+
+</span>
+
+<span style="
+font-weight:bold;
+color:#8b0000;
+">
+
+Crytek
+
+</span>
+
+</div>
+
+</div>
+
+`);
 
 let url=
 
