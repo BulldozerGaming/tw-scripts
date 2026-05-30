@@ -3679,6 +3679,21 @@ $('#'+$(this).data('id'))
 
 });
 
+
+$('#closeSupportScanner')
+.off('click')
+.on('click',function(){
+
+$('#supportScanner').remove();
+
+$('#startNukeScan').show();
+$('#startDefenseScan').show();
+$('#startIncomingScan').show();
+$('#startSupportScan').show();
+
+});
+
+
 }
 
 
