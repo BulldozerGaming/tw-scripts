@@ -3605,9 +3605,14 @@ html,
 );
 
 let villageLinks =
+console.log(
+player.name,
+'falvak:',
+villageLinks.length
+);
 Array.from(
 doc.querySelectorAll(
-'a[href*="screen=info_village&id="]'
+'a[href*="screen=info_village"]'
 )
 ).filter(link=>{
 
@@ -3615,9 +3620,15 @@ let href =
 link.href || '';
 
 return (
+
 href.includes(
-'screen=info_village'
+'info_village'
 )
+
+&&
+
+link.closest('td')
+
 );
 
 });
