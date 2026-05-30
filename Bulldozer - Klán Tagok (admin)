@@ -3396,26 +3396,65 @@ html,
 'text/html'
 );
 
-let tables=
-Array.from(
+let defenseTable=null;
+
 doc.querySelectorAll('table.vis')
-);
+.forEach(t=>{
 
-let supportTable =
-tables.find(t => {
+if(
+t.innerText.includes(
+'Ebből a faluból'
+)
+){
 
-return t.innerText.includes(
-'Összes erősítés a faluban'
-);
+defenseTable=t;
+
+}
 
 });
 
-if(!supportTable){
+if(!defenseTable){
 return null;
 }
 
 let rows=
-supportTable.querySelectorAll('tr');
+[
+...defenseTable.querySelectorAll('tr')
+];
+
+let header=
+rows[0];
+
+let unitIndexes={};
+
+header
+.querySelectorAll('th,td')
+.forEach((cell,index)=>{
+
+let img=
+cell.querySelector('img');
+
+if(!img)return;
+
+let src=
+img.src;
+
+if(src.includes('unit_spear'))
+unitIndexes.spear=index;
+
+if(src.includes('unit_sword'))
+unitIndexes.sword=index;
+
+if(src.includes('unit_archer'))
+unitIndexes.archer=index;
+
+if(src.includes('unit_heavy'))
+unitIndexes.heavy=index;
+
+if(src.includes('unit_knight'))
+unitIndexes.knight=index;
+
+});
 
 let support={
 
@@ -3427,33 +3466,50 @@ knight:0
 
 };
 
-rows.forEach(row=>{
+rows.forEach((row,i)=>{
 
-let tds=
+if(i===0)return;
+
+let cols=
 row.querySelectorAll('td');
 
-if(tds.length<6){
+if(!cols.length)return;
+
+let ownVillage=
+row.innerText.includes(
+'Ebből a faluból'
+);
+
+if(ownVillage){
 return;
 }
 
-let txt=
-row.innerText;
+support.spear+=
+num(cols[
+unitIndexes.spear
+]?.innerText);
 
-if(
-txt.includes('Összes')
-||
-txt.includes('faluban')
-){
+support.sword+=
+num(cols[
+unitIndexes.sword
+]?.innerText);
 
-support.spear=num(tds[1]?.innerText);
-support.sword=num(tds[2]?.innerText);
-support.archer=num(tds[3]?.innerText);
-support.heavy=num(tds[4]?.innerText);
-support.knight=num(tds[5]?.innerText);
+support.archer+=
+num(cols[
+unitIndexes.archer
+]?.innerText);
 
-}
+support.heavy+=
+num(cols[
+unitIndexes.heavy
+]?.innerText);
 
-}); // EZ marad itt
+support.knight+=
+num(cols[
+unitIndexes.knight
+]?.innerText);
+
+});
 
 return support;
 
