@@ -2724,7 +2724,7 @@ html,
 'text/html'
 );
 
-let table=null;
+let table = null;
 
 doc.querySelectorAll('.vis')
 .forEach(t=>{
@@ -2738,6 +2738,8 @@ table=t;
 }
 
 });
+
+console.log(doc.body.innerText);
 
 if(!table){
 continue;
@@ -3533,7 +3535,7 @@ let url=
 `${location.origin}`+
 `/game.php?village=${game_data.village.id}`+
 `&screen=ally`+
-`&mode=members_troops`+
+`&mode=members_defense`+
 `&player_id=${player.id}`;
 
 let html=
