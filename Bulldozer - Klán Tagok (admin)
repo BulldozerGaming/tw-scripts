@@ -3371,8 +3371,8 @@ height:34px;
 <td colspan="2"
 style="
 padding-left:10px;
-    border-top: 2px solid red;
-    border-bottom: 2px solid red;
+background-color: #2d7a3a;
+    color: white;
 ">
 
 <strong>
@@ -3431,8 +3431,7 @@ padding-bottom:6px;
 
 padding-left:8px;
 
-border-bottom:
-2px solid #4d7d58;
+background-color: #63c77b;
 ">
 
 <img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/welcome/player_points.webp"
@@ -3511,8 +3510,8 @@ margin-top:0;
 <td colspan="2"
 style="
 padding-left:10px;
-border-top: 2px solid red;
-    border-bottom: 2px solid red;
+background-color: #2d7a3a;
+    color: white;
 ">
 
 <strong>
