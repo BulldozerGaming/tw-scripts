@@ -3698,20 +3698,20 @@ html+=`
 
 `;
 
-const totalPop =
 
-totalSupport.spear+
-totalSupport.sword+
-totalSupport.archer+
-(totalSupport.heavy*6)+
-(totalSupport.knight*10);
+});
 
 html+=`
+
+</td>
+
+</tr>
+
+</table>
 
 <tr>
 
 <td colspan="2"
-
 style="
 height:10px;
 border:none;
@@ -3727,6 +3727,7 @@ data-id="totalSupportView"
 
 style="
 cursor:pointer;
+background:#2d7a3a;
 height:34px;
 ">
 
@@ -3734,7 +3735,6 @@ height:34px;
 
 style="
 padding-left:10px;
-background:#2d7a3a;
 color:white;
 text-transform:uppercase;
 ">
@@ -3744,9 +3744,9 @@ text-transform:uppercase;
 <img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/command/support.png"
 
 style="
-width:16px;
+width:14px;
 margin-right:6px;
-vertical-align:-3px;
+vertical-align:-2px;
 ">
 
 Összes erősítés a falvakban
@@ -3763,90 +3763,31 @@ style="display:none">
 
 <td colspan="2">
 
-<table class="vis"
+${villageTable([{
 
-width="100%"
+village:'Összes erősítés a falvakban',
 
-style="
-background:#f7fbf7;
-border:1px solid #bfd2c1;
-">
+support:totalSupport,
 
-<tr style="background:#a7c7ae">
+pop:
 
-<th>
-<img src="/graphic/unit/unit_spear.png">
-</th>
+totalSupport.spear+
+totalSupport.sword+
+totalSupport.archer+
+(totalSupport.heavy*6)+
+(totalSupport.knight*10)
 
-<th>
-<img src="/graphic/unit/unit_sword.png">
-</th>
-
-<th>
-<img src="/graphic/unit/unit_archer.png">
-</th>
-
-<th>
-<img src="/graphic/unit/unit_heavy.png">
-</th>
-
-<th>
-<img src="/graphic/unit/unit_knight.png">
-</th>
-
-<th>
-
-<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/overview/farm.webp"
-
-style="width:18px">
-
-</th>
-
-</tr>
-
-<tr>
-
-<td><b>${totalSupport.spear}</b></td>
-
-<td><b>${totalSupport.sword}</b></td>
-
-<td><b>${totalSupport.archer}</b></td>
-
-<td><b>${totalSupport.heavy}</b></td>
-
-<td><b>${totalSupport.knight}</b></td>
-
-<td>
-
-<b>${totalPop}</b>
+}])}
 
 </td>
 
 </tr>
-
-</table>
-
-</td>
-
-</tr>
-
-`;
-
-});
-
-html+=`
-
-</td>
-
-</tr>
-
-</table>
 
 <div style="
 margin-top:24px;
 font-style:italic;
-    padding-left: 10px;
-    padding-bottom: 10px;
+padding-left:10px;
+padding-bottom:10px;
 ">
 
 By
