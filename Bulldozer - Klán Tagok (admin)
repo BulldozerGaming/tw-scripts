@@ -3470,13 +3470,29 @@ html+=`
 
 </tr>
 
+<tr>
+
+<td colspan="2"
+style="
+height:10px;
+border:none;
+background:transparent;
+padding:0;
+">
+
+</td>
+
+</tr>
+
 <tr class="viewToggle"
 data-id="farmView"
 style="
 cursor:pointer;
 background:#d9eadb;
 height:34px;
+margin-top:0;
 ">
+
 
 <td colspan="2"
 style="
