@@ -1,0 +1,646 @@
+// ==UserScript==
+// @name         Bulldozer - Fiókkezelő
+// @namespace    bulldozer
+// @license      Bulldozer Gaming
+// @version      2.0
+// @description  Fiókkezelő segédlet
+// @match        https://*.klanhaboru.hu/game.php*screen=ally&mode=members*
+// @grant        GM_xmlhttpRequest
+// @connect      klanhaboru.hu
+// ==/UserScript==
+
+(function () {
+'use strict';
+
+let repositionHandlerAdded=false;
+
+function createHUD(){
+
+    const old=document.getElementById("twHUD");
+
+    if(old){
+
+        old.remove();
+
+        return;
+
+    }
+
+    const hud=document.createElement("div");
+
+    hud.id="twHUD";
+
+    hud.style.cssText=`
+        position:fixed;
+        top:120px;
+        right:20px;
+        width:600px;
+        background:#f4e4bc;
+        border:3px solid brown;
+        padding:15px;
+        z-index:999999;
+        box-shadow:0 0 20px black;
+        border-radius:8px;
+    `;
+
+    hud.innerHTML=`
+
+<h2>Építési sablon</h2>
+
+<textarea style="
+width:100%;
+height:140px;
+resize:vertical;
+">
+
+HgIAARABDwEAAQABEAEQAQsBEAEQARABEAEQARABEAEMAQ0BDgEMAQ0BDgEMAQ0BDgEOAQwBDQEPAQ4BDAENAQ4BDgENAQwBDQEPAQwBDgEAAQwBDQEOAQwBDQEOAQABCgEAAQABAAEAAQABAQEBAQEBAQEBAQgBCAEPARABEAEQARABCAEIAQgBAgECAQIBDwEOAQwBDQEOAQABDAENAQ4BAAEMAQ0BAAEPAQ4BAAEMAQ0BDgEOAQABDAENAQ4BAAEPAQwBDQEOARAFAAEPAQwBDQEAAQwBDQEOAQABDwEOAQwBDQEOAQwBDQEAAQwBDQEPAQ8BDwEPAQ8BDwEQARIBEAEPARABDAENAQ4BEAEPAQwBDQEOARABCwoPAQwBDQEOARABDwEMAQ0BDgEQAQ8BDAENARABDwEIAQgBCAEIAQgBAwEIAQgBAwEIAQgBCAEBAQEBAQEBAQEBAgECAQIBAgECAQIBAgEBAQEBAQEBAQEBDAENARABDwEMAQ0BDgEPAQwBDQEOAQ8BDAENAQwBDQEOAQ4BDgEPAQ8BCAEIAQgBCAEIAQsBCwELAQsBCwELAQsBCwELAQcBCQEPARABAQEPARABAQEBAQEBAQEBAQEBAQEBAQEBAgECAQIBAgECAQIBAgECAQIBAgEDAQMBAwEPAQ8BEgESARIBEgESARIBEgESARIBEgESARIBEgESARIBEgESARIBEgELBQ8B9ICAgMOJcMOtdMOpc2kgc2FibG9u9ICAgDQ=
+
+</textarea>
+
+<h2>Raktár / Tanya</h2>
+
+<textarea style="
+width:100%;
+height:80px;
+resize:vertical;
+">
+
+QAAAAQ8BEAEJAQoBAAQMAQ0BDgEBARIBAQQQCQsBDwQIAQgEAAUCBRAFDwUABRAFDwUIBQMBAAUQBQ8FEAUPCgsYDwD0gICAUmFrdMOhci9UYW55YfSAgIA0
+
+</textarea>
+
+`;
+
+    document.body.appendChild(hud);
+
+}
+
+function init(){
+
+    if(
+        typeof game_data==="undefined" ||
+        !game_data.features?.AccountManager?.active
+    ){
+        return;
+    }
+
+    const params=new URLSearchParams(location.search);
+
+    if(
+        params.get("screen")!=="am_village" ||
+        params.get("mode")!=="template"
+    ){
+        return;
+    }
+
+    const importBtn=
+    [...document.querySelectorAll(".btn")]
+    .find(x=>x.textContent.includes("Sablon import"));
+
+    if(!importBtn) return;
+
+    let btn=document.getElementById("twInfoBtn");
+
+    if(!btn){
+
+        btn=document.createElement("a");
+
+        btn.id="twInfoBtn";
+
+        btn.className="btn";
+
+        btn.href="#";
+
+        btn.textContent="Info";
+
+        btn.style.position="absolute";
+
+        btn.style.zIndex="999999";
+
+        btn.addEventListener("click",function(e){
+
+            e.preventDefault();
+
+            createHUD();
+
+        });
+
+        document.body.appendChild(btn);
+
+    }
+
+    function positionButton(){
+
+        const rect=importBtn.getBoundingClientRect();
+
+        btn.style.left=
+            (
+                window.scrollX+
+                rect.left-
+                btn.offsetWidth-
+                15
+            )+"px";
+
+        btn.style.top=
+            (
+                window.scrollY+
+                rect.top
+            )+"px";
+
+    }
+
+    positionButton();
+
+    if(!repositionHandlerAdded){
+
+        repositionHandlerAdded=true;
+
+        window.addEventListener(
+            "resize",
+            positionButton
+        );
+
+        window.addEventListener(
+            "scroll",
+            positionButton
+        );
+
+    }
+
+}
+
+init();
+
+new MutationObserver(()=>{
+
+    init();
+
+}).observe(
+    document.body,
+    {
+        childList:true,
+        subtree:true
+    }
+);
+
+
+
+
+
+//====================================================
+// TROOP TEMPLATE INFO
+//====================================================
+
+const TROOP_PRESETS={
+
+TF_24T:{
+axe:6393,
+spy:50,
+light:2700,
+ram:350,
+catapult:150
+},
+
+TF_26T:{
+axe:7293,
+spy:50,
+light:2850,
+ram:450,
+catapult:200
+},
+
+VF_24T:{
+spear:4720,
+sword:3,
+archer:5720,
+spy:300,
+heavy:1400,
+catapult:100
+},
+
+VF_26T:{
+spear:4870,
+sword:3,
+archer:5870,
+spy:300,
+heavy:1750,
+catapult:100
+}
+
+};
+
+function fillTroops(data){
+
+const allUnits=[
+
+"spear",
+"sword",
+"axe",
+"archer",
+"spy",
+"light",
+"marcher",
+"heavy",
+"ram",
+"catapult"
+
+];
+
+// először mindent törlünk
+
+allUnits.forEach(unit=>{
+
+let input=
+
+document.querySelector(
+`input[name="${unit}"]`
+)
+
+||
+
+document.getElementById(
+unit
+);
+
+if(input){
+
+input.value=0;
+
+input.dispatchEvent(
+new Event(
+"input",
+{bubbles:true}
+)
+);
+
+input.dispatchEvent(
+new Event(
+"change",
+{bubbles:true}
+)
+);
+
+}
+
+});
+
+// utána beírjuk az új sablont
+
+Object.entries(data).forEach(([unit,val])=>{
+
+let input=
+
+document.querySelector(
+`input[name="${unit}"]`
+)
+
+||
+
+document.getElementById(
+unit
+);
+
+if(input){
+
+input.value=val;
+
+input.dispatchEvent(
+new Event(
+"input",
+{bubbles:true}
+)
+);
+
+input.dispatchEvent(
+new Event(
+"change",
+{bubbles:true}
+)
+);
+
+}
+
+});
+
+// sablon név kitöltése
+
+const nameInput=
+
+document.querySelector(
+'input[name="template"]'
+)
+
+||
+
+document.querySelector(
+'input[name="templatename"]'
+)
+
+||
+
+document.querySelector(
+'input[type="text"]'
+);
+
+if(nameInput){
+
+const templateName=
+
+Object.keys(
+TROOP_PRESETS
+)
+
+.find(
+k=>
+
+JSON.stringify(
+TROOP_PRESETS[k]
+)
+
+===
+
+JSON.stringify(
+data
+)
+
+);
+
+if(templateName){
+
+nameInput.value=
+templateName;
+
+}
+
+}
+
+}
+
+function createTroopHUD(){
+
+const old=
+document.getElementById(
+"twTroopHUD"
+);
+
+if(old){
+
+old.remove();
+
+return;
+
+}
+
+const unitImg=u=>
+`${image_base}unit/unit_${u}.webp`;
+
+const makeBlock=(name,data)=>{
+
+const units=
+Object.keys(data);
+
+return `
+
+<div style="
+margin-bottom:20px;
+padding:10px;
+border:1px solid #7a5b2e;
+background:#f3e4bd;
+cursor:pointer;
+"
+class="twPreset"
+data-name="${name}"
+>
+
+<h3>${name}</h3>
+
+<table style="
+width:100%;
+text-align:center;
+">
+
+<tr>
+
+${units.map(
+u=>`
+
+<td>
+
+<img
+src="${unitImg(u)}"
+>
+
+</td>
+
+`
+).join("")}
+
+</tr>
+
+<tr>
+
+${units.map(
+u=>`
+
+<td>
+
+${data[u]}
+
+</td>
+
+`
+).join("")}
+
+</tr>
+
+</table>
+
+</div>
+
+`;
+
+};
+
+const hud=
+document.createElement(
+"div"
+);
+
+hud.id="twTroopHUD";
+
+hud.style.cssText=`
+
+position:fixed;
+top:120px;
+right:20px;
+width:650px;
+max-height:80vh;
+overflow:auto;
+background:#f4e4bc;
+border:3px solid brown;
+padding:15px;
+z-index:999999;
+
+`;
+
+hud.innerHTML=
+
+Object.entries(
+TROOP_PRESETS
+)
+
+.map(
+([n,d])=>
+makeBlock(n,d)
+)
+
+.join("");
+
+document.body.appendChild(
+hud
+);
+
+hud.querySelectorAll(
+".twPreset"
+)
+
+.forEach(el=>{
+
+el.addEventListener(
+"click",
+()=>{
+
+fillTroops(
+TROOP_PRESETS[
+el.dataset.name
+]
+);
+
+}
+
+);
+
+});
+
+}
+
+function initTroopInfo(){
+
+if(
+typeof game_data==="undefined" ||
+!game_data.features?.AccountManager?.active
+){
+
+return;
+
+}
+
+const params=
+new URLSearchParams(
+location.search
+);
+
+if(
+
+params.get(
+"screen"
+)!=="am_troops"
+
+||
+
+params.get(
+"mode"
+)!=="template"
+
+){
+
+return;
+
+}
+
+if(
+document.getElementById(
+"twTroopInfoBtn"
+)
+){
+
+return;
+
+}
+
+const title=
+[...document.querySelectorAll(
+"h2"
+)]
+
+.find(
+x=>
+
+x.textContent
+.includes(
+"Sablonok kezelése"
+)
+
+);
+
+if(!title){
+
+return;
+
+}
+
+const btn=
+document.createElement(
+"a"
+);
+
+btn.id=
+"twTroopInfoBtn";
+
+btn.className=
+"btn";
+
+btn.href="#";
+
+btn.textContent=
+"Info";
+
+btn.style.marginLeft=
+"15px";
+
+btn.addEventListener(
+"click",
+e=>{
+
+e.preventDefault();
+
+createTroopHUD();
+
+}
+);
+
+title.appendChild(
+btn
+);
+
+}
+
+initTroopInfo();
+
+new MutationObserver(
+initTroopInfo
+)
+
+.observe(
+document.body,
+{
+
+childList:true,
+subtree:true
+
+}
+);
+
+
+
+})();
