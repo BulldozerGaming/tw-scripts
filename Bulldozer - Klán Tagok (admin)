@@ -3596,34 +3596,50 @@ Object.entries(farmGroups)
 
 if(!data.length)return;
 
-const catId =
-`farmcat_${cat}`;
+const catId=`farmcat_${cat}`;
 
-html += `
+html+=`
 
-<div
-class="farmCategoryToggle"
-data-id="${catId}"
+<table class="vis"
+
+width="100%"
+
 style="
-margin:12px 0;
-padding:8px;
-background:#eef7ef;
-cursor:pointer;
-width:100%;
-box-sizing:border-box;
+margin-bottom:8px;
 ">
+
+<tr
+
+class="farmCategoryToggle"
+
+data-id="${catId}"
+
+style="
+cursor:pointer;
+background:#d9e5d9;
+">
+
+<td>
 
 <strong>
 
 ${farmLabels[cat]}
+
 (${data.length})
 
 </strong>
 
-</div>
+</td>
 
-<div id="${catId}"
+</tr>
+
+<tr
+
+id="${catId}"
+
 style="display:none;">
+
+<td>
 
 `;
 
@@ -3645,20 +3661,30 @@ Object.entries(players)
 .forEach(([player,villages])=>{
 
 const playerId=
-`farmplayer_${cat}_${player}`;
+`farmplayer_${cat}_${player.replace(/\s/g,'_')}`;
 
 html+=`
 
-<div
+<table class="vis"
+
+width="100%"
+
+style="
+margin:4px 0;
+">
+
+<tr
+
 class="farmPlayerToggle"
 
 data-id="${playerId}"
 
 style="
-padding-left:15px;
-margin-bottom:8px;
 cursor:pointer;
+background:#eef4f0;
 ">
+
+<td>
 
 <strong>
 
@@ -3666,30 +3692,92 @@ ${player}
 
 </strong>
 
-</div>
+</td>
 
-<div id="${playerId}"
+</tr>
+
+<tr
+
+id="${playerId}"
+
+style="display:none;">
+
+<td>
+
+<table class="vis"
+
+width="100%"
 
 style="
-display:none;
-padding-left:20px;
+background:#f7fbf7;
 ">
+
+<tr>
+
+<th>Falu</th>
+
+<th>
+<img src="/graphic/unit/unit_spear.png">
+</th>
+
+<th>
+<img src="/graphic/unit/unit_sword.png">
+</th>
+
+<th>
+<img src="/graphic/unit/unit_archer.png">
+</th>
+
+<th>
+<img src="/graphic/unit/unit_heavy.png">
+</th>
+
+<th>
+<img src="/graphic/unit/unit_knight.png">
+</th>
+
+<th>
+<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/overview/farm.webp"
+style="width:18px;">
+</th>
+
+</tr>
+
 `;
 
 villages.forEach(v=>{
 
 html+=`
 
-<div style="
-padding-left:20px;
-margin-top:4px;
-">
+<tr>
+
+<td>
 
 ${v.village}
 
-(${v.pop})
+</td>
 
-</div>
+<td>${v.support.spear}</td>
+
+<td>${v.support.sword}</td>
+
+<td>${v.support.archer}</td>
+
+<td>${v.support.heavy}</td>
+
+<td>${v.support.knight}</td>
+
+<td>
+
+<b>
+
+${v.pop}
+
+</b>
+
+</td>
+
+</tr>
 
 `;
 
@@ -3697,13 +3785,15 @@ ${v.village}
 
 html+=`
 
-</div>
+</table>
 
-</div>
+</td>
+
+</tr>
+
+</table>
 
 `;
-
-});
 
 });
 
@@ -3713,7 +3803,227 @@ html+=`
 
 </tr>
 
+</table>
+
 `;
+
+});Object.entries(farmGroups)
+.forEach(([cat,data])=>{
+
+if(!data.length)return;
+
+const catId=`farmcat_${cat}`;
+
+html+=`
+
+<table class="vis"
+
+width="100%"
+
+style="
+margin-bottom:8px;
+">
+
+<tr
+
+class="farmCategoryToggle"
+
+data-id="${catId}"
+
+style="
+cursor:pointer;
+background:#d9e5d9;
+">
+
+<td>
+
+<strong>
+
+${farmLabels[cat]}
+
+(${data.length})
+
+</strong>
+
+</td>
+
+</tr>
+
+<tr
+
+id="${catId}"
+
+style="display:none;">
+
+<td>
+
+`;
+
+let players={};
+
+data.forEach(v=>{
+
+if(!players[v.player]){
+
+players[v.player]=[];
+
+}
+
+players[v.player].push(v);
+
+});
+
+Object.entries(players)
+.forEach(([player,villages])=>{
+
+const playerId=
+`farmplayer_${cat}_${player.replace(/\s/g,'_')}`;
+
+html+=`
+
+<table class="vis"
+
+width="100%"
+
+style="
+margin:4px 0;
+">
+
+<tr
+
+class="farmPlayerToggle"
+
+data-id="${playerId}"
+
+style="
+cursor:pointer;
+background:#eef4f0;
+">
+
+<td>
+
+<strong>
+
+${player}
+
+</strong>
+
+</td>
+
+</tr>
+
+<tr
+
+id="${playerId}"
+
+style="display:none;">
+
+<td>
+
+<table class="vis"
+
+width="100%"
+
+style="
+background:#f7fbf7;
+">
+
+<tr>
+
+<th>Falu</th>
+
+<th>
+<img src="/graphic/unit/unit_spear.png">
+</th>
+
+<th>
+<img src="/graphic/unit/unit_sword.png">
+</th>
+
+<th>
+<img src="/graphic/unit/unit_archer.png">
+</th>
+
+<th>
+<img src="/graphic/unit/unit_heavy.png">
+</th>
+
+<th>
+<img src="/graphic/unit/unit_knight.png">
+</th>
+
+<th>
+<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/overview/farm.webp"
+style="width:18px;">
+</th>
+
+</tr>
+
+`;
+
+villages.forEach(v=>{
+
+html+=`
+
+<tr>
+
+<td>
+
+${v.village}
+
+</td>
+
+<td>${v.support.spear}</td>
+
+<td>${v.support.sword}</td>
+
+<td>${v.support.archer}</td>
+
+<td>${v.support.heavy}</td>
+
+<td>${v.support.knight}</td>
+
+<td>
+
+<b>
+
+${v.pop}
+
+</b>
+
+</td>
+
+</tr>
+
+`;
+
+});
+
+html+=`
+
+</table>
+
+</td>
+
+</tr>
+
+</table>
+
+`;
+
+});
+
+html+=`
+
+</td>
+
+</tr>
+
+</table>
+
+`;
+
+});
 
 html+=`
 
