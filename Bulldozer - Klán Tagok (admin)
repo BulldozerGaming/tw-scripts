@@ -3468,11 +3468,11 @@ villages.forEach(v=>{
 
 let total=
 
-support.spear+
-support.sword+
-support.archer+
-support.heavy*6+
-support.knight*10;
+v.support.spear+
+v.support.sword+
+v.support.archer+
+v.support.heavy*6+
+v.support.knight*10;
 
 html+=`
 
