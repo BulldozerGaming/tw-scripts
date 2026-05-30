@@ -3328,9 +3328,12 @@ padding-left:10px;
 </tr>
 
 <tr id="playerView"
-style="display:none;">
 
-<td>
+style="
+display:none;
+">
+
+<td colspan="2">
 
 `;
 
@@ -3565,9 +3568,11 @@ padding-left:10px;
 
 <tr id="farmView"
 
-style="display:none;">
+style="
+display:none;
+">
 
-<td>
+<td colspan="2">
 
 `;
 
@@ -3710,9 +3715,12 @@ width="100%"
 
 style="
 background:#f7fbf7;
+border:1px solid #bfd2c1;
 ">
 
-<tr>
+<tr style="
+background:#a7c7ae;
+">
 
 <th>Falu</th>
 
