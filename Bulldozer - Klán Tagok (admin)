@@ -3976,9 +3976,9 @@ border:2px solid #63c77b;
 
 border-radius:8px;
 
-padding:6px 14px;
+padding:5px 12px 5px 12px;
 
-color:#fff;
+color:#f0fff4;
 
 font-size:12px;
 
@@ -3991,9 +3991,18 @@ display:flex;
 align-items:center;
 
 gap:5px;
+
+line-height:1.5;
 ">
 
-ℹ️ Infó
+<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/questionmark.png"
+
+style="
+width:14px;
+height:14px;
+">
+
+Infó
 
 </button>
 
