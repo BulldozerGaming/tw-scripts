@@ -3605,11 +3605,6 @@ html,
 );
 
 let villageLinks =
-console.log(
-player.name,
-'falvak:',
-villageLinks.length
-);
 Array.from(
 doc.querySelectorAll(
 'a[href*="screen=info_village"]'
@@ -3632,6 +3627,12 @@ link.closest('td')
 );
 
 });
+
+console.log(
+player.name,
+'falvak:',
+villageLinks.length
+);
 
 const SUPPORT_BATCH_SIZE = 20;
 
