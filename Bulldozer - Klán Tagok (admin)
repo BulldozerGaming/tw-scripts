@@ -3218,257 +3218,93 @@ $('#startSupportScan').show();
 }
 
 
+// =====================================
+// Render Support
+// =====================================
+
 function renderSupport(){
 
-const farmGroups = {
+const farmLabels={
 
-'40k': [],
-'30k': [],
-'20k': [],
-'10k': [],
-'5k': [],
-'2.5k': [],
-'1k': [],
-'under1k': []
+'40k':'40 ezer feletti populáció',
+'30k':'30 ezer feletti populáció',
+'20k':'20 ezer feletti populáció',
+'10k':'10 ezer feletti populáció',
+'5k':'5 ezer feletti populáció',
+'2.5k':'2,5 ezer feletti populáció',
+'1k':'Ezer feletti populáció',
+'under1k':'Ezer alatti populáció'
 
 };
 
-function getFarmCategory(pop){
-
-if(pop>=40000) return '40k';
-
-if(pop>=30000) return '30k';
-
-if(pop>=20000) return '20k';
-
-if(pop>=10000) return '10k';
-
-if(pop>=5000) return '5k';
-
-if(pop>=2500) return '2.5k';
-
-if(pop>=1000) return '1k';
-
-return 'under1k';
-
-}
-
-let grouped={};
+const groupedPlayers={};
+const farmGroups={};
 
 supportResult.forEach(v=>{
 
-if(!grouped[v.player]){
-grouped[v.player]=[];
+if(!groupedPlayers[v.player]){
+groupedPlayers[v.player]=[];
 }
 
-grouped[v.player].push(v);
+groupedPlayers[v.player].push(v);
 
-let pop =
+const pop=
 
 v.support.spear+
 v.support.sword+
 v.support.archer+
-v.support.heavy*6+
-v.support.knight*10;
+(v.support.heavy*6)+
+(v.support.knight*10);
 
-let cat =
-getFarmCategory(pop);
+let cat='under1k';
 
-farmGroups[cat].push({
+if(pop>=40000) cat='40k';
+else if(pop>=30000) cat='30k';
+else if(pop>=20000) cat='20k';
+else if(pop>=10000) cat='10k';
+else if(pop>=5000) cat='5k';
+else if(pop>=2500) cat='2.5k';
+else if(pop>=1000) cat='1k';
 
-player:v.player,
+if(!farmGroups[cat]){
+farmGroups[cat]={};
+}
 
-village:v.village,
+if(!farmGroups[cat][v.player]){
+farmGroups[cat][v.player]=[];
+}
 
-support:v.support,
+farmGroups[cat][v.player].push({
 
+...v,
 pop
 
 });
 
 });
 
-let html=`
+function buildVillageTable(villages){
 
-<div style="
-height:26px;
-"></div>
+let table=`
 
-<table class="vis"
-width="100%"
-style="
-border-collapse:separate;
-border-spacing:0 6px;
-">
+<table class="vis" width="100%">
 
-<tr class="viewToggle"
-
-data-id="playerView"
-
-style="
-cursor:pointer;
-background:#dce6ef;
-height:34px;
-">
-
-<td colspan="2"
-style="
-width:100%;
-padding-left:10px;
-">
-
-<strong>
-
-👤 Játékos
-
-</strong>
-
-</td>
-
-</tr>
-
-<tr id="playerView"
-style="display:none;">
-
-<td colspan="2">
-
-<table
-width="100%"
-style="
-border-collapse:collapse;
-">
-
-`;
-
-let playerIndex=0;
-
-Object.entries(grouped)
-.forEach(([player,villages])=>{
-
-
-let pid=
-`support_${playerIndex}`;
-
-html+=`
-
-<tr class="supportToggle"
-
-data-id="${pid}"
-
-style="
-cursor:pointer;
-background:#eef4f0;
-
-border-bottom:1px solid #b8cfbe;
-height:32px;
-">
-
-<td style="
-padding-left:10px;
-
-border-top:2px solid #4d7d58;
-border-bottom:2px solid #4d7d58;
-">
-
-<strong style="
-color:#174024;
-display:flex;
-align-items:center;
-gap:6px;
-">
-
-<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/welcome/player_points.webp"
-
-style="
-width:14px;
-height:14px;
-vertical-align:middle;
-margin-right:5px;
-">
-
-${player}
-
-</strong>
-
-</td>
-
-<td align="right"
-style="
-padding-right:14px;
-font-weight:bold;
-white-space:nowrap;
-
-border-top:2px solid #4d7d58;
-border-bottom:2px solid #4d7d58;
-">
-
-<span style="
-color:#666;
-font-size:11px;
-margin-right:6px;
-">
-
-Falvak:
-
-</span>
-
-<strong>
-
-${villages.length}
-
-</strong>
-
-</td>
-
-</tr>
-
-<tr id="${pid}"
-style="display:none;">
-
-<td colspan="2">
-
-<table class="vis"
-width="100%"
-style="
-background:#f7fbf7;
-border:1px solid #bfd2c1;
-">
-
-<tr style="
-background:#a7c7ae;
-">
+<tr>
 
 <th>Falu</th>
 
-<th>
-<img src="/graphic/unit/unit_spear.png">
-</th>
+<th><img src="/graphic/unit/unit_spear.png"></th>
+
+<th><img src="/graphic/unit/unit_sword.png"></th>
+
+<th><img src="/graphic/unit/unit_archer.png"></th>
+
+<th><img src="/graphic/unit/unit_heavy.png"></th>
+
+<th><img src="/graphic/unit/unit_knight.png"></th>
 
 <th>
-<img src="/graphic/unit/unit_sword.png">
-</th>
-
-<th>
-<img src="/graphic/unit/unit_archer.png">
-</th>
-
-<th>
-<img src="/graphic/unit/unit_heavy.png">
-</th>
-
-<th>
-<img src="/graphic/unit/unit_knight.png">
-</th>
-
-<th>
-
-<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/overview/farm.webp"
-
-style="
-width:18px;
-height:18px;
-">
-
+<img src="/graphic/overview/farm.png">
 </th>
 
 </tr>
@@ -3477,311 +3313,11 @@ height:18px;
 
 villages.forEach(v=>{
 
-let total=
-
-v.support.spear+
-v.support.sword+
-v.support.archer+
-v.support.heavy*6+
-v.support.knight*10;
-
-html+=`
+table+=`
 
 <tr>
 
-<td>
-
-${v.village}
-
-</td>
-
-<td>${v.support.spear}</td>
-
-<td>${v.support.sword}</td>
-
-<td>${v.support.archer}</td>
-
-<td>${v.support.heavy}</td>
-
-<td>${v.support.knight}</td>
-
-<td>
-
-<strong>
-
-${total}
-
-</strong>
-
-</td>
-
-</tr>
-
-`;
-
-});
-
-html+=`
-
-</table>
-
-</table>
-
-</td>
-
-</tr>
-
-`;
-
-playerIndex++;
-
-});
-
-html+=`
-
-</table>
-
-</td>
-
-</tr>
-
-<tr class="viewToggle"
-
-data-id="farmView"
-
-style="
-cursor:pointer;
-background:#d9eadb;
-height:34px;
-">
-
-<td colspan="2"
-style="
-width:100%;
-padding-left:10px;
-">
-
-<strong>
-
-🌾 Tanya
-
-</strong>
-
-</td>
-
-</tr>
-
-<tr id="farmView"
-
-style="display:none;">
-
-<td colspan="2">
-
-<table
-width="100%"
-style="
-border-collapse:collapse;
-">
-
-`;
-
-const farmLabels={
-
-'40k':'40 ezer feletti populáció',
-
-'30k':'30 ezer feletti populáció',
-
-'20k':'20 ezer feletti populáció',
-
-'10k':'10 ezer feletti populáció',
-
-'5k':'5 ezer feletti populáció',
-
-'2.5k':'2,5 ezer feletti populáció',
-
-'1k':'Ezer feletti populáció',
-
-'under1k':'Ezer alatti populáció'
-
-};
-
-Object.entries(farmGroups)
-.forEach(([cat,data])=>{
-
-if(!data.length)return;
-
-const catId=`farmcat_${cat}`;
-
-html+=`
-
-<table class="vis"
-
-width="100%"
-
-style="
-margin-bottom:8px;
-border-collapse:collapse;
-border:1px solid #bfd2c1;
-background:#f7fbf7;
-">
-
-
-<tr
-
-class="farmCategoryToggle"
-
-data-id="${catId}"
-
-style="
-cursor:pointer;
-background:#d9e5d9;
-height:32px;
-border-top:2px solid #4d7d58;
-border-bottom:2px solid #4d7d58;
-">
-
-<td>
-
-<strong>
-
-${farmLabels[cat]}
-
-(${data.length})
-
-</strong>
-
-</td>
-
-</tr>
-
-<tr
-
-id="${catId}"
-
-style="display:none;">
-
-<td>
-
-`;
-
-let players={};
-
-data.forEach(v=>{
-
-if(!players[v.player]){
-
-players[v.player]=[];
-
-}
-
-players[v.player].push(v);
-
-});
-
-Object.entries(players)
-.forEach(([player,villages])=>{
-
-const playerId=
-`farmplayer_${cat}_${player.replace(/\s/g,'_')}`;
-
-html+=`
-
-<table class="vis"
-
-width="100%"
-
-style="
-margin:4px 0;
-">
-
-<tr
-
-class="farmPlayerToggle"
-
-data-id="${playerId}"
-
-style="
-cursor:pointer;
-background:#eef4f0;
-height:30px;
-border-bottom:1px solid #b8cfbe;
-">
-
-<td>
-
-<strong>
-
-${player}
-
-</strong>
-
-</td>
-
-</tr>
-
-<tr
-
-id="${playerId}"
-
-style="display:none;">
-
-<td>
-
-<table class="vis"
-
-width="100%"
-
-style="
-background:#f7fbf7;
-border:1px solid #bfd2c1;
-">
-
-<tr style="
-background:#a7c7ae;
-">
-
-<th>Falu</th>
-
-<th>
-<img src="/graphic/unit/unit_spear.png">
-</th>
-
-<th>
-<img src="/graphic/unit/unit_sword.png">
-</th>
-
-<th>
-<img src="/graphic/unit/unit_archer.png">
-</th>
-
-<th>
-<img src="/graphic/unit/unit_heavy.png">
-</th>
-
-<th>
-<img src="/graphic/unit/unit_knight.png">
-</th>
-
-<th>
-<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/overview/farm.webp"
-style="width:18px;">
-</th>
-
-</tr>
-
-`;
-
-villages.forEach(v=>{
-
-html+=`
-
-<tr>
-
-<td>
-
-${v.village}
-
-</td>
+<td>${v.village}</td>
 
 <td>${v.support.spear}</td>
 
@@ -3797,7 +3333,15 @@ ${v.village}
 
 <b>
 
-${v.pop}
+${v.pop ||
+
+(v.support.spear+
+v.support.sword+
+v.support.archer+
+(v.support.heavy*6)+
+(v.support.knight*10))
+
+}
 
 </b>
 
@@ -3809,9 +3353,223 @@ ${v.pop}
 
 });
 
+table+=`</table>`;
+
+return table;
+
+}
+
+let html=`
+
+<div style="height:28px"></div>
+
+<table class="vis" width="100%">
+
+<tr class="viewToggle"
+
+data-id="playerView"
+
+style="cursor:pointer">
+
+<td>
+
+<b>
+
+👤 Játékos
+
+</b>
+
+</td>
+
+</tr>
+
+<tr id="playerView"
+
+style="display:none">
+
+<td>
+
+`;
+
+Object.entries(groupedPlayers)
+.forEach(([player,villages],i)=>{
+
+const id=`p_${i}`;
+
 html+=`
 
+<table class="vis"
+
+width="100%"
+
+style="margin-bottom:8px">
+
+<tr
+
+class="supportToggle"
+
+data-id="${id}"
+
+style="cursor:pointer">
+
+<td>
+
+<b>
+
+${player}
+
+</b>
+
+</td>
+
+<td align="right">
+
+Falvak:
+
+${villages.length}
+
+</td>
+
+</tr>
+
+<tr
+
+id="${id}"
+
+style="display:none">
+
+<td colspan="2">
+
+${buildVillageTable(villages)}
+
+</td>
+
+</tr>
+
 </table>
+
+`;
+
+});
+
+html+=`
+
+</td>
+
+</tr>
+
+<tr class="viewToggle"
+
+data-id="farmView"
+
+style="cursor:pointer">
+
+<td>
+
+<b>
+
+🌾 Tanya
+
+</b>
+
+</td>
+
+</tr>
+
+<tr id="farmView"
+
+style="display:none">
+
+<td>
+
+`;
+
+Object.entries(farmGroups)
+.forEach(([cat,players])=>{
+
+const catId=`cat_${cat}`;
+
+html+=`
+
+<table class="vis"
+
+width="100%"
+
+style="margin-bottom:8px">
+
+<tr
+
+class="farmCategoryToggle"
+
+data-id="${catId}"
+
+style="cursor:pointer">
+
+<td>
+
+<b>
+
+${farmLabels[cat]}
+
+</b>
+
+</td>
+
+</tr>
+
+<tr
+
+id="${catId}"
+
+style="display:none">
+
+<td>
+
+`;
+
+Object.entries(players)
+.forEach(([player,villages])=>{
+
+const pid=
+`${catId}_${player.replace(/\s/g,'')}`;
+
+html+=`
+
+<table class="vis"
+
+width="100%"
+
+style="margin:4px 0">
+
+<tr
+
+class="farmPlayerToggle"
+
+data-id="${pid}"
+
+style="cursor:pointer">
+
+<td>
+
+<b>
+
+${player}
+
+</b>
+
+</td>
+
+</tr>
+
+<tr
+
+id="${pid}"
+
+style="display:none">
+
+<td>
+
+${buildVillageTable(villages)}
 
 </td>
 
@@ -3837,20 +3595,24 @@ html+=`
 
 html+=`
 
-<div style="
-height:32px;
-"></div>
+</td>
+
+</tr>
+
+</table>
 
 <div style="
-margin-top:0;
+margin-top:25px;
 font-size:12px;
 font-style:italic;
-padding-left:4px;
 ">
 
 By
-<b style="color:#8b0000;">
+
+<b style="color:#8b0000">
+
 Crytek
+
 </b>
 
 </div>
@@ -3859,61 +3621,31 @@ Crytek
 
 $('#supportStatus').html(html);
 
-$('.viewToggle')
+$('.viewToggle').off().on('click',function(){
 
-.off('click')
-
-.on('click',function(){
-
-$('#'+$(this).data('id'))
-
-.toggle();
+$('#'+$(this).data('id')).toggle();
 
 });
 
+$('.supportToggle').off().on('click',function(){
 
-$('.supportToggle')
-.off('click')
-.on('click',function(){
-
-$('#'+$(this).data('id'))
-.toggle();
+$('#'+$(this).data('id')).toggle();
 
 });
 
-$('.farmCategoryToggle')
-.off('click')
-.on('click',function(){
+$('.farmCategoryToggle').off().on('click',function(){
 
-$('#'+$(this).data('id'))
-.toggle();
+$('#'+$(this).data('id')).toggle();
 
 });
 
-$('.farmPlayerToggle')
-.off('click')
-.on('click',function(){
+$('.farmPlayerToggle').off().on('click',function(){
 
-$('#'+$(this).data('id'))
-.toggle();
-
-});
-
-$('#closeSupportScanner')
-.off('click')
-.on('click',function(){
-
-$('#supportScanner').remove();
-
-$('#startNukeScan').show();
-$('#startDefenseScan').show();
-$('#startIncomingScan').show();
-$('#startSupportScan').show();
+$('#'+$(this).data('id')).toggle();
 
 });
 
 }
-
 
 
 // =====================================
