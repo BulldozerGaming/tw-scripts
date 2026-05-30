@@ -3215,6 +3215,10 @@ grouped[v.player].push(v);
 
 let html=`
 
+<div style="
+height:26px;
+"></div>
+
 <table class="vis"
 width="100%"
 style="
@@ -3261,8 +3265,10 @@ height:32px;
 
 <td style="
 padding-left:10px;
+
 border-top:2px solid #4d7d58;
 border-bottom:2px solid #4d7d58;
+border-left:2px solid #4d7d58;
 ">
 
 <strong style="
@@ -3292,6 +3298,10 @@ style="
 padding-right:14px;
 font-weight:bold;
 white-space:nowrap;
+
+border-top:2px solid #4d7d58;
+border-bottom:2px solid #4d7d58;
+border-right:2px solid #4d7d58;
 ">
 
 <span style="
