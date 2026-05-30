@@ -3374,7 +3374,15 @@ padding-left:10px;
 
 <strong>
 
-👤 Játékos
+<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/welcome/player_points.webp"
+
+style="
+width:14px;
+margin-right:6px;
+vertical-align:-2px;
+">
+
+Játékos
 
 </strong>
 
@@ -3474,7 +3482,15 @@ padding-left:10px;
 
 <strong>
 
-🌾 Tanya
+<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/overview/farm.webp"
+
+style="
+width:16px;
+margin-right:6px;
+vertical-align:-3px;
+">
+
+Tanya
 
 </strong>
 
@@ -3549,7 +3565,12 @@ grouped[v.player].push(v);
 Object.entries(grouped)
 .forEach(([player,villages])=>{
 
-const pid=`${cat}_${player}`;
+const pid=
+`${cat}_${
+player
+.replace(/\s/g,'_')
+.replace(/[^\w]/g,'')
+}`;
 
 html+=`
 
