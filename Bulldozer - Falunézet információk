@@ -856,35 +856,51 @@ wrapper.style.maxWidth =
 // REPORT FIX
 // =====================================
 
-wrapper
-    .querySelectorAll('table.vis')
-    .forEach(t => {
-
-        t.style.width = 'auto';
-        t.style.maxWidth = 'none';
-        t.style.tableLayout = 'auto';
-    });
+if(wrapper){
 
 wrapper
-    .querySelectorAll('table')
-    .forEach(t => {
+.querySelectorAll('table.vis')
+.forEach(t => {
 
-        t.style.width = 'auto';
-        t.style.maxWidth = 'none';
-        t.style.tableLayout = 'auto';
-    });
+    if(!t || !t.style){
+        return;
+    }
 
-wrapper.style.width =
-    'auto';
+    t.style.width='auto';
+    t.style.maxWidth='none';
+    t.style.tableLayout='auto';
 
-wrapper.style.maxWidth =
-    'none';
+});
 
-previewCell.style.whiteSpace =
-    'normal';
+wrapper
+.querySelectorAll('table')
+.forEach(t => {
 
-previewCell.style.width =
-    'auto';
+    if(!t || !t.style){
+        return;
+    }
+
+    t.style.width='auto';
+    t.style.maxWidth='none';
+    t.style.tableLayout='auto';
+
+});
+
+if(wrapper.style){
+
+wrapper.style.width='auto';
+wrapper.style.maxWidth='none';
+
+}
+
+}
+
+if(previewCell){
+
+previewCell.style.whiteSpace='normal';
+previewCell.style.width='auto';
+
+}
 
 
 
