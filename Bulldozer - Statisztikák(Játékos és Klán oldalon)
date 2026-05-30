@@ -104,6 +104,13 @@
     let type;
     let diagrams;
 
+if (
+getUrlParameter('screen') ===
+'info_village'
+) {
+return;
+}
+
     // ===== JÁTÉKOS =====
     if (getUrlParameter('screen') == 'info_player') {
 
