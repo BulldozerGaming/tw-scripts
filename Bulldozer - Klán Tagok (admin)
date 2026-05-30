@@ -3652,8 +3652,6 @@ return support;
 
 }catch(e){
 
-console.log(e);
-
 return null;
 
 }
@@ -3881,8 +3879,20 @@ link.closest('td')
 
 });
 
+villageLinks = [
 
-const SUPPORT_BATCH_SIZE = 20;
+...new Map(
+
+villageLinks.map(
+x => [x.href, x]
+)
+
+).values()
+
+];
+
+
+const SUPPORT_BATCH_SIZE = 15;
 
 for(
 let i=0;
