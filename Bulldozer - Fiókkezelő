@@ -4,7 +4,8 @@
 // @license      Bulldozer Gaming
 // @version      2.0
 // @description  Fiókkezelő segédlet
-// @match        https://*.klanhaboru.hu/game.php*
+// @match https://*.klanhaboru.hu/game.php*screen=am_village*mode=template*
+// @match https://*.klanhaboru.hu/game.php*screen=am_troops*mode=template*
 // @grant        GM_xmlhttpRequest
 // @connect      klanhaboru.hu
 // ==/UserScript==
