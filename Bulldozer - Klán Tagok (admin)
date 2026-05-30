@@ -3599,24 +3599,23 @@ if(!data.length)return;
 const catId =
 `farmcat_${cat}`;
 
-html+=`
+html += `
 
 <div
 class="farmCategoryToggle"
-
 data-id="${catId}"
-
 style="
 margin:12px 0;
 padding:8px;
 background:#eef7ef;
 cursor:pointer;
+width:100%;
+box-sizing:border-box;
 ">
 
 <strong>
 
 ${farmLabels[cat]}
-
 (${data.length})
 
 </strong>
@@ -3625,13 +3624,6 @@ ${farmLabels[cat]}
 
 <div id="${catId}"
 style="display:none;">
-`;
-
-(${data.length})
-
-</strong>
-
-</div>
 
 `;
 
@@ -3682,10 +3674,6 @@ style="
 display:none;
 padding-left:20px;
 ">
-`;
-
-</strong>
-
 `;
 
 villages.forEach(v=>{
