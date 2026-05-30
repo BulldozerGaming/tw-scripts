@@ -3670,9 +3670,18 @@ Crytek
 
 $('#supportStatus').html(html);
 
-$('.viewToggle,.toggleRow')
-.off()
-.on('click',function(){
+$(document)
+
+.off(
+'click',
+'.viewToggle,.toggleRow'
+)
+
+.on(
+'click',
+'.viewToggle,.toggleRow',
+
+function(){
 
 $('#'+$(this).data('id'))
 .toggle();
