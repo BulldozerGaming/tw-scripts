@@ -3254,6 +3254,16 @@ const farmGroups={};
 
 farmOrder.forEach(x=>farmGroups[x]=[]);
 
+const totalSupport={
+
+spear:0,
+sword:0,
+archer:0,
+heavy:0,
+knight:0
+
+};
+
 supportResult.forEach(v=>{
 
 if(!players[v.player]){
@@ -3261,6 +3271,11 @@ players[v.player]=[];
 }
 
 players[v.player].push(v);
+totalSupport.spear+=v.support.spear;
+totalSupport.sword+=v.support.sword;
+totalSupport.archer+=v.support.archer;
+totalSupport.heavy+=v.support.heavy;
+totalSupport.knight+=v.support.knight;
 
 const pop=
 
@@ -3680,6 +3695,140 @@ html+=`
 </tr>
 
 </table>
+
+`;
+
+const totalPop =
+
+totalSupport.spear+
+totalSupport.sword+
+totalSupport.archer+
+(totalSupport.heavy*6)+
+(totalSupport.knight*10);
+
+html+=`
+
+<tr>
+
+<td colspan="2"
+
+style="
+height:10px;
+border:none;
+">
+
+</td>
+
+</tr>
+
+<tr class="viewToggle"
+
+data-id="totalSupportView"
+
+style="
+cursor:pointer;
+height:34px;
+">
+
+<td colspan="2"
+
+style="
+padding-left:10px;
+background:#2d7a3a;
+color:white;
+text-transform:uppercase;
+">
+
+<strong>
+
+<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/command/support.png"
+
+style="
+width:16px;
+margin-right:6px;
+vertical-align:-3px;
+">
+
+Összes erősítés a falvakban
+
+</strong>
+
+</td>
+
+</tr>
+
+<tr id="totalSupportView"
+
+style="display:none">
+
+<td colspan="2">
+
+<table class="vis"
+
+width="100%"
+
+style="
+background:#f7fbf7;
+border:1px solid #bfd2c1;
+">
+
+<tr style="background:#a7c7ae">
+
+<th>
+<img src="/graphic/unit/unit_spear.png">
+</th>
+
+<th>
+<img src="/graphic/unit/unit_sword.png">
+</th>
+
+<th>
+<img src="/graphic/unit/unit_archer.png">
+</th>
+
+<th>
+<img src="/graphic/unit/unit_heavy.png">
+</th>
+
+<th>
+<img src="/graphic/unit/unit_knight.png">
+</th>
+
+<th>
+
+<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/overview/farm.webp"
+
+style="width:18px">
+
+</th>
+
+</tr>
+
+<tr>
+
+<td><b>${totalSupport.spear}</b></td>
+
+<td><b>${totalSupport.sword}</b></td>
+
+<td><b>${totalSupport.archer}</b></td>
+
+<td><b>${totalSupport.heavy}</b></td>
+
+<td><b>${totalSupport.knight}</b></td>
+
+<td>
+
+<b>${totalPop}</b>
+
+</td>
+
+</tr>
+
+</table>
+
+</td>
+
+</tr>
 
 `;
 
