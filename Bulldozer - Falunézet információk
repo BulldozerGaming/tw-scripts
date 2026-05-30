@@ -368,11 +368,15 @@ document
 
 if (!targetX || !targetY) return;
 
-    const ownX =
-        game_data.village.x;
+const ownX =
+    game_data?.village?.x || 0;
 
-    const ownY =
-        game_data.village.y;
+const ownY =
+    game_data?.village?.y || 0;
+
+if(!ownX || !ownY){
+return;
+}
 
     // =========================================
     // TÁVOLSÁG
