@@ -3352,6 +3352,7 @@ font-weight:bold;
 color:#2d7a3a;
 padding-left:4px;
 margin-top: 20px;
+    text-transform: uppercase;
 ">
 
 Nézet
@@ -3373,6 +3374,7 @@ style="
 padding-left:10px;
 background-color: #2d7a3a;
     color: white;
+    text-transform: uppercase;
 ">
 
 <strong>
@@ -3511,6 +3513,7 @@ margin-top:0;
 style="
 padding-left:10px;
 background-color: #2d7a3a;
+    text-transform: uppercase;
     color: white;
 ">
 
