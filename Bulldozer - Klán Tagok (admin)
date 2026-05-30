@@ -3727,6 +3727,17 @@ $('#'+$(this).data('id'))
 
 });
 
+$('#infoSupportScanner')
+.off('click')
+.on('click',function(){
+
+alert(
+`A klán tagok falvaiban állomásozó klán védelem.
+
+Játékosonkénti vagy Tanya szerinti csoportosításban.`
+);
+
+});
 
 $('#closeSupportScanner')
 .off('click')
@@ -3946,6 +3957,46 @@ A TAGOK ERŐSÍTÉSEI
 
 </h3>
 
+<div style="
+display:flex;
+align-items:center;
+gap:6px;
+">
+
+<button id="infoSupportScanner"
+
+style="
+background:linear-gradient(
+to bottom,
+#2d7a3a,
+#14401d
+);
+
+border:2px solid #63c77b;
+
+border-radius:8px;
+
+padding:6px 14px;
+
+color:#fff;
+
+font-size:12px;
+
+font-weight:bold;
+
+cursor:pointer;
+
+display:flex;
+
+align-items:center;
+
+gap:5px;
+">
+
+ℹ️ Infó
+
+</button>
+
 <button id="closeSupportScanner"
 
 style="
@@ -3974,12 +4025,13 @@ display:flex;
 align-items:center;
 
 gap:5px;
-
 ">
 
 ❌ Bezárás
 
 </button>
+
+</div>
 
 </div>
 
