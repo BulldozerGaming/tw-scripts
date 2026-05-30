@@ -3220,6 +3220,39 @@ $('#startSupportScan').show();
 
 function renderSupport(){
 
+const farmGroups = {
+
+'40k': [],
+'30k': [],
+'20k': [],
+'10k': [],
+'5k': [],
+'2.5k': [],
+'1k': [],
+'under1k': []
+
+};
+
+function getFarmCategory(pop){
+
+if(pop>=40000) return '40k';
+
+if(pop>=30000) return '30k';
+
+if(pop>=20000) return '20k';
+
+if(pop>=10000) return '10k';
+
+if(pop>=5000) return '5k';
+
+if(pop>=2500) return '2.5k';
+
+if(pop>=1000) return '1k';
+
+return 'under1k';
+
+}
+
 let grouped={};
 
 supportResult.forEach(v=>{
@@ -3229,6 +3262,29 @@ grouped[v.player]=[];
 }
 
 grouped[v.player].push(v);
+
+let pop =
+
+v.support.spear+
+v.support.sword+
+v.support.archer+
+v.support.heavy*6+
+v.support.knight*10;
+
+let cat =
+getFarmCategory(pop);
+
+farmGroups[cat].push({
+
+player:v.player,
+
+village:v.village,
+
+support:v.support,
+
+pop
+
+});
 
 });
 
@@ -3245,6 +3301,32 @@ border-collapse:separate;
 border-spacing:0 6px;
 ">
 
+<tr class="viewToggle"
+
+data-id="playerView"
+
+style="
+cursor:pointer;
+background:#dce6ef;
+height:34px;
+">
+
+<td>
+
+<strong>
+
+👤 Játékos
+
+</strong>
+
+</td>
+
+</tr>
+
+<tr id="playerView">
+
+<td>
+
 `;
 
 let playerIndex=0;
@@ -3252,18 +3334,6 @@ let playerIndex=0;
 Object.entries(grouped)
 .forEach(([player,villages])=>{
 
-let totalSupport=
-villages.reduce((sum,v)=>{
-
-return sum+
-
-v.support.spear+
-v.support.sword+
-v.support.archer+
-v.support.heavy+
-v.support.knight;
-
-},0);
 
 let pid=
 `support_${playerIndex}`;
@@ -3398,11 +3468,11 @@ villages.forEach(v=>{
 
 let total=
 
-v.support.spear+
-v.support.sword+
-v.support.archer+
-v.support.heavy+
-v.support.knight;
+support.spear+
+support.sword+
+support.archer+
+support.heavy*6+
+support.knight*10;
 
 html+=`
 
@@ -3458,6 +3528,156 @@ html+=`
 
 </table>
 
+</td>
+
+</tr>
+
+<tr class="viewToggle"
+
+data-id="farmView"
+
+style="
+cursor:pointer;
+background:#d9eadb;
+height:34px;
+">
+
+<td>
+
+<strong>
+
+🌾 Tanya
+
+</strong>
+
+</td>
+
+</tr>
+
+<tr id="farmView"
+
+style="display:none;">
+
+<td>
+
+`;
+
+const farmLabels={
+
+'40k':'40 ezer feletti populáció',
+
+'30k':'30 ezer feletti populáció',
+
+'20k':'20 ezer feletti populáció',
+
+'10k':'10 ezer feletti populáció',
+
+'5k':'5 ezer feletti populáció',
+
+'2.5k':'2,5 ezer feletti populáció',
+
+'1k':'Ezer feletti populáció',
+
+'under1k':'Ezer alatti populáció'
+
+};
+
+Object.entries(farmGroups)
+.forEach(([cat,data])=>{
+
+if(!data.length)return;
+
+html+=`
+
+<div style="
+margin:12px 0;
+padding:8px;
+background:#eef7ef;
+">
+
+<strong>
+
+${farmLabels[cat]}
+
+(${data.length})
+
+</strong>
+
+</div>
+
+`;
+
+let players={};
+
+data.forEach(v=>{
+
+if(!players[v.player]){
+
+players[v.player]=[];
+
+}
+
+players[v.player].push(v);
+
+});
+
+Object.entries(players)
+.forEach(([player,villages])=>{
+
+html+=`
+
+<div style="
+padding-left:15px;
+margin-bottom:8px;
+">
+
+<strong>
+
+${player}
+
+</strong>
+
+`;
+
+villages.forEach(v=>{
+
+html+=`
+
+<div style="
+padding-left:20px;
+margin-top:4px;
+">
+
+${v.village}
+
+(${v.pop})
+
+</div>
+
+`;
+
+});
+
+html+=`
+
+</div>
+
+`;
+
+});
+
+});
+
+html+=`
+
+</td>
+
+</tr>
+
+`;
+
+html+=`
+
 <div style="
 height:32px;
 "></div>
@@ -3479,6 +3699,19 @@ Crytek
 `;
 
 $('#supportStatus').html(html);
+
+$('.viewToggle')
+
+.off('click')
+
+.on('click',function(){
+
+$('#'+$(this).data('id'))
+
+.toggle();
+
+});
+
 
 $('.supportToggle')
 .off('click')
