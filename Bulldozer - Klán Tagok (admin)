@@ -559,8 +559,17 @@ if (cols.length < 5) {
 return;
 }
 
+let villageLink =
+cols[0].querySelector('a');
+
 let village =
-cols[0].innerHTML;
+villageLink
+? `<a href="${location.origin}${villageLink.getAttribute('href')}"
+target="_blank"
+style="font-weight:bold;color:#603000;text-decoration:none;">
+${villageLink.innerHTML}
+</a>`
+: cols[0].innerText;
 
 if (!village) {
 return;
@@ -3389,20 +3398,9 @@ html+=`
 
 <tr>
 
-<td style="
-min-width:260px;
-font-weight:bold;
-padding-left:8px;
-font-size:12px;
-">
-
-<span style="
-display:inline-block;
-">
+<td>
 
 ${v.village}
-
-</span>
 
 </td>
 
