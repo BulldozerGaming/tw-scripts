@@ -236,7 +236,7 @@ gap:8px;
 margin-left:8px;
 ">
 
-<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/buildings/place.png"
+<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/command/support.png"
 
 style="
 width:18px;
@@ -245,7 +245,7 @@ height:18px;
 
 Erősítések
 
-<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/buildings/place.png"
+<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/command/support.png"
 
 style="
 width:18px;
@@ -3655,7 +3655,16 @@ display:flex;
 align-items:center;
 ">
 
-🟢 A TAGOK ERŐSÍTÉSEI
+<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/command/support.png"
+
+style="
+width:18px;
+height:18px;
+margin-right:8px;
+vertical-align:-3px;
+">
+
+A TAGOK ERŐSÍTÉSEI
 
 </h3>
 
@@ -3720,7 +3729,16 @@ color:#1e5d2d;
 line-height:24px;
 ">
 
-🛡️ Erősítések vizsgálata folyamatban...
+<img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/command/support.png"
+
+style="
+width:18px;
+height:18px;
+vertical-align:-3px;
+margin-right:6px;
+">
+
+Erősítések vizsgálata folyamatban...
 
 <div style="
 margin-top:10px;
