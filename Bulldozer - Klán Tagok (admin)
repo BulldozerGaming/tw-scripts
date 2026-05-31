@@ -1151,11 +1151,20 @@ function render() {
                                 ">
 
                                 <table class="vis nukeVillageTable"
-                                       width="100%"
-                                       style="
-                                            background:#fffaf0;
-                                            border:1px solid #d9c28f;
-                                       ">
+style="
+background:#fffaf0;
+border:1px solid #d9c28f;
+
+width:auto;
+
+min-width:620px;
+
+display:inline-table;
+
+margin-left:8px;
+
+vertical-align:top;
+">
 
                                     <tr style="
                                         background:#c7a96b;
@@ -2227,11 +2236,20 @@ if (cat === 'Maradék') {
                         ">
 
                         <table class="vis"
-                               width="100%"
-                               style="
-                                    background:#f7fbff;
-                                    border:1px solid #bfd2e2;
-                               ">
+style="
+background:#f7fbff;
+border:1px solid #bfd2e2;
+
+width:auto;
+
+min-width:620px;
+
+display:inline-table;
+
+margin-left:8px;
+
+vertical-align:top;
+">
 
                             <tr style="
                                 background:#9bb5ca;
@@ -3346,10 +3364,19 @@ function villageTable(villages){
 return `
 
 <table class="vis"
-width="100%"
 style="
 background:#f7fbf7;
 border:1px solid #bfd2c1;
+
+width:auto;
+
+min-width:620px;
+
+display:inline-table;
+
+margin-left:8px;
+
+vertical-align:top;
 ">
 
 <tr style="background:#a7c7ae">
