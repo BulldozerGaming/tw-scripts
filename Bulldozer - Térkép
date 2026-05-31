@@ -9,20 +9,13 @@
 // @connect      klanhaboru.hu
 // ==/UserScript==
 
+(function(){
+
 'use strict';
 
-
-
-//relocate to mass scavenging page
 if (window.location.href.indexOf('screen=map') < 0) {
-    //relocate
-    window.location.assign(game_data.link_base_pure + "map");
+window.location.assign(game_data.link_base_pure + "map");
 }
-
-
-(function (global, factory) {
-
-    'use strict';
 
 
 /**
