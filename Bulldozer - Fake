@@ -4,10 +4,10 @@
 // @license      Bulldozer Gaming
 // @version      2.0
 // @description  Fake script gyülekezőhelyen
-// @match        *://*.klanhaboru.hu/game.php*
+// @match        *://*.klanhaboru.hu/game.php?*screen=place*
+// @match        *://*.klanhaboru.hu/game.php?*screen=place&mode=command*
 // @grant        none
 // @connect      klanhaboru.hu
-// @require      https://raw.githubusercontent.com/BulldozerGaming/tw-scripts/refs/heads/main/Bulldozer%20-%20Kl%C3%A1n%20Tagok%20(admin)
 // ==/UserScript==
 
 (function () {
@@ -32,6 +32,156 @@ catapult:30,
 snob:35
 
 };
+
+
+function getForumCoords(){
+
+const forumId=
+
+localStorage.getItem(
+"crytek_forum_id"
+);
+
+const threadId=
+
+localStorage.getItem(
+"crytek_thread_id"
+);
+
+const cacheKey=
+
+"crytek_forum_cache_"
+
++
+
+forumId
+
++
+
+"_"
+
++
+
+threadId;
+
+
+const cacheTimeKey=
+
+cacheKey
+
++
+
+"_time";
+
+const now=Date.now();
+
+const cached=
+
+localStorage.getItem(
+cacheKey
+);
+
+const cacheTime=
+
+parseInt(
+
+localStorage.getItem(
+cacheTimeKey
+)
+
+||0);
+
+
+if(
+
+cached!==null
+
+&&
+
+now-cacheTime<3000
+
+){
+
+return cached
+
+? cached.split(" ")
+
+: [];
+
+}
+
+
+let result=[];
+
+$.ajax({
+
+url:
+
+game_data.link_base_pure+
+
+"forum&screenmode=view_thread&"
+
++
+
+"forum_id="+forumId+
+
+"&thread_id="+threadId,
+
+async:false,
+
+success:function(html){
+
+result=[
+
+...new Set(
+
+(
+
+$(html)
+
+.find(
+".text,.post_text"
+)
+
+.text()
+
+.match(
+/\d{1,3}\|\d{1,3}/g
+)
+
+||
+
+[]
+
+)
+
+)
+
+];
+
+}
+
+});
+
+
+localStorage.setItem(
+
+cacheKey,
+
+result.join(" ")
+
+);
+
+localStorage.setItem(
+
+cacheTimeKey,
+
+now
+);
+
+return result;
+
+}
 
 
 
@@ -64,15 +214,35 @@ unit
 
 
 
+const params = new URLSearchParams(
+location.search
+);
 
-const params = new URLSearchParams(location.search);
+const screen=
+params.get("screen");
 
-const screen = params.get("screen");
-const mode = params.get("mode");
+const mode=
+params.get("mode");
 
-if(screen !== "place") return;
+if(
+screen!=="place"
+){
+return;
+}
 
-if(mode && mode !== "command") return;
+if(
+
+mode
+
+&&
+
+mode!=="command"
+
+){
+
+return;
+
+}
 
 
 
@@ -166,55 +336,8 @@ forumId
 threadId
 ){
 
-$.ajax({
-
-url:
-
-game_data.link_base_pure+
-
-"forum&screenmode=view_thread&"
-
-+
-
-"forum_id="+forumId+
-
-"&thread_id="+threadId,
-
-async:false,
-
-success:function(html){
-
-coords=[
-
-...new Set(
-
-(
-
-$(html)
-
-.find(
-".text,.post_text"
-)
-
-.text()
-
-.match(
-/\d{1,3}\|\d{1,3}/g
-)
-
-||
-
-[]
-
-)
-
-)
-
-];
-
-}
-
-});
+coords=
+getForumCoords();
 
 }
 
@@ -1740,6 +1863,22 @@ $("#crytekThreadId")
 
 );
 
+Object.keys(localStorage)
+
+.forEach(k=>{
+
+if(
+k.startsWith(
+"crytek_forum_cache_"
+)
+){
+
+localStorage.removeItem(k);
+
+}
+
+});
+
 localStorage.setItem(
 "crytek_fake_coords",
 $("#crytekCoords")
@@ -2038,62 +2177,11 @@ return;
 }
 
 
-updateStatus(
-"Fórum betöltése..."
-);
+coords=
 
+getForumCoords()
 
-$.ajax({
-
-url:
-
-game_data.link_base_pure+
-
-"forum&screenmode=view_thread&"
-
-+
-
-"forum_id="+forumId+
-
-"&thread_id="+threadId,
-
-async:false,
-
-success:function(html){
-
-coords=[
-
-...new Set(
-
-(
-
-$(html)
-
-.find(
-".text,.post_text"
-)
-
-.text()
-
-.match(
-
-/\d{1,3}\|\d{1,3}/g
-
-)
-
-||
-
-[]
-
-)
-
-)
-
-].join(" ");
-
-}
-
-});
+.join(" ");
 
 }
 
@@ -2149,6 +2237,20 @@ localStorage.getItem(
 )
 
 || "ram";
+
+if(
+
+!AVAILABLE_UNITS.length
+
+){
+
+updateStatus(
+"Nincs támogatott egység"
+);
+
+return;
+
+}
 
 if(
 !AVAILABLE_UNITS.includes(
@@ -2991,7 +3093,10 @@ localStorage.removeItem(
 autoKey
 );
 
+
 requestAnimationFrame(()=>{
+
+updateStats();
 
 $("#crytekFakeBtn")
 .click();
