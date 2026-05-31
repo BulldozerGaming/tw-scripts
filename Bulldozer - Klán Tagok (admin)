@@ -1675,283 +1675,248 @@ $('#startSupportScan').hide();
     $('#startDefenseScan').hide();
 $('#startNukeScan').hide();
 
-    for (let player of players) {
+   const BATCH = 6;
 
-       document.getElementById(
+for(
+let x=0;
+x<players.length;
+x+=BATCH
+){
+
+await Promise.all(
+
+players
+.slice(
+x,
+x+BATCH
+)
+
+.map(
+async player=>{
+
+document.getElementById(
 'defenseStatus'
 ).innerHTML=
 `
 
-            <div style="
-                text-align:center;
-                padding:20px;
-                font-size:14px;
-                color:#2c4b66;
-                line-height:24px;
-            ">
+<div style="
+text-align:center;
+padding:20px;
+font-size:14px;
+color:#2c4b66;
+line-height:24px;
+">
 
-                🛡️ Védők vizsgálata folyamatban...
+🛡️ Védők vizsgálata folyamatban...
 
-                <div style="
-                    margin-top:10px;
-                    font-size:15px;
-                ">
+<div style="
+margin-top:10px;
+font-size:15px;
+">
 
-                    <img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/welcome/player_points.webp"
-                         style="
-                            width:18px;
-                            height:18px;
-                            vertical-align:-3px;
-                            margin-right:0px;
-                         ">
+<strong>Vizsgálat:</strong>
 
-                    <strong>Vizsgálat:</strong>
-                    <strong>${player.name}</strong>
+<strong>
 
-                </div>
+${player.name}
 
-                <div style="
-                    margin-top:14px;
-                    font-size:12px;
-                    font-style:italic;
-                    opacity:0.95;
-                ">
+</strong>
 
-                    <span style="
-                        font-weight:bold;
-                        color:#555;
-                    ">
-                        By
-                    </span>
+</div>
 
-                    <span style="
-                        font-weight:bold;
-                        color:#8b0000;
-                    ">
-                        Crytek
-                    </span>
+</div>
 
-                </div>
+`;
 
-            </div>
+let url =
 
-        `;
+`${location.origin}` +
+`/game.php?village=${game_data.village.id}` +
+`&screen=ally` +
+`&mode=members_defense` +
+`&player_id=${player.id}`;
 
-        let url =
+let html=
+await fetchPage(url);
 
-            `${location.origin}` +
-            `/game.php?village=${game_data.village.id}` +
-            `&screen=ally` +
-            `&mode=members_defense` +
-            `&player_id=${player.id}`;
+let doc=
+new DOMParser()
+.parseFromString(
+html,
+'text/html'
+);
 
-        let html =
-            await fetchPage(url);
+let table=null;
 
-        let doc =
-            new DOMParser()
-            .parseFromString(
-                html,
-                'text/html'
-            );
-
-        let table = null;
-
-       for(
+for(
 const t of
 doc.getElementsByClassName(
 'vis'
 )
 ){
 
-    let headers =
-        Array.from(
-            t.querySelectorAll('th')
-        )
-        .map(h =>
-            h.innerText.trim()
-        );
-
-    if (
-        headers.includes('Falu') &&
-        headers.includes('Pont')
-    ) {
-        table = t;
-    }
-
-}
-
-        if (!table) {
-            continue;
-        }
-
-        let rows =
-            table.querySelectorAll('tr');
-let unitIndex =
-getUnitIndexes(table);
-        for (let i = 0; i < rows.length; i++) {
-
-            let cols =
-                rows[i].querySelectorAll('td');
-
-if (cols.length < 5) {
-    continue;
-}
-
-            let village =
-                cols[0]?.innerHTML;
-
-            if (!village) {
-                continue;
-            }
-
-            if (
-                village.includes('faluban') ||
-                village.includes('Úton')
-            ) {
-                continue;
-            }
-
-const OFFSET = 0;
-
-let inVillage = {
-
-    spear:
-        getCol(
-            cols,
-            unitIndex.spear + OFFSET
-        ),
-
-    sword:
-        getCol(
-            cols,
-            unitIndex.sword + OFFSET
-        ),
-
-    archer:
-        getCol(
-            cols,
-            unitIndex.archer + OFFSET
-        ),
-
-    heavy:
-        getCol(
-            cols,
-            unitIndex.heavy + OFFSET
-        ),
-
-    knight:
-        getCol(
-            cols,
-            unitIndex.knight + OFFSET
-        )
-};
-
-let roadCols =
-    rows[i + 1]
-    ? rows[i + 1].querySelectorAll('td')
-    : [];
-
-const roadShift =
-(
-    roadCols.length &&
-    roadCols.length < cols.length
+let headers=
+Array.from(
+t.querySelectorAll('th')
 )
-? -2
-: 0;
+.map(
+h=>h.innerText.trim()
+);
 
-let onRoad = {
+if(
+headers.includes('Falu')
+&&
+headers.includes('Pont')
+){
+table=t;
+}
 
-    spear:
-        getCol(
-            roadCols,
-            unitIndex.spear + roadShift
-        ),
+}
 
-    sword:
-        getCol(
-            roadCols,
-            unitIndex.sword + roadShift
-        ),
+if(!table){
+return;
+}
 
-    archer:
-        getCol(
-            roadCols,
-            unitIndex.archer + roadShift
-        ),
+let rows=
+table.querySelectorAll('tr');
 
-    heavy:
-        getCol(
-            roadCols,
-            unitIndex.heavy + roadShift
-        ),
+let unitIndex=
+getUnitIndexes(table);
 
-    knight:
-        getCol(
-            roadCols,
-            unitIndex.knight + roadShift
-        )
+for(
+let i=0;
+i<rows.length;
+i++
+){
+
+let cols=
+rows[i]
+.querySelectorAll('td');
+
+if(cols.length<5){
+continue;
+}
+
+let village=
+cols[0]?.innerHTML;
+
+if(!village){
+continue;
+}
+
+if(
+village.includes('faluban')
+||
+village.includes('Úton')
+){
+continue;
+}
+
+const OFFSET=0;
+
+let inVillage={
+
+spear:getCol(cols,unitIndex.spear+OFFSET),
+sword:getCol(cols,unitIndex.sword+OFFSET),
+archer:getCol(cols,unitIndex.archer+OFFSET),
+heavy:getCol(cols,unitIndex.heavy+OFFSET),
+knight:getCol(cols,unitIndex.knight+OFFSET)
+
 };
 
-            movableDefense.spear += inVillage.spear;
-            movableDefense.sword += inVillage.sword;
-            movableDefense.archer += inVillage.archer;
-            movableDefense.heavy += inVillage.heavy;
-            movableDefense.knight += inVillage.knight;
+let roadCols=
+rows[i+1]
+?
+rows[i+1].querySelectorAll('td')
+:[ ];
 
-            travelingDefense.spear += onRoad.spear;
-            travelingDefense.sword += onRoad.sword;
-            travelingDefense.archer += onRoad.archer;
-            travelingDefense.heavy += onRoad.heavy;
-            travelingDefense.knight += onRoad.knight;
+const roadShift=
+(
+roadCols.length &&
+roadCols.length<cols.length
+)
+?
+-2
+:
+0;
 
-            let combined = {
+let onRoad={
 
-                spear:
-                    inVillage.spear + onRoad.spear,
+spear:getCol(roadCols,unitIndex.spear+roadShift),
+sword:getCol(roadCols,unitIndex.sword+roadShift),
+archer:getCol(roadCols,unitIndex.archer+roadShift),
+heavy:getCol(roadCols,unitIndex.heavy+roadShift),
+knight:getCol(roadCols,unitIndex.knight+roadShift)
 
-                sword:
-                    inVillage.sword + onRoad.sword,
+};
 
-                archer:
-                    inVillage.archer + onRoad.archer,
+movableDefense.spear+=inVillage.spear;
+movableDefense.sword+=inVillage.sword;
+movableDefense.archer+=inVillage.archer;
+movableDefense.heavy+=inVillage.heavy;
+movableDefense.knight+=inVillage.knight;
 
-                heavy:
-                    inVillage.heavy + onRoad.heavy,
+travelingDefense.spear+=onRoad.spear;
+travelingDefense.sword+=onRoad.sword;
+travelingDefense.archer+=onRoad.archer;
+travelingDefense.heavy+=onRoad.heavy;
+travelingDefense.knight+=onRoad.knight;
 
-                knight:
-                    inVillage.knight + onRoad.knight
-            };
+let combined={
 
-            let pop =
-                calcDefense(combined);
+spear:
+inVillage.spear+onRoad.spear,
 
-            let cat =
-                defenseCategory(pop);
+sword:
+inVillage.sword+onRoad.sword,
 
-            if (
-                cat === 'Maradék' &&
-                pop <= 0
-            ) {
-                continue;
-            }
+archer:
+inVillage.archer+onRoad.archer,
 
-            defenseResult[cat].push({
+heavy:
+inVillage.heavy+onRoad.heavy,
 
-                player:
-                    player.name,
+knight:
+inVillage.knight+onRoad.knight
 
-                village,
+};
 
-                inVillage,
-                onRoad,
-                combined,
-                pop
-            });
+let pop=
+calcDefense(combined);
 
-            i++;
-        }
-    }
+let cat=
+defenseCategory(pop);
+
+if(
+cat==='Maradék'
+&&
+pop<=0
+){
+continue;
+}
+
+defenseResult[cat].push({
+
+player:player.name,
+village,
+inVillage,
+onRoad,
+combined,
+pop
+
+});
+
+i++;
+
+}
+
+}
+
+)
+
+);
+
+}
 
     renderDefense();
 
@@ -2733,7 +2698,32 @@ $('#bdScannerButtonWrap')
 
 incomingResult=[];
 
-for(const player of players){
+incomingResult=[];
+
+const BATCH=6;
+
+for(
+let x=0;
+x<players.length;
+x+=BATCH
+){
+
+await Promise.all(
+
+players
+.slice(
+x,
+x+BATCH
+)
+
+.map(
+async player=>{
+
+document.getElementById(
+'incomingStatus'
+).innerHTML=
+
+`
 
 document.getElementById(
 'incomingStatus'
