@@ -2922,8 +2922,6 @@ await new Promise(
 r=>requestAnimationFrame(r)
 );
 
-}
-
 renderIncoming();
 
 });
