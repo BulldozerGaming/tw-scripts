@@ -13,8 +13,12 @@
 
 'use strict';
 
-if (window.location.href.indexOf('screen=map') < 0) {
-window.location.assign(game_data.link_base_pure + "map");
+if(
+!location.search.includes(
+"screen=map"
+)
+){
+return;
 }
 
 
@@ -688,6 +692,7 @@ if(window.owLiteStarted){
 window.owLiteStarted=false;
 
 $("#owInfoBtn").hide();
+$("#owFloatingInfo").hide();
 
 $("#owHud").remove();
 
@@ -703,6 +708,13 @@ mapOverlay.mapHandler._spawnSector;
 }
 
 mapOverlay.reload();
+
+targetData=[];
+
+playerData=[];
+
+$(".coordVillageMark")
+.remove();
 
 setTimeout(
 drawVillageSelection,
@@ -781,10 +793,8 @@ display:none;
 <div style="
 
 display:flex;
-
+justify-content:space-between;
 align-items:center;
-
-gap:8px;
 
 font-size:18px;
 
@@ -792,6 +802,12 @@ font-weight:bold;
 
 margin-bottom:14px;
 
+">
+
+<div style="
+display:flex;
+align-items:center;
+gap:8px;
 ">
 
 <img
@@ -813,6 +829,22 @@ height:18px;
 Térkép színezés
 
 </span>
+
+</div>
+
+<div id="closeOWInfo"
+
+style="
+cursor:pointer;
+font-size:28px;
+line-height:20px;
+font-weight:bold;
+user-select:none;
+">
+
+×
+
+</div>
 
 </div>
 
@@ -894,6 +926,15 @@ Crytek
 
 hud=$("#owInfoHud");
 
+$("#closeOWInfo").on(
+"click",
+function(){
+
+hud.hide();
+
+}
+);
+
 let dragging=false;
 
 let offsetX=0;
@@ -916,26 +957,13 @@ return;
 
 dragging=true;
 
-ox=
+offsetX=
 e.clientX-
 hud.offset().left;
 
-oy=
+offsetY=
 e.clientY-
 hud.offset().top;
-
-});
-
-
-$("#coordPickerInput")
-
-.on(
-"mousedown",
-function(e){
-
-e.stopPropagation();
-
-dragging=false;
 
 });
 
@@ -1466,6 +1494,42 @@ box-shadow:
 
 ">
 
+<div style="
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:10px;
+">
+
+<div style="
+font-size:20px;
+font-weight:bold;
+">
+
+Koordináta rendszer
+
+</div>
+
+<div id="closeCoordHud"
+
+style="
+cursor:pointer;
+font-size:28px;
+line-height:20px;
+font-weight:bold;
+">
+
+×
+
+</div>
+
+</div>
+
+<div style="
+border-top:1px solid #b08a52;
+margin-bottom:12px;
+"></div>
+
 <div id="fakeScriptSection">
 
 <div
@@ -1933,6 +1997,21 @@ Crytek
 
 hud=$("#coordPickerHud");
 
+$("#closeCoordHud").on(
+"click",
+function(){
+
+hud.hide();
+
+window.coordPickerEnabled=false;
+
+$(".coordVillageMark").remove();
+
+$("#coordInfoBtn").hide();
+
+}
+);
+
 let dragging=false;
 let ox=0;
 let oy=0;
@@ -2074,12 +2153,18 @@ display:none;
 >
 
 <div style="
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:12px;
+">
+
+<div style="
 font-size:18px;
 font-weight:bold;
 display:flex;
 align-items:center;
 gap:8px;
-margin-bottom:12px;
 ">
 
 <img
@@ -2090,6 +2175,21 @@ height:18px;
 ">
 
 Koordináta rendszer
+
+</div>
+
+<div id="closeCoordInfo"
+
+style="
+cursor:pointer;
+font-size:28px;
+line-height:20px;
+font-weight:bold;
+">
+
+×
+
+</div>
 
 </div>
 
@@ -2167,6 +2267,18 @@ Crytek
 
 hud=$("#coordInfoHud");
 
+
+$("#closeCoordInfo").on(
+"click",
+function(){
+
+hud.hide();
+
+}
+);
+
+
+
 let dragging=false;
 
 let ox=0;
@@ -2176,6 +2288,14 @@ let oy=0;
 hud.on(
 "mousedown",
 function(e){
+
+if(
+$(e.target).closest(
+"textarea,input,select,label"
+).length
+){
+return;
+}
 
 dragging=true;
 
@@ -2188,7 +2308,6 @@ e.clientY-
 hud.offset().top;
 
 });
-
 $(document).on(
 "mousemove.coordInfo",
 function(e){
@@ -2615,6 +2734,18 @@ enableCoordPicker();
 window.coordPickerEnabled=
 $("#coordPickerHud")
 .is(":visible");
+
+if(
+!window.coordPickerEnabled
+){
+
+$(".coordVillageMark")
+.remove();
+
+$("#coordInfoBtn")
+.hide();
+
+}
 
 const visible=
 
