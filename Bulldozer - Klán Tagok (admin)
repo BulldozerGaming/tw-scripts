@@ -2725,12 +2725,6 @@ document.getElementById(
 
 `
 
-document.getElementById(
-'incomingStatus'
-).innerHTML=
-
-`
-
 <div style="
 text-align:center;
 padding:20px;
