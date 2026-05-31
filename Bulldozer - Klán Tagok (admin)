@@ -2759,8 +2759,6 @@ table=t;
 
 });
 
-console.log(doc.body.innerText);
-
 if(!table){
 continue;
 }
