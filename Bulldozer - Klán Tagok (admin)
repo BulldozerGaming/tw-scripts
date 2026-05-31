@@ -1377,7 +1377,7 @@ $(document)
 'click',
 '.nukeToggle',
 
-function(){
+function(e){
 
     if ($(e.target).closest('a').length) {
         return;
