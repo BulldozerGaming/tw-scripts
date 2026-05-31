@@ -381,6 +381,9 @@ function getCol(cols, index) {
 
 const players = [];
 
+const playerCache =
+new Map();
+
 $('.vis tr').each(function () {
 
     let link =
@@ -399,18 +402,27 @@ $('.vis tr').each(function () {
         return;
     }
 
-    players.push({
+const playerObj={
 
-        id:
-            match[1],
+id:match[1],
 
-        name:
-            $(this)
-            .find('a[href*="info_player"]')
-            .first()
-            .text()
-            .trim()
-    });
+name:
+$(this)
+.find(
+'a[href*="info_player"]'
+)
+.first()
+.text()
+.trim()
+
+};
+
+players.push(playerObj);
+
+playerCache.set(
+playerObj.id,
+playerObj
+);
 });
 
 // =========================================
@@ -455,7 +467,10 @@ async function fetchPage(url) {
 
 async function scanPlayer(player) {
 
-$('#bdStatus').html(`
+document.getElementById(
+'bdStatus'
+).innerHTML=
+`
 
     <div style="
         text-align:center;
@@ -532,16 +547,21 @@ $('#bdStatus').html(`
 
     let table = null;
 
-    doc.querySelectorAll('.vis')
-        .forEach(t => {
+   for(
+const t of
+doc.getElementsByClassName(
+'vis'
+)
+){
 
-            if (
-                t.innerText.includes('Falu') &&
-                t.innerText.includes('Pont')
-            ) {
-                table = t;
-            }
-        });
+    if (
+        t.innerText.includes('Falu') &&
+        t.innerText.includes('Pont')
+    ) {
+        table = t;
+    }
+
+}
 
     if (!table) {
         return;
@@ -693,9 +713,27 @@ result = {
 
 clanTotalSnobs = 0;
 
-for (let player of players) {
+const BATCH=6;
 
-    await scanPlayer(player);
+for(
+let i=0;
+i<players.length;
+i+=BATCH
+){
+
+await Promise.all(
+
+players
+.slice(
+i,
+i+BATCH
+)
+
+.map(
+scanPlayer
+)
+
+);
 
 }
 
@@ -1325,11 +1363,21 @@ function render() {
 
 `;
 
-    $('#bdStatus').html(html);
+  document.getElementById(
+'bdStatus'
+).innerHTML=
+html;
 
-$('.nukeToggle')
-.off('click')
-.on('click', function(e) {
+$(document)
+.off(
+'click',
+'.nukeToggle'
+)
+.on(
+'click',
+'.nukeToggle',
+
+function(){
 
     if ($(e.target).closest('a').length) {
         return;
@@ -1340,9 +1388,16 @@ $('.nukeToggle')
 
 });
 
-$('.playerToggle')
-.off('click')
-.on('click', function(e) {
+$(document)
+.off(
+'click',
+'.playerToggle'
+)
+.on(
+'click',
+'.playerToggle',
+
+function(e){
 
     if ($(e.target).closest('a').length) {
         return;
@@ -1622,7 +1677,10 @@ $('#startNukeScan').hide();
 
     for (let player of players) {
 
-        $('#defenseStatus').html(`
+       document.getElementById(
+'defenseStatus'
+).innerHTML=
+`
 
             <div style="
                 text-align:center;
@@ -1699,24 +1757,29 @@ $('#startNukeScan').hide();
 
         let table = null;
 
-        doc.querySelectorAll('.vis')
-        .forEach(t => {
+       for(
+const t of
+doc.getElementsByClassName(
+'vis'
+)
+){
 
-            let headers =
-                Array.from(
-                    t.querySelectorAll('th')
-                )
-                .map(h =>
-                    h.innerText.trim()
-                );
+    let headers =
+        Array.from(
+            t.querySelectorAll('th')
+        )
+        .map(h =>
+            h.innerText.trim()
+        );
 
-            if (
-                headers.includes('Falu') &&
-                headers.includes('Pont')
-            ) {
-                table = t;
-            }
-        });
+    if (
+        headers.includes('Falu') &&
+        headers.includes('Pont')
+    ) {
+        table = t;
+    }
+
+}
 
         if (!table) {
             continue;
@@ -2498,20 +2561,36 @@ if (cat === 'Maradék') {
 </div>
 `;
 
-    $('#defenseStatus')
-        .html(html);
+  document.getElementById(
+'defenseStatus'
+).innerHTML=
+html;
 
-    $('.defToggle')
-        .off('click')
-        .on('click', function () {
+$(document)
+.off(
+'click',
+'.defToggle'
+)
+.on(
+'click',
+'.defToggle',
+
+function(){
 
             $('#' + $(this).data('id'))
                 .toggle();
         });
 
-    $('.playerDefenseToggle')
-        .off('click')
-        .on('click', function () {
+$(document)
+.off(
+'click',
+'.playerDefenseToggle'
+)
+.on(
+'click',
+'.playerDefenseToggle',
+
+function(){
 
             $('#' + $(this).data('id'))
                 .toggle();
@@ -2656,7 +2735,9 @@ incomingResult=[];
 
 for(const player of players){
 
-$('#incomingStatus').html(`
+document.getElementById(
+'incomingStatus'
+).innerHTML=
 
 <div style="
 text-align:center;
@@ -2746,8 +2827,12 @@ html,
 
 let table = null;
 
-doc.querySelectorAll('.vis')
-.forEach(t=>{
+for(
+const t of
+doc.getElementsByClassName(
+'vis'
+)
+){
 
 if(
 t.innerText.includes('Faluban')
@@ -2757,7 +2842,7 @@ t.innerText.includes('Úton')
 table=t;
 }
 
-});
+}
 
 if(!table){
 continue;
@@ -3189,12 +3274,21 @@ Crytek
 
 `;
 
-$('#incomingStatus')
-.html(html);
+document.getElementById(
+'incomingStatus'
+).innerHTML=
+html;
 
-$('.incomingPlayerToggle')
-.off('click')
-.on('click',function(){
+$(document)
+.off(
+'click',
+'.incomingPlayerToggle'
+)
+.on(
+'click',
+'.incomingPlayerToggle',
+
+function(){
 
 $('#'+$(this).data('id'))
 .toggle();
