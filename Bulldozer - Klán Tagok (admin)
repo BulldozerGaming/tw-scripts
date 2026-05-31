@@ -1150,20 +1150,11 @@ function render() {
                                     padding:4px 0 8px 0;
                                 ">
 
-                                <table class="vis nukeVillageTable"
+          <table class="vis nukeVillageTable"
+width="100%"
 style="
 background:#fffaf0;
 border:1px solid #d9c28f;
-
-width:auto;
-
-min-width:620px;
-
-display:inline-table;
-
-margin-left:8px;
-
-vertical-align:top;
 ">
 
                                     <tr style="
@@ -1205,17 +1196,18 @@ vertical-align:top;
                         html += `
 
                             <tr style="
-                                background:#fffaf0;
-                                border-bottom:1px solid #d9c28f;
-                                height:26px;
-                            ">
+background:#fffaf0;
+border-bottom:1px solid #d9c28f;
+height:26px;
+">
 
-                                <td style="
-                                    min-width:260px;
-                                    font-weight:bold;
-                                    padding-left:8px;
-                                    font-size:12px;
-                                ">
+                               <td style="
+min-width:260px;
+font-weight:bold;
+padding-left:8px;
+font-size:12px;
+vertical-align:top;
+">
                                     ${v.village}
                                 </td>
 
