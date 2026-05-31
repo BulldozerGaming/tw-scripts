@@ -525,7 +525,7 @@ document.getElementById(
 
     </div>
 
-`);
+`;
 
     let url =
 
@@ -1735,7 +1735,7 @@ $('#startNukeScan').hide();
 
             </div>
 
-        `);
+        `;
 
         let url =
 
