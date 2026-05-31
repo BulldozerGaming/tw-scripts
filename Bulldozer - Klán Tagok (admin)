@@ -2950,11 +2950,13 @@ i++;
 
 renderIncoming();
 
-})  // async player=> + map lezárás
+}) // map async vége
 
-);  // Promise.all lezárás
+); // Promise.all vége
 
-}   // for lezárás
+} // for vége
+
+}); // $('#startIncomingScan').on(...) LEZÁRÁSA
 
 function renderIncoming(){
 
