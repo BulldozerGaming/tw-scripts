@@ -10,9 +10,9 @@
 // ==/UserScript==
 
 (function () {
- 
+  
 'use strict';
-
+ 
 // =========================================
 // CHECK PAGE
 // =========================================
@@ -27,7 +27,7 @@ if (
     return;
 }
 
-  
+ 
 
 // =========================================
 // JOGOSULTSÁG ELLENŐRZÉS
@@ -381,9 +381,6 @@ function getCol(cols, index) {
 
 const players = [];
 
-const playerCache =
-new Map();
-
 $('.vis tr').each(function () {
 
     let link =
@@ -402,27 +399,18 @@ $('.vis tr').each(function () {
         return;
     }
 
-const playerObj={
+    players.push({
 
-id:match[1],
+        id:
+            match[1],
 
-name:
-$(this)
-.find(
-'a[href*="info_player"]'
-)
-.first()
-.text()
-.trim()
-
-};
-
-players.push(playerObj);
-
-playerCache.set(
-playerObj.id,
-playerObj
-);
+        name:
+            $(this)
+            .find('a[href*="info_player"]')
+            .first()
+            .text()
+            .trim()
+    });
 });
 
 // =========================================
@@ -467,10 +455,7 @@ async function fetchPage(url) {
 
 async function scanPlayer(player) {
 
-document.getElementById(
-'bdStatus'
-).innerHTML=
-`
+$('#bdStatus').html(`
 
     <div style="
         text-align:center;
@@ -525,7 +510,7 @@ document.getElementById(
 
     </div>
 
-`;
+`);
 
     let url =
 
@@ -547,21 +532,16 @@ document.getElementById(
 
     let table = null;
 
-   for(
-const t of
-doc.getElementsByClassName(
-'vis'
-)
-){
+    doc.querySelectorAll('.vis')
+        .forEach(t => {
 
-    if (
-        t.innerText.includes('Falu') &&
-        t.innerText.includes('Pont')
-    ) {
-        table = t;
-    }
-
-}
+            if (
+                t.innerText.includes('Falu') &&
+                t.innerText.includes('Pont')
+            ) {
+                table = t;
+            }
+        });
 
     if (!table) {
         return;
@@ -713,27 +693,9 @@ result = {
 
 clanTotalSnobs = 0;
 
-const BATCH=6;
+for (let player of players) {
 
-for(
-let i=0;
-i<players.length;
-i+=BATCH
-){
-
-await Promise.all(
-
-players
-.slice(
-i,
-i+BATCH
-)
-
-.map(
-scanPlayer
-)
-
-);
+    await scanPlayer(player);
 
 }
 
@@ -1344,7 +1306,7 @@ function render() {
     font-style:italic;
     opacity:0.95;
 ">
- 
+
     <span style="
         font-weight:bold;
         color:#555;
@@ -1363,21 +1325,11 @@ function render() {
 
 `;
 
-  document.getElementById(
-'bdStatus'
-).innerHTML=
-html;
+    $('#bdStatus').html(html);
 
-$(document)
-.off(
-'click',
-'.nukeToggle'
-)
-.on(
-'click',
-'.nukeToggle',
-
-function(e){
+$('.nukeToggle')
+.off('click')
+.on('click', function(e) {
 
     if ($(e.target).closest('a').length) {
         return;
@@ -1388,16 +1340,9 @@ function(e){
 
 });
 
-$(document)
-.off(
-'click',
-'.playerToggle'
-)
-.on(
-'click',
-'.playerToggle',
-
-function(e){
+$('.playerToggle')
+.off('click')
+.on('click', function(e) {
 
     if ($(e.target).closest('a').length) {
         return;
@@ -1675,248 +1620,275 @@ $('#startSupportScan').hide();
     $('#startDefenseScan').hide();
 $('#startNukeScan').hide();
 
-   const BATCH = 6;
+    for (let player of players) {
 
-for(
-let x=0;
-x<players.length;
-x+=BATCH
-){
+        $('#defenseStatus').html(`
 
-await Promise.all(
+            <div style="
+                text-align:center;
+                padding:20px;
+                font-size:14px;
+                color:#2c4b66;
+                line-height:24px;
+            ">
 
-players
-.slice(
-x,
-x+BATCH
-)
+                🛡️ Védők vizsgálata folyamatban...
 
-.map(
-async player=>{
+                <div style="
+                    margin-top:10px;
+                    font-size:15px;
+                ">
 
-document.getElementById(
-'defenseStatus'
-).innerHTML=
-`
+                    <img src="https://dshu.innogamescdn.com/asset/6ce2ab95/graphic/welcome/player_points.webp"
+                         style="
+                            width:18px;
+                            height:18px;
+                            vertical-align:-3px;
+                            margin-right:0px;
+                         ">
 
-<div style="
-text-align:center;
-padding:20px;
-font-size:14px;
-color:#2c4b66;
-line-height:24px;
-">
+                    <strong>Vizsgálat:</strong>
+                    <strong>${player.name}</strong>
 
-🛡️ Védők vizsgálata folyamatban...
+                </div>
 
-<div style="
-margin-top:10px;
-font-size:15px;
-">
+                <div style="
+                    margin-top:14px;
+                    font-size:12px;
+                    font-style:italic;
+                    opacity:0.95;
+                ">
 
-<strong>Vizsgálat:</strong>
+                    <span style="
+                        font-weight:bold;
+                        color:#555;
+                    ">
+                        By
+                    </span>
 
-<strong>
+                    <span style="
+                        font-weight:bold;
+                        color:#8b0000;
+                    ">
+                        Crytek
+                    </span>
 
-${player.name}
+                </div>
 
-</strong>
+            </div>
 
-</div>
+        `);
 
-</div>
+        let url =
 
-`;
+            `${location.origin}` +
+            `/game.php?village=${game_data.village.id}` +
+            `&screen=ally` +
+            `&mode=members_defense` +
+            `&player_id=${player.id}`;
 
-let url =
+        let html =
+            await fetchPage(url);
 
-`${location.origin}` +
-`/game.php?village=${game_data.village.id}` +
-`&screen=ally` +
-`&mode=members_defense` +
-`&player_id=${player.id}`;
+        let doc =
+            new DOMParser()
+            .parseFromString(
+                html,
+                'text/html'
+            );
 
-let html=
-await fetchPage(url);
+        let table = null;
 
-let doc=
-new DOMParser()
-.parseFromString(
-html,
-'text/html'
-);
+        doc.querySelectorAll('.vis')
+        .forEach(t => {
 
-let table=null;
+            let headers =
+                Array.from(
+                    t.querySelectorAll('th')
+                )
+                .map(h =>
+                    h.innerText.trim()
+                );
 
-for(
-const t of
-doc.getElementsByClassName(
-'vis'
-)
-){
+            if (
+                headers.includes('Falu') &&
+                headers.includes('Pont')
+            ) {
+                table = t;
+            }
+        });
 
-let headers=
-Array.from(
-t.querySelectorAll('th')
-)
-.map(
-h=>h.innerText.trim()
-);
+        if (!table) {
+            continue;
+        }
 
-if(
-headers.includes('Falu')
-&&
-headers.includes('Pont')
-){
-table=t;
-}
-
-}
-
-if(!table){
-return;
-}
-
-let rows=
-table.querySelectorAll('tr');
-
-let unitIndex=
+        let rows =
+            table.querySelectorAll('tr');
+let unitIndex =
 getUnitIndexes(table);
+        for (let i = 0; i < rows.length; i++) {
 
-for(
-let i=0;
-i<rows.length;
-i++
-){
+            let cols =
+                rows[i].querySelectorAll('td');
 
-let cols=
-rows[i]
-.querySelectorAll('td');
-
-if(cols.length<5){
-continue;
+if (cols.length < 5) {
+    continue;
 }
 
-let village=
-cols[0]?.innerHTML;
+            let village =
+                cols[0]?.innerHTML;
 
-if(!village){
-continue;
-}
+            if (!village) {
+                continue;
+            }
 
-if(
-village.includes('faluban')
-||
-village.includes('Úton')
-){
-continue;
-}
+            if (
+                village.includes('faluban') ||
+                village.includes('Úton')
+            ) {
+                continue;
+            }
 
-const OFFSET=0;
+const OFFSET = 0;
 
-let inVillage={
+let inVillage = {
 
-spear:getCol(cols,unitIndex.spear+OFFSET),
-sword:getCol(cols,unitIndex.sword+OFFSET),
-archer:getCol(cols,unitIndex.archer+OFFSET),
-heavy:getCol(cols,unitIndex.heavy+OFFSET),
-knight:getCol(cols,unitIndex.knight+OFFSET)
+    spear:
+        getCol(
+            cols,
+            unitIndex.spear + OFFSET
+        ),
 
+    sword:
+        getCol(
+            cols,
+            unitIndex.sword + OFFSET
+        ),
+
+    archer:
+        getCol(
+            cols,
+            unitIndex.archer + OFFSET
+        ),
+
+    heavy:
+        getCol(
+            cols,
+            unitIndex.heavy + OFFSET
+        ),
+
+    knight:
+        getCol(
+            cols,
+            unitIndex.knight + OFFSET
+        )
 };
 
-let roadCols=
-rows[i+1]
-?
-rows[i+1].querySelectorAll('td')
-:[ ];
+let roadCols =
+    rows[i + 1]
+    ? rows[i + 1].querySelectorAll('td')
+    : [];
 
-const roadShift=
+const roadShift =
 (
-roadCols.length &&
-roadCols.length<cols.length
+    roadCols.length &&
+    roadCols.length < cols.length
 )
-?
--2
-:
-0;
+? -2
+: 0;
 
-let onRoad={
+let onRoad = {
 
-spear:getCol(roadCols,unitIndex.spear+roadShift),
-sword:getCol(roadCols,unitIndex.sword+roadShift),
-archer:getCol(roadCols,unitIndex.archer+roadShift),
-heavy:getCol(roadCols,unitIndex.heavy+roadShift),
-knight:getCol(roadCols,unitIndex.knight+roadShift)
+    spear:
+        getCol(
+            roadCols,
+            unitIndex.spear + roadShift
+        ),
 
+    sword:
+        getCol(
+            roadCols,
+            unitIndex.sword + roadShift
+        ),
+
+    archer:
+        getCol(
+            roadCols,
+            unitIndex.archer + roadShift
+        ),
+
+    heavy:
+        getCol(
+            roadCols,
+            unitIndex.heavy + roadShift
+        ),
+
+    knight:
+        getCol(
+            roadCols,
+            unitIndex.knight + roadShift
+        )
 };
 
-movableDefense.spear+=inVillage.spear;
-movableDefense.sword+=inVillage.sword;
-movableDefense.archer+=inVillage.archer;
-movableDefense.heavy+=inVillage.heavy;
-movableDefense.knight+=inVillage.knight;
+            movableDefense.spear += inVillage.spear;
+            movableDefense.sword += inVillage.sword;
+            movableDefense.archer += inVillage.archer;
+            movableDefense.heavy += inVillage.heavy;
+            movableDefense.knight += inVillage.knight;
 
-travelingDefense.spear+=onRoad.spear;
-travelingDefense.sword+=onRoad.sword;
-travelingDefense.archer+=onRoad.archer;
-travelingDefense.heavy+=onRoad.heavy;
-travelingDefense.knight+=onRoad.knight;
+            travelingDefense.spear += onRoad.spear;
+            travelingDefense.sword += onRoad.sword;
+            travelingDefense.archer += onRoad.archer;
+            travelingDefense.heavy += onRoad.heavy;
+            travelingDefense.knight += onRoad.knight;
 
-let combined={
+            let combined = {
 
-spear:
-inVillage.spear+onRoad.spear,
+                spear:
+                    inVillage.spear + onRoad.spear,
 
-sword:
-inVillage.sword+onRoad.sword,
+                sword:
+                    inVillage.sword + onRoad.sword,
 
-archer:
-inVillage.archer+onRoad.archer,
+                archer:
+                    inVillage.archer + onRoad.archer,
 
-heavy:
-inVillage.heavy+onRoad.heavy,
+                heavy:
+                    inVillage.heavy + onRoad.heavy,
 
-knight:
-inVillage.knight+onRoad.knight
+                knight:
+                    inVillage.knight + onRoad.knight
+            };
 
-};
+            let pop =
+                calcDefense(combined);
 
-let pop=
-calcDefense(combined);
+            let cat =
+                defenseCategory(pop);
 
-let cat=
-defenseCategory(pop);
+            if (
+                cat === 'Maradék' &&
+                pop <= 0
+            ) {
+                continue;
+            }
 
-if(
-cat==='Maradék'
-&&
-pop<=0
-){
-continue;
-}
+            defenseResult[cat].push({
 
-defenseResult[cat].push({
+                player:
+                    player.name,
 
-player:player.name,
-village,
-inVillage,
-onRoad,
-combined,
-pop
+                village,
 
-});
+                inVillage,
+                onRoad,
+                combined,
+                pop
+            });
 
-i++;
-
-}
-
-}
-
-)
-
-);
-
-}
+            i++;
+        }
+    }
 
     renderDefense();
 
@@ -2526,36 +2498,20 @@ if (cat === 'Maradék') {
 </div>
 `;
 
-  document.getElementById(
-'defenseStatus'
-).innerHTML=
-html;
+    $('#defenseStatus')
+        .html(html);
 
-$(document)
-.off(
-'click',
-'.defToggle'
-)
-.on(
-'click',
-'.defToggle',
-
-function(){
+    $('.defToggle')
+        .off('click')
+        .on('click', function () {
 
             $('#' + $(this).data('id'))
                 .toggle();
         });
 
-$(document)
-.off(
-'click',
-'.playerDefenseToggle'
-)
-.on(
-'click',
-'.playerDefenseToggle',
-
-function(){
+    $('.playerDefenseToggle')
+        .off('click')
+        .on('click', function () {
 
             $('#' + $(this).data('id'))
                 .toggle();
@@ -2690,7 +2646,7 @@ Vizsgálat...
 </div>
 
 `;
- 
+
 $('#bdScannerButtonWrap')
 .after(incomingPanel);
 
@@ -2698,32 +2654,9 @@ $('#bdScannerButtonWrap')
 
 incomingResult=[];
 
-incomingResult=[];
+for(const player of players){
 
-const BATCH=6;
-
-for(
-let x=0;
-x<players.length;
-x+=BATCH
-){
-
-await Promise.all(
-
-players
-.slice(
-x,
-x+BATCH
-)
-
-.map(
-async player=>{
-
-document.getElementById(
-'incomingStatus'
-).innerHTML=
-
-`
+$('#incomingStatus').html(`
 
 <div style="
 text-align:center;
@@ -2791,7 +2724,7 @@ Crytek
 
 </div>
 
-`;
+`);
 
 let url=
 
@@ -2813,12 +2746,8 @@ html,
 
 let table = null;
 
-for(
-const t of
-doc.getElementsByClassName(
-'vis'
-)
-){
+doc.querySelectorAll('.vis')
+.forEach(t=>{
 
 if(
 t.innerText.includes('Faluban')
@@ -2828,10 +2757,10 @@ t.innerText.includes('Úton')
 table=t;
 }
 
-}
+});
 
 if(!table){
-return;
+continue;
 }
 
 let indexes=
@@ -2948,15 +2877,14 @@ i++;
 
 }
 
+}
+
 renderIncoming();
 
-}) // map async vége
+}
+);
 
-); // Promise.all vége
 
-} // for vége
-
-}); // $('#startIncomingScan').on(...) LEZÁRÁSA
 
 function renderIncoming(){
 
@@ -3261,21 +3189,12 @@ Crytek
 
 `;
 
-document.getElementById(
-'incomingStatus'
-).innerHTML=
-html;
+$('#incomingStatus')
+.html(html);
 
-$(document)
-.off(
-'click',
-'.incomingPlayerToggle'
-)
-.on(
-'click',
-'.incomingPlayerToggle',
-
-function(){
+$('.incomingPlayerToggle')
+.off('click')
+.on('click',function(){
 
 $('#'+$(this).data('id'))
 .toggle();
