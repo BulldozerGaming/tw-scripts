@@ -1921,9 +1921,7 @@ r=>requestAnimationFrame(r)
 
 }
 
-    }
-
-   requestAnimationFrame(()=>{
+requestAnimationFrame(()=>{
 
 renderDefense();
 
