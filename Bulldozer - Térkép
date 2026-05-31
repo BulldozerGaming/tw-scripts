@@ -645,6 +645,10 @@ window.owLiteStarted=false;
 
 btn.text("⚔ Sereg térkép");
 
+$("#owInfoBtn").hide();
+
+$("#owHud").remove();
+
 $(".mapOverlay_map_canvas").remove();
 
 if(
@@ -676,22 +680,219 @@ btn.text(
 "🗺 Normál térkép"
 );
 
+$("#owInfoBtn").show();
+
 // nothing
+
+}
+
+function toggleOWInfo(){
+
+if($("#owHud").length){
+
+$("#owHud").remove();
+
+return;
+
+}
+
+$("#owControls").append(`
+
+<div id="owHud"
+
+style="
+width:420px;
+
+background:#f4e4bc;
+
+border:2px solid #7d510f;
+
+padding:14px;
+
+border-radius:8px;
+
+box-shadow:
+0 3px 10px rgba(0,0,0,.25);
+
+font-size:13px;
+
+line-height:24px;
+">
+
+<h3 style="
+margin-top:0;
+margin-bottom:10px;
+">
+
+Térkép színezés
+
+</h3>
+
+<div>
+
+<div>
+<span style="
+display:inline-block;
+width:18px;
+height:18px;
+background:black;
+margin-right:8px;
+"></span>
+
+0 - 1k
+</div>
+
+<div>
+<span style="
+display:inline-block;
+width:18px;
+height:18px;
+background:gray;
+margin-right:8px;
+"></span>
+
+1k - 3k
+</div>
+
+<div>
+<span style="
+display:inline-block;
+width:18px;
+height:18px;
+background:green;
+margin-right:8px;
+"></span>
+
+3k - 5k
+</div>
+
+<div>
+<span style="
+display:inline-block;
+width:18px;
+height:18px;
+background:cyan;
+margin-right:8px;
+"></span>
+
+5k - 10k
+</div>
+
+<div>
+<span style="
+display:inline-block;
+width:18px;
+height:18px;
+background:yellow;
+margin-right:8px;
+"></span>
+
+10k - 15k
+</div>
+
+<div>
+<span style="
+display:inline-block;
+width:18px;
+height:18px;
+background:orange;
+margin-right:8px;
+"></span>
+
+15k - 20k
+</div>
+
+<div>
+<span style="
+display:inline-block;
+width:18px;
+height:18px;
+background:#ff6666;
+margin-right:8px;
+"></span>
+
+20k - 30k
+</div>
+
+<div>
+<span style="
+display:inline-block;
+width:18px;
+height:18px;
+background:red;
+margin-right:8px;
+"></span>
+
+30k - 40k
+</div>
+
+<div>
+<span style="
+display:inline-block;
+width:18px;
+height:18px;
+background:#0090ff;
+margin-right:8px;
+"></span>
+
+40k+
+</div>
+
+</div>
+
+</div>
+
+`);
 
 }
 
 
 function createArmyMapButton(){
 
-    if($("#owLiteBtn").length) return;
+if($("#owControls").length) return;
 
-const btn=$(`
+const container=$(`
+<div id="owControls"
+
+style="
+margin-bottom:15px;
+display:flex;
+flex-direction:column;
+align-items:flex-start;
+gap:8px;
+">
+
+<div id="owButtonRow"
+
+style="
+display:flex;
+gap:8px;
+flex-wrap:wrap;
+">
+
+</div>
+
+<div style="
+font-style:italic;
+font-weight:bold;
+color:#7d510f;
+font-size:13px;
+margin-left:3px;
+">
+
+By Crytek
+
+</div>
+
+</div>
+`);
+
+const armyBtn=$(`
 <a id="owLiteBtn"
 
 style="
 display:inline-block;
 padding:8px 14px;
-margin-bottom:12px;
 
 background:
 linear-gradient(
@@ -718,8 +919,6 @@ cursor:pointer;
 user-select:none;
 
 text-decoration:none;
-
-transition:.15s;
 ">
 
 ⚔ Sereg térkép
@@ -727,21 +926,67 @@ transition:.15s;
 </a>
 `);
 
-    const target=$("h2:contains('Kontinens')");
+const infoBtn=$(`
+<a id="owInfoBtn"
 
-    if(target.length){
+style="
+display:none;
 
-        btn.insertBefore(target);
+padding:8px 12px;
 
-    }else{
+background:
+linear-gradient(
+180deg,
+#3a6ea5,
+#23496f
+);
 
-        $("#content_value").prepend(btn);
+border:1px solid #18314b;
 
-    }
+border-radius:7px;
 
-    btn.on("click",startOverwatchLite);
+color:white;
+
+font-weight:bold;
+
+cursor:pointer;
+
+text-decoration:none;
+">
+
+ⓘ Info
+
+</a>
+`);
+
+const target=$("h2:contains('Kontinens')");
+
+if(target.length){
+
+container.insertBefore(target);
+
+}else{
+
+$("#content_value").prepend(container);
 
 }
+
+$("#owButtonRow")
+.append(armyBtn)
+.append(infoBtn);
+
+armyBtn.on(
+"click",
+startOverwatchLite
+);
+
+infoBtn.on(
+"click",
+toggleOWInfo
+);
+
+}
+
 
 
 $(document).ready(()=>{
