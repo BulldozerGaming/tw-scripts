@@ -2948,8 +2948,6 @@ i++;
 
 }
 
-}
-
 renderIncoming();
 
 })  // async player=> + map lezárás
