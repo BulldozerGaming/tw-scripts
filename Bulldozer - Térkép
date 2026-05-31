@@ -1079,9 +1079,9 @@ left:
 questBtn.offset().left + 8
 )+"px",
 
-top:"15%",
+top:"20%",
 
-transform:"translateY(-15%)",
+transform:"translateY(-20%)",
 
 zIndex:99999
 
@@ -1359,9 +1359,56 @@ toggleOWInfo
 }
 
 
-$(document).ready(()=>{
+$(document).ready(async function(){
 
-    createArmyMapButton();
+createArmyMapButton();
+
+let isAdmin=true;
+
+try{
+
+const html=await $.get(
+"/game.php?screen=ally&mode=members_defense"
+);
+
+const hasSelect=
+
+$(html)
+
+.find(
+'.input-nicer option'
+)
+
+.length>1;
+
+/*
+ha több játékost tudsz kiválasztani
+akkor van jogosultságod
+*/
+
+isAdmin=hasSelect;
+
+}catch(e){
+
+console.log(
+"Admin check error",
+e
+);
+
+}
+
+if(!isAdmin){
+
+$("#owLiteBtn").hide();
+
+}
+
+/* FONTOS */
+/* coord gomb újrapozicionálás */
+
+$(window).trigger(
+"resize"
+);
 
 });
 
@@ -2506,11 +2553,12 @@ $("body").append(btn);
 
 function pos(){
 
-const mapBtn=
-$("#owLiteBtn");
+const mapBtn=$("#owLiteBtn");
 
-if(!mapBtn.length)
-return;
+if(
+mapBtn.length &&
+mapBtn.css("display")!=="none"
+){
 
 btn.css({
 
@@ -2524,6 +2572,26 @@ mapBtn.offset().top+
 )+"px"
 
 });
+
+}else{
+
+const questBtn=
+$("#questlog_new");
+
+btn.css({
+
+left:
+(
+questBtn.offset().left+8
+)+"px",
+
+top:"20%",
+
+transform:"translateY(-20%)"
+
+});
+
+}
 
 }
 
@@ -2907,17 +2975,33 @@ localStorage.getItem(
 )
 ) || 1;
 
-const forumID =
+const forumID = (
 
 $("#forumID")
 .val()
-.replace(/\D/g,'');
 
-const threadID =
+|| ""
+
+)
+
+.replace(
+/\D/g,
+''
+);
+
+const threadID = (
 
 $("#threadID")
 .val()
-.replace(/\D/g,'');
+
+|| ""
+
+)
+
+.replace(
+/\D/g,
+''
+);
 
 let script =
 
