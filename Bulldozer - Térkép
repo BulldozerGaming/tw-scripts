@@ -997,21 +997,26 @@ $("#content_value").prepend(container);
 
 $("#owButtonRow").append(armyBtn);
 
-const leftMenu=$(".bg_left");
+const questLog = $("#questlog_new");
 
-if(leftMenu.length){
+if(
+questLog.length &&
+!$("#owFloatingInfo").length
+){
 
-leftMenu.append(
-$("<div id='owFloatingInfo' style='margin-top:10px;'></div>")
+questLog.after(
+`<div id="owFloatingInfo"
+style="
+margin-top:8px;
+display:flex;
+justify-content:center;
+">
+</div>`
 );
 
-$("#owFloatingInfo").append(infoBtn);
-
-}else{
-
-$("#owInfoRow").append(infoBtn);
-
 }
+
+$("#owFloatingInfo").html(infoBtn);
 
 armyBtn.on(
 "click",
