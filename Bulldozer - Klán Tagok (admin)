@@ -2920,14 +2920,15 @@ r=>requestAnimationFrame(r)
 
 }
 
-requestAnimationFrame(()=>{
+await new Promise(
+r=>requestAnimationFrame(r)
+);
+
+}
 
 renderIncoming();
 
 });
-
-}
-);
 
 
 
