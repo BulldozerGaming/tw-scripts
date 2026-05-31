@@ -2831,7 +2831,7 @@ table=t;
 }
 
 if(!table){
-continue;
+return;
 }
 
 let indexes=
