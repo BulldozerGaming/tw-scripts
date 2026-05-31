@@ -264,6 +264,11 @@ var MapRenderer = {
             this.renderSector(data, sector);
         };
         mapOverlay.reload();
+
+setTimeout(
+drawVillageSelection,
+100
+);
     },
 
     renderSector(data, sector) {
@@ -699,7 +704,10 @@ mapOverlay.mapHandler._spawnSector;
 
 mapOverlay.reload();
 
-// nothing
+setTimeout(
+drawVillageSelection,
+100
+);
 
 return;
 
@@ -896,19 +904,43 @@ hud.on(
 "mousedown",
 function(e){
 
-dragging=true;
+if(
+$(e.target).closest(
+"textarea,input,select,label"
+).length
+){
 
-offsetX=
-e.clientX-
-hud.offset().left;
-
-offsetY=
-e.clientY-
-hud.offset().top;
+return;
 
 }
 
-);
+dragging=true;
+
+ox=
+e.clientX-
+hud.offset().left;
+
+oy=
+e.clientY-
+hud.offset().top;
+
+});
+
+
+$("#coordPickerInput")
+
+.on(
+"mousedown",
+function(e){
+
+e.stopPropagation();
+
+dragging=false;
+
+});
+
+
+
 
 $(document).on(
 "mousemove.owHud",
@@ -1190,6 +1222,130 @@ alignItems:"center"
 
 
 
+
+
+
+
+/* COORD INFO CONTAINER */
+
+const coordInfoBtn=$(`
+
+<a id="coordInfoBtn"
+
+style="
+
+display:none;
+
+padding:0;
+
+background:
+
+linear-gradient(
+180deg,
+#58b558,
+#2f7d2f
+);
+
+border:1px solid #123d12;
+
+border-radius:7px;
+
+color:#fff;
+
+font-weight:bold;
+
+cursor:pointer;
+
+text-decoration:none;
+
+width:28px;
+
+height:28px;
+
+font-size:12px;
+
+line-height:28px;
+
+text-align:center;
+
+box-shadow:
+0 2px 5px rgba(0,0,0,.35);
+
+user-select:none;
+
+"
+
+>
+
+ⓘ
+
+</a>
+
+`);
+
+if(
+!$("#coordFloatingInfo").length
+){
+
+$("#owFloatingInfo")
+
+.after(`
+
+<div id="coordFloatingInfo"
+
+style="
+
+display:none;
+
+margin-top:4px;
+
+width:34px;
+
+height:34px;
+
+justify-content:center;
+
+align-items:center;
+
+"
+
+>
+
+</div>
+
+`);
+
+}
+
+$("#coordFloatingInfo")
+
+.empty()
+
+.css({
+
+display:"flex",
+
+justifyContent:"center",
+
+alignItems:"center"
+
+})
+
+.append(
+coordInfoBtn
+);
+
+coordInfoBtn.on(
+"click",
+toggleCoordInfo
+);
+
+
+
+
+
+
+
 armyBtn.on(
 "click",
 startOverwatchLite
@@ -1208,5 +1364,1704 @@ $(document).ready(()=>{
     createArmyMapButton();
 
 });
+
+
+
+
+
+
+
+/* ===========================
+   COORD PICKER MODULE
+=========================== */
+
+window.selectedVillages=
+window.selectedVillages || [];
+
+function toggleCoordHud(){
+
+let hud=$("#coordPickerHud");
+
+if(!hud.length){
+
+$("body").append(`
+
+<div id="coordPickerHud"
+
+style="
+
+position:fixed;
+
+left:90px;
+
+top:170px;
+
+display:inline-block;
+
+width:auto;
+
+background:#e7d7af;
+
+border:2px solid #4f7f2a;
+
+border-radius:10px;
+
+padding:14px;
+
+z-index:999999;
+
+display:none;
+
+cursor:move;
+
+box-shadow:
+0 4px 12px rgba(0,0,0,.35);
+
+">
+
+<div id="fakeScriptSection">
+
+<div
+
+class="coordCollapse"
+
+data-label="Fake script"
+
+data-target="#fakeScriptContent"
+
+style="
+font-size:18px;
+font-weight:bold;
+cursor:pointer;
+padding-bottom:10px;
+"
+
+>
+
+▶ Fake script
+
+</div>
+
+<div
+id="fakeScriptContent"
+
+style="
+display:none;
+"
+>
+
+<div
+
+class="coordCollapse"
+
+data-label="Sima script"
+
+data-target="#simpleFakeContent"
+
+style="
+font-weight:bold;
+cursor:pointer;
+margin-bottom:10px;
+"
+
+>
+
+▶ Sima script
+
+</div>
+
+<div
+id="simpleFakeContent"
+style="
+display:none;
+margin-bottom:12px;
+"
+
+>
+
+<label style="
+display:flex;
+align-items:center;
+gap:6px;
+margin-bottom:10px;
+cursor:pointer;
+">
+
+<input
+type="checkbox"
+id="simpleFakeCode"
+>
+
+Kód
+
+<label style="
+display:flex;
+align-items:center;
+gap:6px;
+margin-left:10px;
+cursor:pointer;
+">
+
+<input
+type="checkbox"
+id="simpleFakeSpoiler"
+>
+
+Spoiler
+
+</label>
+
+</label>
+
+<textarea
+
+id="simpleFakeOutput"
+
+readonly
+
+placeholder="Először válaszd ki a koordinátákat a térképen."
+
+style="
+
+width:400px;
+
+height:170px;
+
+padding:3px;
+
+resize:none;
+
+box-sizing:border-box;
+
+color:#666;
+
+"
+
+></textarea>
+
+<div style="
+margin-top:10px;
+">
+
+<button
+
+id="copySimpleFake"
+
+class="btn"
+
+>
+
+Másolás
+
+</button>
+
+</div>
+
+</div>
+
+<div style="
+width:50px;
+border-top:1px solid #b08a52;
+margin:10px 0;
+"></div>
+
+<div
+
+class="coordCollapse"
+
+data-label="Fórum ID script"
+
+data-target="#forumFakeContent"
+
+style="
+font-weight:bold;
+cursor:pointer;
+margin-bottom:10px;
+"
+
+>
+
+▶ Fórum ID script
+
+</div>
+
+<div
+id="forumFakeContent"
+style="
+display:none;
+margin-bottom:12px;
+"
+>
+
+<label style="
+display:flex;
+align-items:center;
+gap:6px;
+margin-bottom:10px;
+cursor:pointer;
+">
+
+<input
+type="checkbox"
+id="forumFakeCode"
+>
+
+Kód
+
+<label style="
+display:flex;
+align-items:center;
+gap:6px;
+margin-left:10px;
+cursor:pointer;
+">
+
+<input
+type="checkbox"
+id="forumFakeSpoiler"
+>
+
+Spoiler
+
+</label>
+
+</label>
+
+<div style="
+display:flex;
+gap:8px;
+margin-bottom:10px;
+">
+
+<input
+
+id="forumID"
+
+placeholder="Fórum ID"
+
+inputmode="numeric"
+
+style="
+
+width:90px;
+
+padding:5px;
+
+border:1px solid #8b642e;
+
+border-radius:4px;
+
+"
+
+>
+
+<input
+
+id="threadID"
+
+placeholder="Thread ID"
+
+inputmode="numeric"
+
+style="
+
+width:90px;
+
+padding:5px;
+
+border:1px solid #8b642e;
+
+border-radius:4px;
+
+"
+
+>
+
+</div>
+
+<textarea
+
+id="forumFakeOutput"
+
+readonly
+
+placeholder="Először add meg a Fórum és Thread ID-t."
+
+style="
+
+width:400px;
+
+height:170px;
+
+padding:3px;
+
+resize:none;
+
+box-sizing:border-box;
+
+color:#666;
+
+"
+
+></textarea>
+
+<div style="
+margin-top:10px;
+">
+
+<button
+
+id="copyForumFake"
+
+class="btn"
+
+>
+
+Másolás
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<div
+
+id="mainSectionDivider"
+
+style="
+border-top:1px solid #b08a52;
+margin-bottom:12px;
+"
+
+></div>
+
+<div
+
+class="coordCollapse"
+
+data-label="Koordináták"
+
+data-target="#coordContent"
+
+style="
+font-size:18px;
+font-weight:bold;
+cursor:pointer;
+margin-bottom:12px;
+"
+
+>
+
+▼ Koordináták
+
+</div>
+
+<div
+id="coordContent"
+style="
+display:block;
+"
+>
+
+<div style="
+margin-bottom:10px;
+font-weight:bold;
+">
+
+Megjelenés
+
+</div>
+
+<div style="
+display:flex;
+gap:20px;
+margin-bottom:12px;
+">
+
+<label style="
+display:flex;
+align-items:center;
+gap:6px;
+cursor:pointer;
+">
+
+<input
+type="checkbox"
+id="coordColumn"
+>
+
+Oszlop
+
+</label>
+
+<label style="
+display:flex;
+align-items:center;
+gap:6px;
+cursor:pointer;
+">
+
+<input
+type="checkbox"
+id="coordBB"
+>
+
+BB-Kód
+
+</label>
+
+<label style="
+display:flex;
+align-items:center;
+gap:6px;
+cursor:pointer;
+">
+
+<input
+type="checkbox"
+id="coordCode"
+>
+
+Kód
+
+</label>
+
+</div>
+
+<textarea
+
+id="coordPickerInput"
+
+readonly
+
+style="
+
+width:400px;
+
+height:150px;
+
+padding:3px;
+
+resize:none;
+
+box-sizing:border-box;
+
+user-select:text;
+
+cursor:text;
+
+"
+
+></textarea>
+
+</div>
+
+<div style="
+margin-top:16px;
+padding-top:12px;
+border-top:1px solid #b08a52;
+
+font-style:italic;
+
+font-size:14px;
+">
+
+By <span style="
+color:#8b0000;
+font-weight:bold;
+">
+
+Crytek
+
+</span>
+
+</div>
+
+</div>
+
+`);
+
+hud=$("#coordPickerHud");
+
+let dragging=false;
+let ox=0;
+let oy=0;
+
+hud.on(
+"mousedown",
+function(e){
+
+if(
+$(e.target).closest(
+"textarea,input,label,select"
+).length
+){
+
+dragging=false;
+
+return;
+
+}
+
+dragging=true;
+
+ox=
+e.clientX-
+hud.offset().left;
+
+oy=
+e.clientY-
+hud.offset().top;
+
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+$("#coordPickerInput").on(
+"mousedown mousemove mouseup",
+function(e){
+
+e.stopPropagation();
+
+}
+);
+
+
+
+$(document).on(
+"mousemove.coordhud",
+function(e){
+
+if(!dragging)return;
+
+hud.css({
+
+left:
+(e.clientX-ox)+"px",
+
+top:
+(e.clientY-oy)+"px"
+
+});
+
+});
+
+$(document).on(
+"mouseup.coordhud",
+function(){
+
+dragging=false;
+
+});
+
+}
+
+hud.toggle();
+
+}
+
+
+
+
+
+function toggleCoordInfo(){
+
+let hud=$("#coordInfoHud");
+
+if(!hud.length){
+
+$("body").append(`
+
+<div id="coordInfoHud"
+
+style="
+
+position:fixed;
+
+left:70px;
+
+top:220px;
+
+cursor:move;
+
+user-select:none;
+
+z-index:999999;
+
+width:320px;
+
+background:#e7d7af;
+
+border:2px solid #4f7f2a;
+
+border-radius:10px;
+
+padding:14px;
+
+box-shadow:0 4px 12px rgba(0,0,0,.35);
+
+font-size:14px;
+
+display:none;
+
+"
+
+>
+
+<div style="
+font-size:18px;
+font-weight:bold;
+display:flex;
+align-items:center;
+gap:8px;
+margin-bottom:12px;
+">
+
+<img
+src="/graphic/rabe.png"
+style="
+width:18px;
+height:18px;
+">
+
+Koordináta rendszer
+
+</div>
+
+<div style="
+display:flex;
+flex-direction:column;
+gap:10px;
+">
+
+<div style="
+margin-top:14px;
+padding-top:12px;
+border-top:1px solid #b08a52;
+">
+
+<b>Koordináta kiválasztás</b><br><br>
+
+Falvak kijelölése kattintással.<br>
+Kiválasztott falvak kiemelése zöld kerettel.
+
+</div>
+
+<div style="
+margin-top:14px;
+padding-top:12px;
+border-top:1px solid #b08a52;
+">
+
+<b>Koordináta formázás</b><br><br>
+
+<b>Oszlop</b> - Alapból sorban jeleníti meg a koordinátákat, ezt bejelölve oszlopba rendezi.<br>
+<b>BB-Kód</b> - Minden koordinátát átalakít PL: -> [coord]555|555[/coord]<br>
+<b>Kód</b> - Keretezi a koordinátákat [code]555|444 333|555[/code]<br>
+
+</div>
+
+<div style="
+margin-top:14px;
+padding-top:12px;
+border-top:1px solid #b08a52;
+">
+
+<b>Fake Script rendszer</b><br><br>
+Automatikus script generálás.<br>
+<b>Sima script</b> - A térképen kiválasztott koordináták alapján.<br>
+<b>Fórum ID script</b> - Fórum és Thread ID alapján.<br>
+
+</div>
+
+</div>
+
+<div style="
+margin-top:14px;
+padding-top:12px;
+border-top:1px solid #b08a52;
+font-style:italic;
+">
+
+By
+
+<span style="
+color:#8b0000;
+font-weight:bold;
+">
+
+Crytek
+
+</span>
+
+</div>
+
+</div>
+
+`);
+
+hud=$("#coordInfoHud");
+
+let dragging=false;
+
+let ox=0;
+
+let oy=0;
+
+hud.on(
+"mousedown",
+function(e){
+
+dragging=true;
+
+ox=
+e.clientX-
+hud.offset().left;
+
+oy=
+e.clientY-
+hud.offset().top;
+
+});
+
+$(document).on(
+"mousemove.coordInfo",
+function(e){
+
+if(!dragging)return;
+
+hud.css({
+
+left:
+(e.clientX-ox)+"px",
+
+top:
+(e.clientY-oy)+"px"
+
+});
+
+});
+
+$(document).on(
+"mouseup.coordInfo",
+function(){
+
+dragging=false;
+
+});
+
+}
+
+hud.toggle();
+
+}
+
+
+
+
+
+
+
+function updateCoordInput(){
+
+let coords=[
+...window.selectedVillages
+];
+
+const column=
+$("#coordColumn")
+.is(":checked");
+
+const bb=
+$("#coordBB")
+.is(":checked");
+
+const code=
+$("#coordCode")
+.is(":checked");
+
+/* BB és CODE kizárják egymást */
+
+$("#coordBB").prop(
+"disabled",
+code
+);
+
+$("#coordCode").prop(
+"disabled",
+bb
+);
+
+/* BB */
+
+if(bb){
+
+coords=
+coords.map(
+
+x=>
+"[coord]"+x+"[/coord]"
+
+);
+
+}
+
+const separator=
+column
+? "\n"
+: " ";
+
+let output=
+coords.join(
+separator
+);
+
+/* CODE */
+
+if(code){
+
+output=
+"[code]"+
+output.trim()+
+"[/code]";
+
+}
+
+$("#coordPickerInput")
+.val(output);
+
+window.lastCoordRender=
+output;
+
+}
+
+
+
+
+function drawVillageSelection(){
+
+$(".coordVillageMark")
+.remove();
+
+window.selectedVillages.forEach(coord=>{
+
+const parts=
+coord.split("|");
+
+const village=
+TWMap.villages[
+(parts[0]*1000)+
+parseInt(parts[1])
+];
+
+if(
+!village ||
+!village.id
+)return;
+
+const el=
+$("#map_village_"+village.id);
+
+if(!el.length)
+return;
+
+const overlay = $(`
+
+<div class="coordVillageMark"
+
+style="
+
+width:52px;
+
+height:37px;
+
+position:absolute;
+
+left:${el.css("left")};
+
+top:${el.css("top")};
+
+outline:
+rgba(51,255,0,.9)
+solid 3px;
+
+background:
+rgba(0,255,0,.12);
+
+pointer-events:none;
+
+box-sizing:border-box;
+
+z-index:60;
+
+"
+
+></div>
+
+`);
+
+overlay.appendTo(
+el.parent()
+);
+
+overlay[0].markVillageCoord =
+coord;
+
+});
+
+}
+
+function enableCoordPicker(){
+
+
+if(
+!window.coordSpawnHooked
+){
+
+window.coordSpawnHooked=true;
+
+const oldSpawn=
+TWMap.mapHandler.spawnSector;
+
+TWMap.mapHandler.spawnSector=
+function(data,sector){
+
+oldSpawn.call(
+this,
+data,
+sector
+);
+
+setTimeout(
+drawVillageSelection,
+0
+);
+
+};
+
+}
+
+if(window.coordPickerInitialized)
+return;
+
+window.coordPickerInitialized=true;
+
+window.coordPickerEnabled=false;
+
+/* EREDETI MAP CLICK ELMENTÉS */
+
+window.coordOldClick =
+TWMap.mapHandler.onClick;
+
+/* SAJÁT CLICK HANDLER */
+
+TWMap.mapHandler.onClick=
+function(x,y,event){
+
+if(!window.coordPickerEnabled){
+
+return window.coordOldClick
+? window.coordOldClick(
+x,
+y,
+event
+)
+: true;
+
+}
+
+const coord=
+x+"|"+y;
+
+const village=
+TWMap.villages[
+(x*1000)+y
+];
+
+if(!village)
+return false;
+
+const idx=
+window.selectedVillages
+.indexOf(coord);
+
+if(idx>-1){
+
+window.selectedVillages.splice(
+idx,
+1
+);
+
+}else{
+
+window.selectedVillages.push(
+coord
+);
+
+}
+
+updateCoordInput();
+
+drawVillageSelection();
+
+/* KH popup tiltás */
+
+return false;
+
+};
+
+}
+
+
+
+
+
+function createCoordButton(){
+
+if($("#coordPickerBtn").length)
+return;
+
+const btn=$(`
+
+<a id="coordPickerBtn"
+
+style="
+
+position:fixed;
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+width:30px;
+
+height:30px;
+
+background:
+
+linear-gradient(
+180deg,
+#58b558,
+#2f7d2f
+);
+
+border:1px solid #123d12;
+
+border-radius:7px;
+
+box-shadow:
+
+0 2px 5px rgba(0,0,0,.35);
+
+cursor:pointer;
+
+z-index:999999;
+
+"
+
+>
+
+<img
+
+src="/graphic/rabe.png"
+
+style="
+
+width:18px;
+
+height:18px;
+
+pointer-events:none;
+
+
+"
+
+>
+
+</a>
+
+`);
+
+$("body").append(btn);
+
+function pos(){
+
+const mapBtn=
+$("#owLiteBtn");
+
+if(!mapBtn.length)
+return;
+
+btn.css({
+
+left:
+mapBtn.offset().left+"px",
+
+top:
+(
+mapBtn.offset().top+
+42
+)+"px"
+
+});
+
+}
+
+pos();
+
+$(window).on(
+"resize",
+pos
+);
+
+btn.on(
+"click",
+function(){
+
+toggleCoordHud();
+
+enableCoordPicker();
+
+/* PICKER ON/OFF */
+
+window.coordPickerEnabled=
+$("#coordPickerHud")
+.is(":visible");
+
+const visible=
+
+$("#coordPickerHud")
+.is(":visible");
+
+$("#coordInfoBtn").css({
+
+display:
+
+visible
+
+? "block"
+
+: "none"
+
+});
+
+if(visible){
+
+if(
+
+$("#owInfoBtn")
+.is(":visible")
+
+){
+
+$("#coordFloatingInfo").css({
+
+marginTop:"4px"
+
+});
+
+}else{
+
+$("#coordFloatingInfo").css({
+
+marginTop:"-34px"
+
+});
+
+}
+
+}
+
+});
+
+}
+
+$(document).ready(function(){
+
+createCoordButton();
+
+$(document)
+
+.on(
+"change",
+"#coordColumn,#coordBB,#coordCode",
+updateCoordInput
+);
+
+
+
+$(document)
+
+.on(
+"click",
+
+".coordCollapse",
+
+function(){
+
+const target=
+$(
+$(this).data(
+"target"
+)
+);
+
+target.toggle();
+
+const opened=
+target.is(":visible");
+
+const label=
+
+$(this)
+
+.attr(
+"data-label"
+);
+
+$(this).text(
+
+(opened
+?"▼ "
+:"▶ ")
+
++
+
+label
+
+);
+
+});
+
+
+});
+
+
+
+function updateSimpleFake(){
+
+const coords =
+(
+$("#coordPickerInput")
+.val() || ""
+)
+.trim();
+
+
+
+let worldSpeed =
+parseFloat(
+localStorage.getItem(
+"crytek_world_speed"
+)
+);
+
+let unitSpeed =
+parseFloat(
+localStorage.getItem(
+"crytek_unit_speed"
+)
+);
+
+if(
+isNaN(worldSpeed) ||
+isNaN(unitSpeed)
+){
+
+$.get(
+
+"/interface.php?func=get_config",
+
+function(xml){
+
+worldSpeed =
+parseFloat(
+$(xml)
+.find("speed")
+.text()
+.trim()
+);
+
+unitSpeed =
+parseFloat(
+$(xml)
+.find("unit_speed")
+.text()
+.trim()
+);
+
+localStorage.setItem(
+"crytek_world_speed",
+worldSpeed
+);
+
+localStorage.setItem(
+"crytek_unit_speed",
+unitSpeed
+);
+
+worldSpeed =
+parseFloat(worldSpeed);
+
+unitSpeed =
+parseFloat(unitSpeed);
+
+const nightEnd =
+parseInt(
+
+$(xml)
+
+.find("night end_hour")
+
+.text()
+
+.trim()
+
+) || 7;
+
+localStorage.setItem(
+
+"crytek_night_end",
+
+nightEnd
+
+);
+
+updateSimpleFake();
+
+}
+
+);
+
+return;
+
+}
+
+
+
+/* ITT ZÁRÓDJON LE updateSimpleFake */
+
+let script=
+
+`javascript:
+var koordinatak = "${coords}";
+var vilagSebesseg = ${worldSpeed};
+var egysegSebesseg = ${unitSpeed};
+var leglassabbEgyseg = "kos";
+var ejszakaiVege = ${
+localStorage.getItem(
+"crytek_night_end"
+) || 7
+};
+var ejszakaiKezdete = 10;
+var egysegek = {
+osszes: "nem",
+landzsas: 0,
+kardos: 0,
+bardos: 0,
+ijasz: 0,
+kem: 1,
+konnyulovas: 0,
+lovasijasz: 0,
+nehezlovas: 0,
+kos: 0,
+katapult: 1,
+lovag: 0,
+nemes: 0
+};
+
+var fejleszto="IronFist";
+var verzio="1.4";
+
+$.getScript(
+"https://media.innogamescdn.com/com_DS_HU/scripts/place/avoid_night/avoid_night_v1.5.js"
+);
+
+void(0);`;
+
+const useCode=
+
+$("#simpleFakeCode")
+.is(":checked");
+
+const useSpoiler=
+
+$("#simpleFakeSpoiler")
+.is(":checked");
+
+if(useCode){
+
+script=
+"[code]"
++
+script+
+"[/code]";
+
+}
+
+if(useSpoiler){
+
+script=
+"[spoiler=Fake script]"
++
+script+
+"[/spoiler]";
+
+}
+
+if(coords.length){
+
+$("#simpleFakeOutput")
+.val(script);
+
+}else{
+
+$("#simpleFakeOutput")
+.val("");
+
+}
+
+} // updateSimpleFake vége
+
+$(document)
+
+.on(
+"change",
+"#simpleFakeCode,#simpleFakeSpoiler",
+updateSimpleFake
+);
+
+$(document)
+
+.on(
+"click",
+"#copySimpleFake",
+function(){
+
+navigator
+.clipboard
+.writeText(
+
+$("#simpleFakeOutput")
+.val()
+
+);
+
+UI.SuccessMessage(
+
+"Kimásolva"
+
+);
+
+});
+
+const oldCoordUpdate=
+updateCoordInput;
+
+updateCoordInput=
+function(){
+
+oldCoordUpdate();
+
+updateSimpleFake();
+
+};
+
+updateSimpleFake();
+
+
+
+function updateForumFake(){
+
+let worldSpeed =
+parseFloat(
+localStorage.getItem(
+"crytek_world_speed"
+)
+) || 1;
+
+let unitSpeed =
+parseFloat(
+localStorage.getItem(
+"crytek_unit_speed"
+)
+) || 1;
+
+const forumID =
+
+$("#forumID")
+.val()
+.replace(/\D/g,'');
+
+const threadID =
+
+$("#threadID")
+.val()
+.replace(/\D/g,'');
+
+let script =
+
+`javascript:
+var forum_id = "${forumID}";
+var thread_id = "${threadID}";
+var vilagSebesseg = ${worldSpeed};
+var egysegSebesseg = ${unitSpeed};
+var leglassabbEgyseg = "kos";
+
+var legHamarabb = ${
+localStorage.getItem(
+"crytek_night_end"
+) || 7
+};
+
+var legKesobb = 10;
+
+var egysegek = {
+
+osszes:"nem",
+
+landzsas:0,
+kardos:0,
+bardos:0,
+ijasz:0,
+kem:1,
+konnyulovas:0,
+lovasijasz:0,
+nehezlovas:0,
+kos:0,
+katapult:1,
+lovag:0,
+nemes:0
+
+};
+
+var fejleszto="bArNNNi";
+var verzio="1.4.1";
+
+$.getScript(
+"https://media.innogames.com/com_DS_HU/scripts/avoid_night_forum_coords_v1_4_1.js"
+);
+
+void(0);`;
+
+const useCode=
+
+$("#forumFakeCode")
+.is(":checked");
+
+const useSpoiler=
+
+$("#forumFakeSpoiler")
+.is(":checked");
+
+if(useCode){
+
+script=
+
+"[code]"
+
++
+
+script
+
++
+
+"[/code]";
+
+}
+
+if(useSpoiler){
+
+script=
+
+"[spoiler=Fórum ID Fake script]"
+
++
+
+script
+
++
+
+"[/spoiler]";
+
+}
+
+if(
+forumID.length &&
+threadID.length
+){
+
+$("#forumFakeOutput")
+.val(script);
+
+}else{
+
+$("#forumFakeOutput")
+.val("");
+
+}
+
+}
+
+$(document)
+
+.on(
+"change input",
+
+"#forumFakeCode,#forumFakeSpoiler,#forumID,#threadID",
+
+updateForumFake
+
+);
+
+$(document)
+
+.on(
+"click",
+
+"#copyForumFake",
+
+function(){
+
+navigator.clipboard.writeText(
+
+$("#forumFakeOutput")
+.val()
+
+);
+
+UI.SuccessMessage(
+"Kimásolva"
+);
+
+}
+
+);
+
+updateForumFake();
+
+
+
+
 
 })();
