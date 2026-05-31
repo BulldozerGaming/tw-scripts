@@ -221,10 +221,10 @@ getStackColor(stack){
 stack/=1000;
 
 if(stack<1)
-return "rgba(0,0,0,0.55)";
+return "rgba(90,90,90,0.55)";
 
 if(stack<3)
-return "rgba(90,90,90,0.55)";
+return "rgba(0,0,0,0.55)";
 
 if(stack<5)
 return "rgba(0,180,0,0.55)";
@@ -437,65 +437,104 @@ y,
 bg
 ){
 
-    ctx.save();
+ctx.save();
 
-    ctx.font="bold 10px Arial";
+ctx.font="bold 10px Arial";
 
-    ctx.textAlign="center";
-    ctx.textBaseline="middle";
+ctx.textAlign="center";
 
-    const padding=5;
+ctx.textBaseline="middle";
 
-    const w=
-    ctx.measureText(text).width;
+const paddingX=5;
+const paddingY=4;
 
-    const h=16;
+const metrics=
+ctx.measureText(text);
 
-    const lightBg=
-    bg.includes("255,255,0") ||
-    bg.includes("255,140,0") ||
-    bg.includes("0,255,255");
+const textWidth=
+metrics.width;
 
-    const textColor=
-    lightBg
-    ? "black"
-    : "white";
+const ascent=
+metrics.actualBoundingBoxAscent || 7;
 
-    const strokeColor=
-    lightBg
-    ? "white"
-    : "black";
+const descent=
+metrics.actualBoundingBoxDescent || 3;
 
-    ctx.fillStyle=bg;
+const textHeight=
+ascent+descent;
 
-    ctx.fillRect(
-        x-(w/2)-padding,
-        y-(h/2),
-        w+(padding*2),
-        h
-    );
+const boxWidth=
+Math.ceil(
+textWidth+(paddingX*2)
+);
 
-    ctx.lineWidth=3;
+const boxHeight=
+Math.ceil(
+textHeight+(paddingY*2)
+);
 
-    ctx.strokeStyle=
-    strokeColor;
+const lightBg=
 
-    ctx.strokeText(
-        text,
-        x,
-        y
-    );
+bg.includes("255,255,0") ||
+bg.includes("255,140,0") ||
+bg.includes("0,255,255");
 
-    ctx.fillStyle=
-    textColor;
+const textColor=
+lightBg
+? "black"
+: "white";
 
-    ctx.fillText(
-        text,
-        x,
-        y
-    );
+const strokeColor=
+lightBg
+? "white"
+: "black";
 
-    ctx.restore();
+/* háttér */
+
+ctx.fillStyle=bg;
+
+const bgY=
+Math.round(
+y-boxHeight/2
+)-1;
+
+ctx.fillRect(
+
+Math.round(
+x-boxWidth/2
+),
+
+bgY,
+
+boxWidth,
+
+boxHeight
+
+);
+
+/* szöveg */
+
+ctx.lineWidth=3;
+
+ctx.strokeStyle=
+strokeColor;
+
+ctx.strokeText(
+text,
+x,
+y
+);
+
+ctx.fillStyle=
+textColor;
+
+ctx.fillText(
+text,
+x,
+y
+);
+
+ctx.restore();
 
 },
 
@@ -643,8 +682,6 @@ if(window.owLiteStarted){
 
 window.owLiteStarted=false;
 
-btn.text("⚔ Sereg térkép");
-
 $("#owInfoBtn").hide();
 
 $("#owHud").remove();
@@ -676,11 +713,15 @@ await DataManager.fetchAllData();
 
 window.owLiteStarted=true;
 
-btn.text(
-"🗺 Normál térkép"
-);
+/* nothing */
 
-$("#owInfoBtn").show();
+$("#owFloatingInfo").show();
+
+$("#owInfoBtn").css({
+
+display:"block"
+
+});
 
 // nothing
 
@@ -688,155 +729,154 @@ $("#owInfoBtn").show();
 
 function toggleOWInfo(){
 
-if($("#owHud").length){
+let hud=$("#owInfoHud");
 
-$("#owHud").remove();
+if(!hud.length){
 
-return;
+$("body").append(`
 
-}
-
-$("#owControls").append(`
-
-<div id="owHud"
+<div id="owInfoHud"
 
 style="
-width:420px;
 
-background:#f4e4bc;
+position:fixed;
 
-border:2px solid #7d510f;
+left:70px;
+
+top:120px;
+
+cursor:move;
+
+user-select:none;
+
+z-index:999999;
+
+width:260px;
+
+background:#e7d7af;
+
+border:2px solid #8b642e;
+
+border-radius:10px;
 
 padding:14px;
 
-border-radius:8px;
-
 box-shadow:
-0 3px 10px rgba(0,0,0,.25);
+0 4px 12px rgba(0,0,0,.35);
 
-font-size:13px;
+font-size:15px;
 
-line-height:24px;
+display:none;
+
 ">
 
-<h3 style="
-margin-top:0;
-margin-bottom:10px;
+<div style="
+
+display:flex;
+
+align-items:center;
+
+gap:8px;
+
+font-size:18px;
+
+font-weight:bold;
+
+margin-bottom:14px;
+
 ">
+
+<img
+
+src="https://dshu.innogamescdn.com/asset/c1c7057d/graphic/icons/map2.webp"
+
+style="
+
+width:18px;
+
+height:18px;
+
+"
+
+>
+
+<span>
 
 Térkép színezés
 
-</h3>
+</span>
 
-<div>
-
-<div>
-<span style="
-display:inline-block;
-width:18px;
-height:18px;
-background:black;
-margin-right:8px;
-"></span>
-
-0 - 1k
 </div>
 
-<div>
-<span style="
-display:inline-block;
+<div style="display:flex;flex-direction:column;gap:7px;">
+
+${[
+["#808080","0 - 1k"],
+["#000","1k - 3k"],
+["green","3k - 5k"],
+["#25dfe8","5k - 10k"],
+["yellow","10k - 15k"],
+["orange","15k - 20k"],
+["#ff6b6b","20k - 30k"],
+["red","30k - 40k"],
+["dodgerblue","40k+"]
+].map(x=>`
+
+<div style="
+display:flex;
+align-items:center;
+gap:10px;
+">
+
+<div style="
 width:18px;
 height:18px;
-background:gray;
-margin-right:8px;
-"></span>
+background:${x[0]};
+border:1px solid rgba(0,0,0,.2);
+"></div>
 
-1k - 3k
+${x[1]}
+
 </div>
 
-<div>
-<span style="
-display:inline-block;
-width:18px;
-height:18px;
-background:green;
-margin-right:8px;
-"></span>
+`).join("")}
 
-3k - 5k
+<div style="
+
+margin-top:14px;
+
+font-size:12px;
+
+opacity:.65;
+
+font-style:italic;
+
+">
+
+A gomb újbóli megnyomásával
+normál térképnézetre válthatsz.
+
 </div>
 
-<div>
-<span style="
-display:inline-block;
-width:18px;
-height:18px;
-background:cyan;
-margin-right:8px;
-"></span>
-
-5k - 10k
 </div>
 
-<div>
-<span style="
-display:inline-block;
-width:18px;
-height:18px;
-background:yellow;
-margin-right:8px;
-"></span>
+<div style="
+margin-top:18px;
+padding-top:12px;
+border-top:1px solid #b08a52;
 
-10k - 15k
-</div>
+font-style:italic;
+font-size:14px;
+">
 
-<div>
-<span style="
-display:inline-block;
-width:18px;
-height:18px;
-background:orange;
-margin-right:8px;
-"></span>
+By <span style="
+color:#8b0000;
+font-weight:bold;
+">
 
-15k - 20k
-</div>
+Crytek
 
-<div>
-<span style="
-display:inline-block;
-width:18px;
-height:18px;
-background:#ff6666;
-margin-right:8px;
-"></span>
-
-20k - 30k
-</div>
-
-<div>
-<span style="
-display:inline-block;
-width:18px;
-height:18px;
-background:red;
-margin-right:8px;
-"></span>
-
-30k - 40k
-</div>
-
-<div>
-<span style="
-display:inline-block;
-width:18px;
-height:18px;
-background:#0090ff;
-margin-right:8px;
-"></span>
-
-40k+
-</div>
+</span>
 
 </div>
 
@@ -844,8 +884,70 @@ margin-right:8px;
 
 `);
 
+hud=$("#owInfoHud");
+
+let dragging=false;
+
+let offsetX=0;
+
+let offsetY=0;
+
+hud.on(
+"mousedown",
+function(e){
+
+dragging=true;
+
+offsetX=
+e.clientX-
+hud.offset().left;
+
+offsetY=
+e.clientY-
+hud.offset().top;
+
 }
 
+);
+
+$(document).on(
+"mousemove.owHud",
+function(e){
+
+if(!dragging) return;
+
+hud.css({
+
+left:
+(
+e.clientX-offsetX
+)+"px",
+
+top:
+(
+e.clientY-offsetY
+)+"px"
+
+});
+
+}
+
+);
+
+$(document).on(
+"mouseup.owHud",
+function(){
+
+dragging=false;
+
+}
+);
+
+}
+
+hud.toggle();
+
+}
 
 function createArmyMapButton(){
 
@@ -871,52 +973,104 @@ flex-wrap:wrap;
 
 </div>
 
-<div id="owInfoRow"
-
-style="
-margin-top:8px;
-display:flex;
-flex-direction:column;
-align-items:flex-start;
-gap:8px;
-">
-
 </div>
+`);
 
-<div
+const armyBtn=$(`
+
+<a id="owLiteBtn"
 
 style="
-padding-top:10px;
-padding-bottom:10px;
-padding-left:10px;
 
-font-style:italic;
-font-size:13px;
+position: fixed;
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+width:30px;
+
+height:30px;
+
+background:
+linear-gradient(
+180deg,
+#7d1d1d,
+#521010
+);
+
+border:1px solid #2e0505;
+
+border-radius:7px;
+
+box-shadow:
+0 2px 5px rgba(0,0,0,.35);
+
+cursor:pointer;
+
+z-index:999999;
+
+text-decoration:none;
 
 "
 
 >
 
-By <span style="
-color:#8b0000;
-font-weight:bold;
-">
+<img
+src="https://dshu.innogamescdn.com/asset/c1c7057d/graphic/icons/map2.webp"
+style="
+width:18px;
+height:18px;
+pointer-events:none;
+"
+>
 
-Crytek
+</a>
 
-</span>
 
-</div>
-
-</div>
 `);
 
-const armyBtn=$(`
-<a id="owLiteBtn"
+function positionArmyBtn(){
+
+const questBtn=$("#questlog_new");
+
+if(!questBtn.length) return;
+
+armyBtn.css({
+
+position:"fixed",
+
+left:
+(
+questBtn.offset().left + 8
+)+"px",
+
+top:"15%",
+
+transform:"translateY(-15%)",
+
+zIndex:99999
+
+});
+
+}
+
+positionArmyBtn();
+
+$(window).on(
+"resize",
+positionArmyBtn
+);
+
+const infoBtn=$(`
+<a id="owInfoBtn"
 
 style="
-display:inline-block;
-padding:8px 14px;
+display:none;
+
+padding:0;
 
 background:
 linear-gradient(
@@ -933,52 +1087,27 @@ color:white;
 
 font-weight:bold;
 
-font-size:13px;
+cursor:pointer;
+
+text-decoration:none;
+
+width:28px;
+
+height:28px;
+
+font-size:12px;
+
+line-height:28px;
+
+text-align:center;
 
 box-shadow:
 0 2px 5px rgba(0,0,0,.35);
 
-cursor:pointer;
-
 user-select:none;
-
-text-decoration:none;
 ">
 
-⚔ Sereg térkép
-
-</a>
-`);
-
-const infoBtn=$(`
-<a id="owInfoBtn"
-
-style="
-display:none;
-
-padding:8px 12px;
-
-background:
-linear-gradient(
-180deg,
-#3a6ea5,
-#23496f
-);
-
-border:1px solid #18314b;
-
-border-radius:7px;
-
-color:white;
-
-font-weight:bold;
-
-cursor:pointer;
-
-text-decoration:none;
-">
-
-ⓘ Info
+ⓘ
 
 </a>
 `);
@@ -995,28 +1124,71 @@ $("#content_value").prepend(container);
 
 }
 
-$("#owButtonRow").append(armyBtn);
+$("body").append(
+armyBtn
+);
 
-const questLog = $("#questlog_new");
+
+
+/* INFO GOMB QUEST CONTAINER ALÁ */
+
+const questContainer=
+$("#questlog_new")
+.closest(".questlog");
 
 if(
-questLog.length &&
+questContainer.length &&
 !$("#owFloatingInfo").length
 ){
 
-questLog.after(
-`<div id="owFloatingInfo"
+questContainer.css({
+
+display:"flex",
+flexDirection:"column",
+alignItems:"center"
+
+});
+
+questContainer.append(`
+
+<div id="owFloatingInfo"
+
 style="
-margin-top:8px;
-display:flex;
+display:none;
+
+margin-top:0px;
+
+width:34px;
+
+height:34px;
+
 justify-content:center;
-">
-</div>`
-);
+
+align-items:center;
+"
+
+>
+
+</div>
+
+`);
 
 }
 
-$("#owFloatingInfo").html(infoBtn);
+$("#owFloatingInfo")
+.empty()
+.css({
+
+display:"flex",
+
+justifyContent:"center",
+
+alignItems:"center"
+
+})
+.append(infoBtn);
+
+
 
 armyBtn.on(
 "click",
@@ -1031,7 +1203,6 @@ toggleOWInfo
 }
 
 
-
 $(document).ready(()=>{
 
     createArmyMapButton();
@@ -1039,4 +1210,3 @@ $(document).ready(()=>{
 });
 
 })();
-
