@@ -693,13 +693,39 @@ result = {
 
 clanTotalSnobs = 0;
 
-for (let player of players) {
+for(let i=0;i<players.length;i++){
+
+    const player =
+    players[i];
 
     await scanPlayer(player);
 
+    $('#bdStatus').prepend(`
+
+<div style="
+font-size:12px;
+text-align:center;
+padding-bottom:8px;
+color:#7a2100;
+">
+
+${i+1}/${players.length}
+
+</div>
+
+`);
+
+    await new Promise(
+        r=>requestAnimationFrame(r)
+    );
+
 }
 
+requestAnimationFrame(()=>{
+
 render();
+
+});
 
 }
 
@@ -1888,9 +1914,20 @@ let onRoad = {
 
             i++;
         }
+
+await new Promise(
+r=>requestAnimationFrame(r)
+);
+
+}
+
     }
 
-    renderDefense();
+   requestAnimationFrame(()=>{
+
+renderDefense();
+
+});
 
     $('#infoDefenseScanner')
     .off('click')
@@ -2877,9 +2914,17 @@ i++;
 
 }
 
+await new Promise(
+r=>requestAnimationFrame(r)
+);
+
 }
 
+requestAnimationFrame(()=>{
+
 renderIncoming();
+
+});
 
 }
 );
@@ -4369,9 +4414,17 @@ supportResult.push(
 
 }
 
+await new Promise(
+r=>requestAnimationFrame(r)
+);
+
 }
 
+requestAnimationFrame(()=>{
+
 renderSupport();
+
+});
 
 });
 
