@@ -983,6 +983,21 @@ text-decoration:none;
 </a>
 `);
 
+const leftMenu = $(".bg_left");
+
+if(leftMenu.length){
+
+leftMenu.append(container);
+
+container.css({
+
+marginTop:"10px",
+marginLeft:"0px"
+
+});
+
+}else{
+
 const target=$("h2:contains('Kontinens')");
 
 if(target.length){
@@ -992,6 +1007,8 @@ container.insertBefore(target);
 }else{
 
 $("#content_value").prepend(container);
+
+}
 
 }
 
