@@ -1150,12 +1150,12 @@ function render() {
                                     padding:4px 0 8px 0;
                                 ">
 
-          <table class="vis nukeVillageTable"
-width="100%"
-style="
-background:#fffaf0;
-border:1px solid #d9c28f;
-">
+                                <table class="vis nukeVillageTable"
+                                       width="100%"
+                                       style="
+                                            background:#fffaf0;
+                                            border:1px solid #d9c28f;
+                                       ">
 
                                     <tr style="
                                         background:#c7a96b;
@@ -1196,18 +1196,17 @@ border:1px solid #d9c28f;
                         html += `
 
                             <tr style="
-background:#fffaf0;
-border-bottom:1px solid #d9c28f;
-height:26px;
-">
+                                background:#fffaf0;
+                                border-bottom:1px solid #d9c28f;
+                                height:26px;
+                            ">
 
-                               <td style="
-min-width:260px;
-font-weight:bold;
-padding-left:8px;
-font-size:12px;
-vertical-align:top;
-">
+                                <td style="
+                                    min-width:260px;
+                                    font-weight:bold;
+                                    padding-left:8px;
+                                    font-size:12px;
+                                ">
                                     ${v.village}
                                 </td>
 
@@ -2228,20 +2227,11 @@ if (cat === 'Maradék') {
                         ">
 
                         <table class="vis"
-style="
-background:#f7fbff;
-border:1px solid #bfd2e2;
-
-width:auto;
-
-min-width:620px;
-
-display:inline-table;
-
-margin-left:8px;
-
-vertical-align:top;
-">
+                               width="100%"
+                               style="
+                                    background:#f7fbff;
+                                    border:1px solid #bfd2e2;
+                               ">
 
                             <tr style="
                                 background:#9bb5ca;
@@ -3356,19 +3346,10 @@ function villageTable(villages){
 return `
 
 <table class="vis"
+width="100%"
 style="
 background:#f7fbf7;
 border:1px solid #bfd2c1;
-
-width:auto;
-
-min-width:620px;
-
-display:inline-table;
-
-margin-left:8px;
-
-vertical-align:top;
 ">
 
 <tr style="background:#a7c7ae">
