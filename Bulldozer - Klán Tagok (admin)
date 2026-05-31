@@ -2952,10 +2952,13 @@ i++;
 
 renderIncoming();
 
-}
-);
+} // async player=> vége
 
+) // map vége
 
+); // Promise.all vége
+
+} // for ciklus vége
 
 function renderIncoming(){
 
