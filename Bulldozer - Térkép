@@ -1552,6 +1552,8 @@ cursor:pointer;
 ">
 
 <input
+class="crytekCheckbox"
+
 type="checkbox"
 id="simpleFakeCode"
 >
@@ -1567,6 +1569,8 @@ cursor:pointer;
 ">
 
 <input
+class="crytekCheckbox"
+
 type="checkbox"
 id="simpleFakeSpoiler"
 >
@@ -1668,6 +1672,8 @@ cursor:pointer;
 ">
 
 <input
+class="crytekCheckbox"
+
 type="checkbox"
 id="forumFakeCode"
 >
@@ -1683,6 +1689,8 @@ cursor:pointer;
 ">
 
 <input
+class="crytekCheckbox"
+
 type="checkbox"
 id="forumFakeSpoiler"
 >
@@ -1707,16 +1715,10 @@ placeholder="Fórum ID"
 
 inputmode="numeric"
 
+class="crytekFancyInput"
+
 style="
-
 width:90px;
-
-padding:5px;
-
-border:1px solid #8b642e;
-
-border-radius:4px;
-
 "
 
 >
@@ -1857,6 +1859,8 @@ cursor:pointer;
 ">
 
 <input
+class="crytekCheckbox"
+
 type="checkbox"
 id="coordColumn"
 >
@@ -1873,6 +1877,8 @@ cursor:pointer;
 ">
 
 <input
+class="crytekCheckbox"
+
 type="checkbox"
 id="coordBB"
 >
@@ -1889,6 +1895,8 @@ cursor:pointer;
 ">
 
 <input
+class="crytekCheckbox"
+
 type="checkbox"
 id="coordCode"
 >
@@ -4059,13 +4067,14 @@ Másolás
 
 id="plannerOutput"
 
+class="crytekInputArea"
+
 readonly
 
 style="
 margin-top:18px;
 width:100%;
 height:170px;
-resize:none;
 "
 
 ></textarea>
