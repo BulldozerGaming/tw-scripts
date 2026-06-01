@@ -4361,6 +4361,23 @@ coord
 
 
 
+const baseUrl =
+location.origin;
+
+const WATCH_ICON =
+baseUrl +
+"/graphic/buildings/watchtower.png";
+
+const NUKE_ICON =
+baseUrl +
+"/graphic/command/attack_large.png";
+
+const SNOB_ICON =
+baseUrl +
+"/graphic/unit/unit_snob.png";
+
+
+
 
 
 function parseCoords(text){
