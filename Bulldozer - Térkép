@@ -2028,6 +2028,26 @@ cursor:text;
 
 ></textarea>
 
+<div style="
+margin-top:10px;
+">
+
+<button
+
+id="copyCoordOutput"
+
+class="btn"
+
+>
+
+Másolás
+
+</button>
+
+</div>
+
+</div>
+
 </div>
 
 <div style="
@@ -2917,6 +2937,30 @@ $(document)
 "change",
 "#coordColumn,#coordBB,#coordCode",
 updateCoordInput
+);
+
+
+$(document)
+
+.on(
+"click",
+
+"#copyCoordOutput",
+
+function(){
+
+navigator.clipboard.writeText(
+
+$("#coordPickerInput").val()
+
+);
+
+UI.SuccessMessage(
+"Kimásolva"
+);
+
+}
+
 );
 
 
