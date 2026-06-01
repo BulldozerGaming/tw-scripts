@@ -5040,7 +5040,7 @@ return(
 
 `[|][b][color=green]${launch}[/color][/b]`+
 
-`[|][url=${baseUrl}/game.php?village=${fromId}&screen=place&target=${targetId}]Indítás[/url]`
+`[|][url=${baseUrl}/game.php?village=${fromId}&screen=place&target=${targetId}][img]${baseUrl}/graphic/command/attack.png[/img][/url]`
 
 );
 
