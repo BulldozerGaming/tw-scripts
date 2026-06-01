@@ -205,15 +205,58 @@ defenseData;
 
     setupMapInterceptors() {
         const originalReceivedInfo = TWMap.popup.receivedPopupInformationForSingleVillage;
-        TWMap.popup.receivedPopupInformationForSingleVillage = function(e) {
-            originalReceivedInfo.call(TWMap.popup, e);
-            if (Object.keys(e).length > 0) MapRenderer.makeOutput(e);
-        };
+        TWMap.popup.receivedPopupInformationForSingleVillage =
+function(e){
+
+originalReceivedInfo.call(
+TWMap.popup,
+e
+);
+
+if(
+!e ||
+typeof e.xy==="undefined"
+){
+return;
+}
+
+if(
+Object.keys(e).length>0
+){
+
+MapRenderer.makeOutput(e);
+
+}
+
+};
         const originalDisplayForVillage = TWMap.popup.displayForVillage;
-        TWMap.popup.displayForVillage = function(e, a, t) {
-            originalDisplayForVillage.call(TWMap.popup, e, a, t);
-            if (Object.keys(e).length > 0) MapRenderer.makeOutput(e);
-        };
+       TWMap.popup.displayForVillage = function(e, a, t) {
+
+originalDisplayForVillage.call(
+TWMap.popup,
+e,
+a,
+t
+);
+
+/* NULL CHECK */
+
+if(
+!e ||
+typeof e.xy==="undefined"
+){
+return;
+}
+
+if(
+Object.keys(e).length>0
+){
+
+MapRenderer.makeOutput(e);
+
+}
+
+};
     }
 };
 
