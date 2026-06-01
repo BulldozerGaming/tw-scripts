@@ -4311,11 +4311,21 @@ x=>x.time
 (a,b)=>a-b
 );
 
-const spread=
-times[
-times.length-1
-]-
-times[0];
+const avg =
+times.reduce(
+(a,b)=>a+b,
+0
+)/times.length;
+
+let spread=0;
+
+times.forEach(t=>{
+
+spread+=Math.abs(
+t-avg
+);
+
+});
 
 if(
 !bestNuke ||
@@ -4494,15 +4504,21 @@ x=>x.time
 (a,b)=>a-b
 );
 
-const spread=
+const avg =
+times.reduce(
+(a,b)=>a+b,
+0
+)/times.length;
 
-times[
-times.length-1
-]
+let spread=0;
 
--
+times.forEach(t=>{
 
-times[0];
+spread+=Math.abs(
+t-avg
+);
+
+});
 
 if(
 !bestSnob ||
