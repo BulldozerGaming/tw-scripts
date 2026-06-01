@@ -4996,7 +4996,7 @@ const formatted =
 [size=11][b]Indítások[/b][/size]
 
 [table]
-[**]Indító[||]Célpont[||]Indítás[||]Indít[/**]
+[**]Indító[||]Célpont[||]Indítás[||][img]${baseUrl}/graphic/command/attack.png[/img][/**]
 `
 
 +
