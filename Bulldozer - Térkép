@@ -1377,13 +1377,15 @@ if(
 
 $("#owFloatingInfo")
 
-.after(`
+.parent()
+
+.append(`
 
 <div id="coordFloatingInfo"
 
 style="
 
-display:none;
+display:flex;
 
 margin-top:4px;
 
