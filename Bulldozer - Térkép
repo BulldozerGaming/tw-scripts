@@ -2126,7 +2126,7 @@ style="
 position:fixed;
 left:70px;
 top:140px;
-width:560px;
+width:700px;
 background:#e7d7af;
 border:2px solid #4f7f2a;
 border-radius:10px;
@@ -3683,11 +3683,15 @@ gap:18px;
 margin-bottom:18px;
 ">
 
-<div>
+<div style="
+font-size:18px;
+font-weight:bold;
+margin-bottom:8px;
+">
 
-Beérkezés:
+Beérkezés
 
-<br>
+</div>
 
 <input
 
@@ -3700,8 +3704,6 @@ width:260px;
 "
 
 >
-
-</div>
 
 </div>
 
@@ -3723,7 +3725,7 @@ color:#5a3b10;
 margin-bottom:8px;
 ">
 
-Cél falvak
+Célpont
 
 </div>
 
@@ -3743,24 +3745,76 @@ height:150px;
 </div>
 
 
-<!-- NUKES -->
-
 <div style="
-display:flex;
-align-items:flex-start;
-gap:14px;
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:24px;
 ">
+
+<!-- NEMES -->
 
 <div>
 
 <div style="
 font-size:18px;
 font-weight:bold;
-color:#5a3b10;
 margin-bottom:8px;
 ">
 
-Nuke falvak
+Nemes
+
+</div>
+
+<textarea
+
+id="plannerSnobs"
+
+class="crytekInputArea"
+
+style="
+width:260px;
+height:120px;
+"
+
+></textarea>
+
+<div style="
+margin-top:10px;
+font-weight:bold;
+">
+
+Nemes / Cél
+
+</div>
+
+<input
+
+id="plannerSnobCount"
+
+value="1"
+
+class="crytekSmallInput"
+
+style="
+margin-top:6px;
+"
+
+>
+
+</div>
+
+
+<!-- NUKE -->
+
+<div>
+
+<div style="
+font-size:18px;
+font-weight:bold;
+margin-bottom:8px;
+">
+
+Nuke
 
 </div>
 
@@ -3771,22 +3825,18 @@ id="plannerNukes"
 class="crytekInputArea"
 
 style="
-width:420px;
-height:110px;
+width:260px;
+height:120px;
 "
 
 ></textarea>
 
-</div>
-
-<div>
-
 <div style="
+margin-top:10px;
 font-weight:bold;
-margin-bottom:8px;
 ">
 
-Nuke / cél
+Nuke / Cél
 
 </div>
 
@@ -3798,67 +3848,9 @@ value="1"
 
 class="crytekSmallInput"
 
->
-
-</div>
-
-</div>
-
-
-<!-- SNOBS -->
-
-<div style="
-display:flex;
-align-items:flex-start;
-gap:14px;
-">
-
-<div>
-
-<div style="
-font-size:18px;
-font-weight:bold;
-color:#5a3b10;
-margin-bottom:8px;
-">
-
-Nemes falvak
-
-</div>
-
-<textarea
-
-id="plannerSnobs"
-
-class="crytekInputArea"
-
 style="
-width:420px;
-height:110px;
+margin-top:6px;
 "
-
-></textarea>
-
-</div>
-
-<div>
-
-<div style="
-font-weight:bold;
-margin-bottom:8px;
-">
-
-Nemes / cél
-
-</div>
-
-<input
-
-id="plannerSnobCount"
-
-value="1"
-
-class="crytekSmallInput"
 
 >
 
