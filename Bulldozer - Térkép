@@ -1328,7 +1328,48 @@ alignItems:"center"
 
 armyBtn.on(
 "click",
-startOverwatchLite
+async function(){
+
+let isAdmin=true;
+
+try{
+
+const html=
+await $.get(
+"/game.php?screen=ally&mode=members_defense"
+);
+
+isAdmin=
+
+$(html)
+
+.find(
+".input-nicer option"
+)
+
+.length>1;
+
+}catch(e){
+
+isAdmin=false;
+
+}
+
+if(!isAdmin){
+
+UI.ErrorMessage(
+
+"Csak klán vezetőként működik ez a funkció!"
+
+);
+
+return;
+
+}
+
+startOverwatchLite();
+
+}
 );
 
 infoBtn.on(
@@ -1345,46 +1386,13 @@ toggleGlobalInfo
 
 
 
-$(document).ready(async function(){
-
-let isAdmin=false;
-
-try{
-
-const html=await $.get(
-"/game.php?screen=ally&mode=members_defense"
-);
-
-isAdmin =
-
-$(html)
-
-.find(
-'.input-nicer option'
-)
-
-.length>1;
-
-}catch(e){
-
-console.log(
-"Admin check error",
-e
-);
-
-}
-
-if(isAdmin){
+$(document).ready(function(){
 
 createArmyMapButton();
-
-/* coord újrapozicionálás */
 
 $(window).trigger(
 "resize"
 );
-
-}
 
 });
 
