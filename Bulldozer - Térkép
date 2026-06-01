@@ -3568,23 +3568,6 @@ Egység:
 
 <br>
 
-<select
-
-id="plannerUnit"
-
-style="
-width:140px;
-padding:5px;
-"
-
->
-
-<option value="ram">Kos</option>
-
-<option value="snob">Nemes</option>
-
-</select>
-
 </div>
 
 </div>
@@ -3597,28 +3580,6 @@ gap:20px;
 
 <div>
 
-Forrás falvak
-
-<br>
-
-<textarea
-
-id="plannerSources"
-
-style="
-width:280px;
-height:260px;
-resize:none;
-"
-
-placeholder="500|500&#10;501|500"
-
-></textarea>
-
-</div>
-
-<div>
-
 Cél falvak
 
 <br>
@@ -3628,14 +3589,76 @@ Cél falvak
 id="plannerTargets"
 
 style="
-width:280px;
-height:260px;
+width:250px;
+height:220px;
 resize:none;
 "
 
-placeholder="510|510&#10;511|511"
+></textarea>
+
+</div>
+
+<div>
+
+Nemes falvak
+
+<br>
+
+<textarea
+
+id="plannerSnobs"
+
+style="
+width:250px;
+height:180px;
+resize:none;
+"
 
 ></textarea>
+
+<br>
+
+Nemes / cél
+
+<input
+id="plannerSnobCount"
+value="1"
+style="
+width:55px;
+">
+
+</div>
+
+<div>
+
+Nuke falvak
+
+<br>
+
+<textarea
+
+id="plannerNukes"
+
+style="
+width:250px;
+height:180px;
+resize:none;
+"
+
+></textarea>
+
+<br>
+
+Nuke / cél
+
+<input
+id="plannerNukeCount"
+value="1"
+style="
+width:55px;
+">
+
+</div>
 
 </div>
 
@@ -3785,38 +3808,61 @@ dragging=false;
 
 
 
+const RAM_SPEED=30;
+const SNOB_SPEED=35;
+
+function parseCoords(text){
+
+const matches=
+text.match(
+/\d{1,3}\|\d{1,3}/g
+);
+
+return matches
+? [...new Set(matches)]
+: [];
+
+}
+
 function plannerDistance(a,b){
 
-const A=a.split("|");
+const [ax,ay]=
+a.split("|").map(Number);
 
-const B=b.split("|");
+const [bx,by]=
+b.split("|").map(Number);
 
 return Math.sqrt(
 
-Math.pow(
-A[0]-B[0],
-2
-)
-
-+
-
-Math.pow(
-A[1]-B[1],
-2
-)
+Math.pow(ax-bx,2)+
+Math.pow(ay-by,2)
 
 );
 
 }
 
+function calcLaunch(
+arrival,
+from,
+to,
+speed
+){
 
+const dist=
+plannerDistance(
+from,
+to
+);
 
-function plannerSpeed(unit){
+return new Date(
 
-if(unit==="snob")
-return 35;
+arrival.getTime()
 
-return 30;
+-
+
+(dist*speed*60000)
+
+);
 
 }
 
@@ -3831,97 +3877,280 @@ $(document).on(
 function(){
 
 const arrival=
-$("#arrivalTime").val();
+new Date(
 
-const unit=
-$("#plannerUnit").val();
-
-const speed=
-plannerSpeed(unit);
-
-const sources=
-
-$("#plannerSources")
-
+$("#arrivalTime")
 .val()
-
-.split(/\n+/)
-
-.map(x=>x.trim())
-
-.filter(Boolean);
-
-const targets=
-
-$("#plannerTargets")
-
-.val()
-
-.split(/\n+/)
-
-.map(x=>x.trim())
-
-.filter(Boolean);
-
-let output=[];
-
-targets.forEach(target=>{
-
-sources.forEach(source=>{
-
-const dist=
-
-plannerDistance(
-source,
-target
-);
-
-const minutes=
-dist*speed;
-
-const send=
-
-new Date(arrival);
-
-send.setMinutes(
-
-send.getMinutes()
-
--
-
-minutes
+.replace(
+" ",
+"T"
+)
 
 );
 
-output.push(
+if(
+isNaN(
+arrival.getTime()
+)
+){
 
-source+
-
-" -> "+
-
-target+
-
-" = "+
-
-send.toLocaleString()
-
+UI.ErrorMessage(
+"Rossz idő"
 );
 
-});
-
-});
-
-$("#plannerOutput")
-
-.val(
-
-output.join("\n")
-
-);
+return;
 
 }
 
+const targets=
+parseCoords(
+$("#plannerTargets").val()
 );
+
+const nukes=
+parseCoords(
+$("#plannerNukes").val()
+);
+
+const snobs=
+parseCoords(
+$("#plannerSnobs").val()
+);
+
+const nukePer=
+parseInt(
+$("#plannerNukeCount").val()
+)||1;
+
+const snobPer=
+parseInt(
+$("#plannerSnobCount").val()
+)||1;
+
+let output=[];
+
+
+/* NUKE */
+
+let allNukes=[];
+
+targets.forEach(target=>{
+
+nukes.forEach(from=>{
+
+const launch=
+calcLaunch(
+arrival,
+from,
+target,
+RAM_SPEED
+);
+
+allNukes.push({
+
+from,
+target,
+
+time:
+launch.getTime(),
+
+launch,
+
+type:
+"NUKE"
+
+});
+
+});
+
+});
+
+const avgTime=
+arrival.getTime();
+
+allNukes.sort(
+(a,b)=>
+
+Math.abs(
+a.time-avgTime
+)
+
+-
+
+Math.abs(
+b.time-avgTime
+)
+
+);
+
+const needed=
+
+targets.length*
+nukePer;
+
+let used=
+new Set();
+
+let targetCount={};
+
+targets.forEach(
+t=>
+targetCount[t]=0
+);
+
+for(
+const a of allNukes
+){
+
+if(
+used.has(a.from)
+)
+continue;
+
+if(
+targetCount[
+a.target
+]>=nukePer
+)
+continue;
+
+used.add(
+a.from
+);
+
+targetCount[
+a.target
+]++;
+
+output.push(a);
+
+}
+
+
+/* NOBLE */
+
+if(
+snobs.length
+){
+
+let allSnobs=[];
+
+targets.forEach(target=>{
+
+snobs.forEach(from=>{
+
+const launch=
+calcLaunch(
+arrival,
+from,
+target,
+SNOB_SPEED
+);
+
+allSnobs.push({
+
+from,
+target,
+
+time:
+launch.getTime(),
+
+launch,
+
+type:
+"NEMES"
+
+});
+
+});
+
+});
+
+const avgTime2=
+arrival.getTime();
+
+allSnobs.sort(
+(a,b)=>
+
+Math.abs(
+a.time-avgTime2
+)
+
+-
+
+Math.abs(
+b.time-avgTime2
+)
+
+);
+
+let usedSnob=
+new Set();
+
+let targetSnob={};
+
+targets.forEach(
+t=>
+targetSnob[t]=0
+);
+
+for(
+const a of allSnobs
+){
+
+if(
+usedSnob.has(a.from)
+)
+continue;
+
+if(
+targetSnob[
+a.target
+]>=snobPer
+)
+continue;
+
+usedSnob.add(
+a.from
+);
+
+targetSnob[
+a.target
+]++;
+
+output.push(a);
+
+}
+
+}
+
+output.sort(
+(a,b)=>
+a.time-b.time
+);
+
+$("#plannerOutput")
+.val(
+
+output.map(x=>
+
+`${x.type}
+
+${x.from}
+
+->
+
+${x.target}
+
+=
+
+${x.launch.toLocaleString()}`
+
+).join("\n")
+
+);
+
+});
 
 
 
