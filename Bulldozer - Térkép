@@ -4920,15 +4920,16 @@ function(){
 
 window.selectedVillages=[];
 
-$("#coordPickerInput")
-.val("");
-
 $(".coordVillageMark")
 .remove();
 
 drawVillageSelection();
 
 updateCoordInput();
+
+UI.SuccessMessage(
+"Törölve"
+);
 
 UI.SuccessMessage(
 "Törölve"
