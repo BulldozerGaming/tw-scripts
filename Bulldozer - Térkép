@@ -2802,9 +2802,10 @@ $("#owFloatingInfo")
 }
 
 const visible=
-
 $("#coordPickerHud")
 .is(":visible");
+
+/* koordináta vagy OW fut */
 
 if(
 visible ||
@@ -2812,8 +2813,12 @@ window.owLiteStarted
 ){
 
 $("#owFloatingInfo").css({
+
 display:"flex"
+
 });
+
+$("#owInfoBtn").show();
 
 }else{
 
