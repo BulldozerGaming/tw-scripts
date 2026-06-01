@@ -2805,6 +2805,12 @@ if(
 !window.coordPickerEnabled
 ){
 
+/* teljes reset */
+
+window.selectedVillages=[];
+
+updateCoordInput();
+
 $(".coordVillageMark")
 .remove();
 
