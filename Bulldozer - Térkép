@@ -2069,6 +2069,26 @@ window.coordPickerEnabled=false;
 
 window.selectedVillages=[];
 
+/* format reset */
+
+$("#coordColumn")
+.prop(
+"checked",
+false
+);
+
+$("#coordBB")
+.prop(
+"checked",
+false
+);
+
+$("#coordCode")
+.prop(
+"checked",
+false
+);
+
 updateCoordInput();
 
 $(".coordVillageMark").remove();
@@ -2808,6 +2828,26 @@ if(
 /* teljes reset */
 
 window.selectedVillages=[];
+
+/* format reset */
+
+$("#coordColumn")
+.prop(
+"checked",
+false
+);
+
+$("#coordBB")
+.prop(
+"checked",
+false
+);
+
+$("#coordCode")
+.prop(
+"checked",
+false
+);
 
 updateCoordInput();
 
