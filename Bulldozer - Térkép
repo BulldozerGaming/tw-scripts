@@ -3963,30 +3963,44 @@ $("#plannerSnobCount").val()
 )||1;
 
 
+const requiredNukes =
+targets.length * nukePer;
+
+const requiredSnobs =
+targets.length * snobPer;
+
+/*
+csak info
+nem állítjuk meg a számolást
+*/
+
 if(
 nukes.length <
-targets.length*nukePer
+requiredNukes
 ){
 
-UI.ErrorMessage(
-"Nincs elég NUKE koordináta"
-);
+UI.InfoMessage(
 
-return;
+`Kevés NUKE coord (${nukes.length}/${requiredNukes}) - részleges optimalizálás`
+
+);
 
 }
 
 if(
+
 snobs.length &&
+
 snobs.length <
-targets.length*snobPer
+requiredSnobs
+
 ){
 
-UI.ErrorMessage(
-"Nincs elég NEMES koordináta"
-);
+UI.InfoMessage(
 
-return;
+`Kevés NEMES coord (${snobs.length}/${requiredSnobs}) - részleges optimalizálás`
+
+);
 
 }
 
@@ -4043,11 +4057,16 @@ targetCount,
 startIndex
 ){
 
-const valid=
-targets.every(
-t=>
-targetCount[t]>=nukePer
+const neededAssignments =
+Math.min(
+nukes.length,
+targets.length*nukePer
 );
+
+const valid=
+
+current.length >=
+neededAssignments;
 
 if(valid){
 
@@ -4221,11 +4240,16 @@ targetCount,
 startIndex
 ){
 
-const valid=
-targets.every(
-t=>
-targetCount[t]>=snobPer
+const neededAssignments =
+Math.min(
+snobs.length,
+targets.length*snobPer
 );
+
+const valid=
+
+current.length >=
+neededAssignments;
 
 if(valid){
 
