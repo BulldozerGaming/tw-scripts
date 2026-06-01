@@ -3962,6 +3962,34 @@ parseInt(
 $("#plannerSnobCount").val()
 )||1;
 
+
+if(
+nukes.length <
+targets.length*nukePer
+){
+
+UI.ErrorMessage(
+"Nincs elég NUKE koordináta"
+);
+
+return;
+
+}
+
+if(
+snobs.length &&
+snobs.length <
+targets.length*snobPer
+){
+
+UI.ErrorMessage(
+"Nincs elég NEMES koordináta"
+);
+
+return;
+
+}
+
 let output=[];
 
 
@@ -4006,7 +4034,7 @@ allNukes.sort(
 a.time-b.time
 );
 
-let best=null;
+let bestNuke=null;
 
 for(
 let start=0;
@@ -4088,14 +4116,14 @@ picked[0]
 
 if(
 
-!best ||
+!bestNuke ||
 
 spread<
-best.spread
+bestNuke.spread
 
 ){
 
-best={
+bestNuke={
 
 spread,
 
@@ -4114,10 +4142,10 @@ break;
 
 }
 
-if(best){
+if(bestNuke){
 
 output.push(
-...best.picked
+...bestNuke.picked
 );
 
 }
@@ -4168,7 +4196,7 @@ allSnobs.sort(
 a.time-b.time
 );
 
-let best=null;
+let bestSnob=null;
 
 for(
 let start=0;
@@ -4250,14 +4278,14 @@ picked[0]
 
 if(
 
-!best ||
+!bestSnob ||
 
 spread<
-best.spread
+bestSnob.spread
 
 ){
 
-best={
+bestSnob={
 
 spread,
 
@@ -4276,15 +4304,75 @@ break;
 
 }
 
-if(best){
+if(bestSnob){
 
 output.push(
-...best.picked
+...bestSnob.picked
 );
 
 }
 
 }
+
+
+
+output.sort(
+(a,b)=>
+a.time-b.time
+);
+
+$("#plannerOutput")
+.val(
+
+output.map(x=>{
+
+const d=x.launch;
+
+const pad=n=>
+String(n).padStart(
+2,
+"0"
+);
+
+return(
+
+x.type+
+
+" | "+
+
+x.from+
+
+" -> "+
+
+x.target+
+
+" | "+
+
+pad(
+d.getHours()
+)
+
++":"+
+
+pad(
+d.getMinutes()
+)
+
++":"+
+
+pad(
+d.getSeconds()
+)
+
+);
+
+})
+
+.join("\n")
+
+);
+
+
 
 
 
