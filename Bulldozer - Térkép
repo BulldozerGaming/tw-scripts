@@ -1937,9 +1937,14 @@ cursor:text;
 
 <div style="
 margin-top:10px;
+
 display:flex;
-gap:8px;
+
 align-items:center;
+
+gap:8px;
+
+height:28px;
 ">
 
 <button
@@ -3600,11 +3605,12 @@ background:#f7f1df;
 
 
 
+
 .crytekResetBtn{
 
-width:26px;
+width:28px;
 
-height:26px;
+height:28px;
 
 padding:0;
 
@@ -3614,27 +3620,64 @@ align-items:center;
 
 justify-content:center;
 
-border-radius:6px;
+vertical-align:middle;
 
-border:1px solid #7a5325;
+line-height:28px;
+
+font-size:14px;
+
+font-weight:bold;
+
+border-radius:3px;
+
+cursor:pointer;
+
+box-sizing:border-box;
+
+/* UGYANAZ mint a .btn */
 
 background:
 
 linear-gradient(
 180deg,
-#f5e7c5,
-#d7bd8d
+#f6eed9,
+#d9c7a1
 );
 
-cursor:pointer;
+border:
 
-font-weight:bold;
+1px solid #7d510f;
+
+color:#000;
 
 box-shadow:
 
-0 1px 2px rgba(0,0,0,.2);
+inset 0 1px 0 rgba(255,255,255,.4),
+0 1px 1px rgba(0,0,0,.2);
 
 }
+
+.crytekResetBtn:hover{
+
+background:
+
+linear-gradient(
+180deg,
+#f8f1df,
+#ccb387
+);
+
+border-color:#6f4709;
+
+transform:none;
+
+}
+
+
+
+
+
+
 
 .crytekResetBtn:hover{
 
@@ -3796,20 +3839,30 @@ margin-bottom:18px;
 ">
 
 <div style="
+
+display:flex;
+
+align-items:center;
+
+gap:8px;
+
 font-size:18px;
+
 font-weight:bold;
+
 margin-bottom:8px;
+
 ">
 
 Csapódás
 
-<button class="plannerReset"
+<button
+
+class="plannerReset crytekResetBtn"
 
 data-reset="arrival"
 
 title="Reset"
-
-class="plannerReset crytekResetBtn"
 
 >
 
@@ -3845,21 +3898,29 @@ gap:16px;
 <div>
 
 <div style="
+
+display:flex;
+
+align-items:center;
+
+gap:8px;
+
 font-size:18px;
+
 font-weight:bold;
-color:#5a3b10;
+
 margin-bottom:8px;
+
 ">
 
 Célpont
 
-<button class="plannerReset"
+<button
+class="plannerReset crytekResetBtn"
 
 data-reset="targets"
 
 title="Reset"
-
-class="plannerReset crytekResetBtn"
 
 >
 
@@ -3896,20 +3957,30 @@ gap:24px;
 <div>
 
 <div style="
+
+display:flex;
+
+align-items:center;
+
+gap:8px;
+
 font-size:18px;
+
 font-weight:bold;
+
 margin-bottom:8px;
+
 ">
 
 Nemes
 
-<button class="plannerReset"
+<button
+
+class="plannerReset crytekResetBtn"
 
 data-reset="snobs"
 
 title="Reset"
-
-class="plannerReset crytekResetBtn"
 
 >
 
@@ -3963,20 +4034,30 @@ margin-top:6px;
 <div>
 
 <div style="
+
+display:flex;
+
+align-items:center;
+
+gap:8px;
+
 font-size:18px;
+
 font-weight:bold;
+
 margin-bottom:8px;
+
 ">
 
 Nuke
 
-<button class="plannerReset"
+<button
+
+class="plannerReset crytekResetBtn"
 
 data-reset="nukes"
 
 title="Reset"
-
-class="plannerReset crytekResetBtn"
 
 >
 
