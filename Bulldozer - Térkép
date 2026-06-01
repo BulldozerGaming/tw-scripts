@@ -3630,19 +3630,9 @@ box-sizing:border-box;
 
 /* UGYANAZ mint a .btn */
 
-background:
+background: linear-gradient(to bottom, #947a62 0%, #7b5c3d 22%, #6c4824 30%, #6c4824 100%);
 
-linear-gradient(
-180deg,
-#f6eed9,
-#d9c7a1
-);
-
-border:
-
-1px solid #7d510f;
-
-color:#000;
+color: #fff;
 
 box-shadow:
 
@@ -3653,31 +3643,15 @@ inset 0 1px 0 rgba(255,255,255,.4),
 
 .crytekResetBtn:hover{
 
-background:
+background: linear-gradient(to bottom, #b69471 0%, #9f764d 22%, #8f6133 30%, #6c4d2d 100%);
 
-linear-gradient(
-180deg,
-#f8f1df,
-#ccb387
-);
-
-border-color:#6f4709;
+    color: #fff;
 
 transform:none;
 
 }
 
 
-
-
-
-
-
-.crytekResetBtn:hover{
-
-transform:translateY(-1px);
-
-}
 
 .crytekFancyInput{
 
@@ -4148,8 +4122,14 @@ readonly
 
 style="
 margin-top:18px;
-width:100%;
+
+width:540px;
+
+max-width:100%;
+
 height:170px;
+
+box-sizing:border-box;
 "
 
 ></textarea>
