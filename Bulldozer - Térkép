@@ -2183,13 +2183,15 @@ border-radius:8px;
 
 <ul>
 
-<li>Falvak stack alapján színezése</li>
+<li>Aktiválás után a térkép stack szerint színezi a falvakat</li>
 
-<li>K beosztás megjelenítés</li>
+<li>A színek a falu teljes stack méretét mutatják</li>
 
-<li>Popup információk</li>
+<li>Falura húzva részletes popup jelenik meg</li>
 
-<li>Incoming számok</li>
+<li>Incoming ikon és szám megjelenik térképen</li>
+
+<li>Újra megnyomva visszakapod az alap térképet</li>
 
 </ul>
 
@@ -2205,15 +2207,17 @@ border-radius:8px;
 
 <ul>
 
-<li>Kattints falvakra a térképen kijelöléshez</li>
+<li>Kattints falvakra térképen a kijelöléshez</li>
 
-<li>Oszlop bekapcsolása soronként rendezi a koordinátákat</li>
+<li>Új kattintás törli a kijelölést</li>
 
-<li>BB bekapcsolása fórum formátumot készít</li>
+<li>Oszlop opció soronként rendezi kiírást</li>
 
-<li>Code bekapcsolása code tagbe rakja</li>
+<li>BB opció fórum kompatibilis coord taget készít</li>
 
-<li>Másolás gomb a teljes listát kimásolja</li>
+<li>Code opció code blokkba rakja a listát</li>
+
+<li>Másolás gomb vágólapra teszi az eredményt</li>
 
 </ul>
 
@@ -2229,11 +2233,15 @@ border-radius:8px;
 
 <ul>
 
-<li>Sima koordinátás script</li>
+<li>Sima script automatikusan generál fake scriptet koordinátákból</li>
 
-<li>Fórum ID script</li>
+<li>Fórum ID script fórum topic alapú fake scriptet készít</li>
 
-<li>Automatikus generálás</li>
+<li>Kód opció code tagbe rakja a scriptet</li>
+
+<li>Spoiler opció spoiler tagbe helyezi</li>
+
+<li>Másolás gomb az elkészült scriptet kimásolja</li>
 
 </ul>
 
@@ -2245,7 +2253,7 @@ padding:12px;
 border-radius:8px;
 ">
 
-<b>Mass Attack Planner</b>
+<b>Támadás tervező</b>
 
 <ul>
 
@@ -2253,17 +2261,17 @@ border-radius:8px;
 
 <li>Cél falvak mezőbe kerülnek a cél koordináták</li>
 
-<li>Nuke falvak mezőbe az induló OFF koordináták kerülnek</li>
+<li>Nuke falvak mezőbe írd az OFF indulókat</li>
 
-<li>Nuke / cél megadja hány OFF menjen egy célra</li>
+<li>Nuke / cél adja meg hány OFF menjen célonként</li>
 
-<li>Nemes falvak mezőbe kerülnek a nemes koordináták</li>
+<li>Nemes falvak mezőbe írd a nemes koordinátákat</li>
 
-<li>Nemes / cél megadja hány nemes menjen egy célra</li>
+<li>Nemes / cél adja meg hány nemes menjen célonként</li>
 
-<li>Számolás globálisan optimalizálja az indításokat</li>
+<li>Számolás globálisan optimalizálja indításokat</li>
 
-<li>Másolás BB formátumban másolja ki az eredményt</li>
+<li>Másolás BB formátumban kimásolja az eredményt</li>
 
 </ul>
 
@@ -2279,11 +2287,13 @@ border-radius:8px;
 
 <ul>
 
-<li>Piros gomb = térkép rendszer</li>
+<li>Piros gomb = stack / overwatch rendszer</li>
 
 <li>Zöld gomb = koordináta rendszer</li>
 
-<li>ⓘ = közös segítség</li>
+<li>Kaszárnya ikon = Mass Attack Planner</li>
+
+<li>ⓘ gomb közös segítségpanel</li>
 
 </ul>
 
@@ -3476,8 +3486,106 @@ positionBtn
 
 btn.on(
 "click",
-toggleMassPlannerHud
+function(){
+
+toggleMassPlannerHud();
+
+const visible=
+$("#crytekMassHud")
+.is(":visible");
+
+if(
+visible ||
+window.owLiteStarted ||
+$("#coordPickerHud").is(":visible")
+){
+
+$("#owFloatingInfo")
+.css({
+
+display:"flex",
+
+justifyContent:"center",
+
+alignItems:"center"
+
+});
+
+$("#owInfoBtn").show();
+
+}else{
+
+$("#owInfoBtn").hide();
+
+$("#owFloatingInfo").hide();
+
+}
+
+}
 );
+
+}
+
+
+
+
+
+if(!$("#crytekMassStyles").length){
+
+$("head").append(`
+
+<style id="crytekMassStyles">
+
+.crytekInputArea{
+
+padding:8px;
+
+border:1px solid #8b642e;
+
+border-radius:6px;
+
+background:#f7f1df;
+
+font-size:14px;
+
+box-sizing:border-box;
+
+resize:none;
+
+box-shadow:
+inset 0 1px 2px rgba(0,0,0,.12);
+
+}
+
+.crytekSmallInput{
+
+width:60px;
+
+padding:6px;
+
+border:1px solid #8b642e;
+
+border-radius:6px;
+
+background:#f7f1df;
+
+}
+
+.crytekMainInput{
+
+padding:7px;
+
+border:1px solid #8b642e;
+
+border-radius:6px;
+
+background:#f7f1df;
+
+}
+
+</style>
+
+`);
 
 }
 
@@ -3760,51 +3868,6 @@ class="crytekSmallInput"
 
 </div>
 
-<div style="
-margin-top:18px;
-display:flex;
-gap:12px;
-">
-
-<b style="
-font-size:16px;
-color:#5a3b10;
-">
-
-Nuke falvak
-
-</b>
-
-<br>
-
-<textarea
-
-id="plannerNukes"
-
-style="
-width:250px;
-height:180px;
-resize:none;
-"
-
-></textarea>
-
-<br>
-
-Nuke / cél
-
-<input
-id="plannerNukeCount"
-value="1"
-style="
-width:55px;
-">
-
-</div>
-
-</div>
-
-</div>
 
 
 <div style="
@@ -3865,7 +3928,30 @@ hud=$("#crytekMassHud");
 
 $("#closeMassPlanner")
 .click(
-()=>hud.hide()
+function(){
+
+hud.hide();
+
+const stillOpen=
+
+window.owLiteStarted ||
+
+$("#coordPickerHud")
+.is(":visible");
+
+if(stillOpen){
+
+$("#owInfoBtn").show();
+
+}else{
+
+$("#owInfoBtn").hide();
+
+$("#owFloatingInfo").hide();
+
+}
+
+}
 );
 
 enableMassDrag();
