@@ -3602,11 +3602,13 @@ background:#f7f1df;
 
 .crytekResetBtn{
 
-width:28px;
+width:23px;
 
-height:28px;
+height:23px;
 
 padding:0;
+
+line-height:1.5;
 
 display:inline-flex;
 
