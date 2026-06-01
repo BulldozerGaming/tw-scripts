@@ -4996,7 +4996,7 @@ const formatted =
 [size=11][b]Indítások[/b][/size]
 
 [table]
-[**]Indító[||]Célpont[||]Indítás[||][img]${baseUrl}/graphic/command/attack.png[/img][/**]
+[**]Indító[||]Célpont[||]Indítás[||][img]${WATCH_ICON}[/img][/**]
 `
 
 +
@@ -5032,6 +5032,14 @@ location.protocol+
 "//"+
 location.host;
 
+const attackIcon =
+
+x.type==="NUKE"
+
+? NUKE_ICON
+
+: SNOB_ICON;
+
 return(
 
 `[*][coord]${x.from}[/coord]`+
@@ -5040,7 +5048,11 @@ return(
 
 `[|][b][color=green]${launch}[/color][/b]`+
 
-`[|][url=${baseUrl}/game.php?village=${fromId}&screen=place&target=${targetId}][img]${baseUrl}/graphic/command/attack.png[/img][/url]`
+`[|][url=${baseUrl}/game.php?village=${fromId}&screen=place&target=${targetId}]`+
+
+`[img]${attackIcon}[/img]`+
+
+`[/url]`
 
 );
 
