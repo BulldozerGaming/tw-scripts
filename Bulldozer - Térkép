@@ -2205,13 +2205,15 @@ border-radius:8px;
 
 <ul>
 
-<li>Kattintással kijelölés</li>
+<li>Kattints falvakra a térképen kijelöléshez</li>
 
-<li>Zöld keretes megjelenítés</li>
+<li>Oszlop bekapcsolása soronként rendezi a koordinátákat</li>
 
-<li>Formázás / BB / Code</li>
+<li>BB bekapcsolása fórum formátumot készít</li>
 
-<li>Másolás gombok</li>
+<li>Code bekapcsolása code tagbe rakja</li>
+
+<li>Másolás gomb a teljes listát kimásolja</li>
 
 </ul>
 
@@ -2247,17 +2249,21 @@ border-radius:8px;
 
 <ul>
 
-<li>Nuke optimalizálás</li>
+<li>Beérkezés mezőbe írd a kívánt csapódási időt</li>
 
-<li>Nemes optimalizálás</li>
+<li>Cél falvak mezőbe kerülnek a cél koordináták</li>
 
-<li>Globális idő optimalizálás</li>
+<li>Nuke falvak mezőbe az induló OFF koordináták kerülnek</li>
 
-<li>Nuke / cél támogatás</li>
+<li>Nuke / cél megadja hány OFF menjen egy célra</li>
 
-<li>Nemes / cél támogatás</li>
+<li>Nemes falvak mezőbe kerülnek a nemes koordináták</li>
 
-<li>BB output generálás</li>
+<li>Nemes / cél megadja hány nemes menjen egy célra</li>
+
+<li>Számolás globálisan optimalizálja az indításokat</li>
+
+<li>Másolás BB formátumban másolja ki az eredményt</li>
 
 </ul>
 
@@ -3506,9 +3512,9 @@ left:120px;
 
 top:80px;
 
-width:980px;
+width:auto;
 
-min-height:650px;
+max-width:620px;
 
 height:auto;
 
@@ -3576,12 +3582,15 @@ Beérkezés:
 <br>
 
 <input
+
 id="arrivalTime"
+
+class="crytekMainInput"
 
 style="
 width:260px;
-padding:5px;
 "
+
 >
 
 </div>
@@ -3591,28 +3600,71 @@ padding:5px;
 
 <div style="
 display:flex;
-gap:20px;
+flex-direction:column;
+gap:16px;
 ">
+
+<!-- TARGET -->
 
 <div>
 
-<b style="
-font-size:16px;
+<div style="
+font-size:18px;
+font-weight:bold;
 color:#5a3b10;
+margin-bottom:8px;
 ">
-Cél falvak
-</b>
 
-<br>
+Cél falvak
+
+</div>
 
 <textarea
 
 id="plannerTargets"
 
+class="crytekInputArea"
+
 style="
-width:250px;
-height:220px;
-resize:none;
+width:420px;
+height:150px;
+"
+
+></textarea>
+
+</div>
+
+
+<!-- NUKES -->
+
+<div style="
+display:flex;
+align-items:flex-start;
+gap:14px;
+">
+
+<div>
+
+<div style="
+font-size:18px;
+font-weight:bold;
+color:#5a3b10;
+margin-bottom:8px;
+">
+
+Nuke falvak
+
+</div>
+
+<textarea
+
+id="plannerNukes"
+
+class="crytekInputArea"
+
+style="
+width:420px;
+height:110px;
 "
 
 ></textarea>
@@ -3621,43 +3673,98 @@ resize:none;
 
 <div>
 
-<b style="
-font-size:16px;
+<div style="
+font-weight:bold;
+margin-bottom:8px;
+">
+
+Nuke / cél
+
+</div>
+
+<input
+
+id="plannerNukeCount"
+
+value="1"
+
+class="crytekSmallInput"
+
+>
+
+</div>
+
+</div>
+
+
+<!-- SNOBS -->
+
+<div style="
+display:flex;
+align-items:flex-start;
+gap:14px;
+">
+
+<div>
+
+<div style="
+font-size:18px;
+font-weight:bold;
 color:#5a3b10;
+margin-bottom:8px;
 ">
 
 Nemes falvak
 
-</b>
-
-<br>
+</div>
 
 <textarea
 
 id="plannerSnobs"
 
+class="crytekInputArea"
+
 style="
-width:250px;
-height:180px;
-resize:none;
+width:420px;
+height:110px;
 "
 
 ></textarea>
 
-<br>
-
-Nemes / cél
-
-<input
-id="plannerSnobCount"
-value="1"
-style="
-width:55px;
-">
-
 </div>
 
 <div>
+
+<div style="
+font-weight:bold;
+margin-bottom:8px;
+">
+
+Nemes / cél
+
+</div>
+
+<input
+
+id="plannerSnobCount"
+
+value="1"
+
+class="crytekSmallInput"
+
+>
+
+</div>
+
+</div>
+
+</div>
+
+<div style="
+margin-top:18px;
+display:flex;
+gap:12px;
+">
 
 <b style="
 font-size:16px;
