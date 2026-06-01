@@ -2243,6 +2243,32 @@ padding:12px;
 border-radius:8px;
 ">
 
+<b>Mass Attack Planner</b>
+
+<ul>
+
+<li>Nuke optimalizálás</li>
+
+<li>Nemes optimalizálás</li>
+
+<li>Globális idő optimalizálás</li>
+
+<li>Nuke / cél támogatás</li>
+
+<li>Nemes / cél támogatás</li>
+
+<li>BB output generálás</li>
+
+</ul>
+
+</div>
+
+<div style="
+border:1px solid #b08a52;
+padding:12px;
+border-radius:8px;
+">
+
 <b>Használat</b>
 
 <ul>
@@ -3480,9 +3506,11 @@ left:120px;
 
 top:80px;
 
-width:900px;
+width:980px;
 
-height:700px;
+min-height:650px;
+
+height:auto;
 
 background:#e7d7af;
 
@@ -3568,7 +3596,12 @@ gap:20px;
 
 <div>
 
+<b style="
+font-size:16px;
+color:#5a3b10;
+">
 Cél falvak
+</b>
 
 <br>
 
@@ -3588,7 +3621,14 @@ resize:none;
 
 <div>
 
+<b style="
+font-size:16px;
+color:#5a3b10;
+">
+
 Nemes falvak
+
+</b>
 
 <br>
 
@@ -3619,7 +3659,14 @@ width:55px;
 
 <div>
 
+<b style="
+font-size:16px;
+color:#5a3b10;
+">
+
 Nuke falvak
+
+</b>
 
 <br>
 
@@ -4381,7 +4428,14 @@ output.sort(
 a.time-b.time
 );
 
-$("#plannerOutput").val(
+const arrivalText=
+$("#arrivalTime").val();
+
+const formatted=
+
+`[b]Csapódás:[/b] ${arrivalText}
+
+`+
 
 output.map(x=>{
 
@@ -4389,27 +4443,44 @@ const d=x.launch;
 
 const pad=n=>
 String(n).padStart(
-2,"0");
+2,
+"0"
+);
+
+const launch=
+
+pad(
+d.getHours()
+)+":"+
+
+pad(
+d.getMinutes()
+)+":"+
+
+pad(
+d.getSeconds()
+);
+
+const color=
+
+x.type==="NUKE"
+? "red"
+: "green";
 
 return(
 
-x.type+
-" | "+
-x.from+
-" -> "+
-x.target+
-" | "+
+`[b]Innen:[/b] [coord]${x.from}[/coord]
+[b]Ide:[/b] [coord]${x.target}[/coord]
+[b]Indítás:[/b] [color=${color}]${launch}[/color]
 
-pad(d.getHours())+
-":"+
-pad(d.getMinutes())+
-":"+
-pad(d.getSeconds())
+`
 
 );
 
-}).join("\n")
+}).join("");
 
+$("#plannerOutput").val(
+formatted
 );
 
 }); // <-- EZ ZÁRJA LE A plannerCalc clicket
