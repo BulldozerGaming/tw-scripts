@@ -4342,6 +4342,27 @@ dragging=false;
 const RAM_SPEED=30;
 const SNOB_SPEED=35;
 
+
+
+const coordToVillageId={};
+
+Object.values(TWMap.villages).forEach(v=>{
+
+const coord =
+Math.floor(v.xy/1000)
++"|"+
+(v.xy%1000);
+
+coordToVillageId[
+coord
+]=v.id;
+
+});
+
+
+
+
+
 function parseCoords(text){
 
 const matches=
@@ -4995,6 +5016,17 @@ pad(d.getMinutes())+
 ":"+
 pad(d.getSeconds());
 
+
+const fromId=
+coordToVillageId[
+x.from
+] || "";
+
+const targetId=
+coordToVillageId[
+x.target
+] || "";
+
 return(
 
 `[*][coord]${x.from}[/coord]`+
@@ -5003,7 +5035,7 @@ return(
 
 `[|][b][color=green]${launch}[/color][/b]`+
 
-`[|]<button class="plannerLaunchBtn" data-from="${x.from}" data-target="${x.target}">Indítás</button>`
+`[|][url=/game.php?village=${fromId}&screen=place&target=${targetId}]Indítás[/url]`
 
 );
 
