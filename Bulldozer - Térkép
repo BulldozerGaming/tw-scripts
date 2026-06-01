@@ -734,8 +734,13 @@ if(window.owLiteStarted){
 
 window.owLiteStarted=false;
 
-$("#owInfoBtn").hide();
+if(
+!$("#coordPickerHud").is(":visible")
+){
+
 $("#owFloatingInfo").hide();
+
+}
 
 $("#owHud").remove();
 
@@ -1314,121 +1319,6 @@ alignItems:"center"
 
 
 
-/* COORD INFO CONTAINER */
-
-const coordInfoBtn=$(`
-
-<a id="coordInfoBtn"
-
-style="
-
-display:none;
-
-padding:0;
-
-background:
-
-linear-gradient(
-180deg,
-#58b558,
-#2f7d2f
-);
-
-border:1px solid #123d12;
-
-border-radius:7px;
-
-color:#fff;
-
-font-weight:bold;
-
-cursor:pointer;
-
-text-decoration:none;
-
-width:28px;
-
-height:28px;
-
-font-size:12px;
-
-line-height:28px;
-
-text-align:center;
-
-box-shadow:
-0 2px 5px rgba(0,0,0,.35);
-
-user-select:none;
-
-"
-
->
-
-ⓘ
-
-</a>
-
-`);
-
-if(
-!$("#coordFloatingInfo").length
-){
-
-$("#owFloatingInfo")
-
-.parent()
-
-.append(`
-
-<div id="coordFloatingInfo"
-
-style="
-
-display:flex;
-
-margin-top:4px;
-
-width:34px;
-
-height:34px;
-
-justify-content:center;
-
-align-items:center;
-
-"
-
->
-
-</div>
-
-`);
-
-}
-
-$("#coordFloatingInfo")
-
-.empty()
-
-.css({
-
-display:"flex",
-
-justifyContent:"center",
-
-alignItems:"center"
-
-})
-
-.append(
-coordInfoBtn
-);
-
-coordInfoBtn.on(
-"click",
-toggleCoordInfo
-);
 
 
 
@@ -1443,7 +1333,7 @@ startOverwatchLite
 
 infoBtn.on(
 "click",
-toggleOWInfo
+toggleGlobalInfo
 );
 
 }
@@ -2216,84 +2106,54 @@ hud.toggle();
 
 
 
-function toggleCoordInfo(){
+function toggleGlobalInfo(){
 
-let hud=$("#coordInfoHud");
+let hud=$("#globalInfoHud");
 
 if(!hud.length){
 
 $("body").append(`
 
-<div id="coordInfoHud"
+<div id="globalInfoHud"
 
 style="
-
 position:fixed;
-
 left:70px;
-
-top:220px;
-
-cursor:move;
-
-user-select:none;
-
-z-index:999999;
-
-width:320px;
-
+top:140px;
+width:560px;
 background:#e7d7af;
-
 border:2px solid #4f7f2a;
-
 border-radius:10px;
-
-padding:14px;
-
-box-shadow:0 4px 12px rgba(0,0,0,.35);
-
-font-size:14px;
-
+padding:16px;
+z-index:999999;
 display:none;
-
-"
-
->
+box-shadow:0 4px 12px rgba(0,0,0,.35);
+cursor:move;
+">
 
 <div style="
 display:flex;
 justify-content:space-between;
 align-items:center;
+font-size:22px;
+font-weight:bold;
 margin-bottom:12px;
 ">
 
-<div style="
-font-size:18px;
-font-weight:bold;
-display:flex;
-align-items:center;
-gap:8px;
-">
+<div>
 
-<img
-src="/graphic/rabe.png"
-style="
-width:18px;
-height:18px;
-">
-
-Koordináta rendszer
+Crytek Térkép Rendszer
 
 </div>
 
-<div id="closeCoordInfo"
+<div id="closeGlobalInfo"
 
 style="
 cursor:pointer;
-font-size:28px;
-line-height:20px;
-font-weight:bold;
-">
+font-size:32px;
+"
+
+>
 
 ×
 
@@ -2302,55 +2162,99 @@ font-weight:bold;
 </div>
 
 <div style="
-display:flex;
-flex-direction:column;
-gap:10px;
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:12px;
 ">
 
 <div style="
-margin-top:14px;
-padding-top:12px;
-border-top:1px solid #b08a52;
+border:1px solid #b08a52;
+padding:12px;
+border-radius:8px;
 ">
 
-<b>Koordináta kiválasztás</b><br><br>
+<b>Térkép színezés</b>
 
-Falvak kijelölése kattintással.<br>
-Kiválasztott falvak kiemelése zöld kerettel.
+<ul>
+
+<li>Falvak stack alapján színezése</li>
+
+<li>K beosztás megjelenítés</li>
+
+<li>Popup információk</li>
+
+<li>Incoming számok</li>
+
+</ul>
 
 </div>
 
 <div style="
-margin-top:14px;
-padding-top:12px;
-border-top:1px solid #b08a52;
+border:1px solid #b08a52;
+padding:12px;
+border-radius:8px;
 ">
 
-<b>Koordináta formázás</b><br><br>
+<b>Koordináta rendszer</b>
 
-<b>Oszlop</b> - Alapból sorban jeleníti meg a koordinátákat, ezt bejelölve oszlopba rendezi.<br>
-<b>BB-Kód</b> - Minden koordinátát átalakít PL: -> [coord]555|555[/coord]<br>
-<b>Kód</b> - Keretezi a koordinátákat [code]555|444 333|555[/code]<br>
+<ul>
+
+<li>Kattintással kijelölés</li>
+
+<li>Zöld keretes megjelenítés</li>
+
+<li>Formázás / BB / Code</li>
+
+<li>Másolás gombok</li>
+
+</ul>
 
 </div>
 
 <div style="
-margin-top:14px;
-padding-top:12px;
-border-top:1px solid #b08a52;
+border:1px solid #b08a52;
+padding:12px;
+border-radius:8px;
 ">
 
-<b>Fake Script rendszer</b><br><br>
-Automatikus script generálás.<br>
-<b>Sima script</b> - A térképen kiválasztott koordináták alapján.<br>
-<b>Fórum ID script</b> - Fórum és Thread ID alapján.<br>
+<b>Fake script</b>
+
+<ul>
+
+<li>Sima koordinátás script</li>
+
+<li>Fórum ID script</li>
+
+<li>Automatikus generálás</li>
+
+</ul>
+
+</div>
+
+<div style="
+border:1px solid #b08a52;
+padding:12px;
+border-radius:8px;
+">
+
+<b>Használat</b>
+
+<ul>
+
+<li>Piros gomb = térkép rendszer</li>
+
+<li>Zöld gomb = koordináta rendszer</li>
+
+<li>ⓘ = közös segítség</li>
+
+</ul>
 
 </div>
 
 </div>
 
 <div style="
-margin-top:14px;
+margin-top:16px;
 padding-top:12px;
 border-top:1px solid #b08a52;
 font-style:italic;
@@ -2373,74 +2277,11 @@ Crytek
 
 `);
 
-hud=$("#coordInfoHud");
+hud=$("#globalInfoHud");
 
-
-$("#closeCoordInfo").on(
-"click",
-function(){
-
-hud.hide();
-
-}
+$("#closeGlobalInfo").click(
+()=>hud.hide()
 );
-
-
-
-let dragging=false;
-
-let ox=0;
-
-let oy=0;
-
-hud.on(
-"mousedown",
-function(e){
-
-if(
-$(e.target).closest(
-"textarea,input,select,label"
-).length
-){
-return;
-}
-
-dragging=true;
-
-ox=
-e.clientX-
-hud.offset().left;
-
-oy=
-e.clientY-
-hud.offset().top;
-
-});
-$(document).on(
-"mousemove.coordInfo",
-function(e){
-
-if(!dragging)return;
-
-hud.css({
-
-left:
-(e.clientX-ox)+"px",
-
-top:
-(e.clientY-oy)+"px"
-
-});
-
-});
-
-$(document).on(
-"mouseup.coordInfo",
-function(){
-
-dragging=false;
-
-});
 
 }
 
@@ -2876,8 +2717,15 @@ updateCoordInput();
 $(".coordVillageMark")
 .remove();
 
-$("#coordInfoBtn")
+if(
+!window.owLiteStarted &&
+!$("#coordPickerHud").is(":visible")
+){
+
+$("#owFloatingInfo")
 .hide();
+
+}
 
 }
 
@@ -2886,42 +2734,18 @@ const visible=
 $("#coordPickerHud")
 .is(":visible");
 
-$("#coordInfoBtn").css({
-
-display:
-
-visible
-
-? "block"
-
-: "none"
-
-});
-
-if(visible){
-
 if(
-
-$("#owInfoBtn")
-.is(":visible")
-
+visible ||
+window.owLiteStarted
 ){
 
-$("#coordFloatingInfo").css({
-
-marginTop:"4px"
-
+$("#owFloatingInfo").css({
+display:"flex"
 });
 
 }else{
 
-$("#coordFloatingInfo").css({
-
-marginTop:"-34px"
-
-});
-
-}
+$("#owFloatingInfo").hide();
 
 }
 
