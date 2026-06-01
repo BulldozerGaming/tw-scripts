@@ -3535,7 +3535,160 @@ font-weight:bold;
 
 <div id="massPlannerContent">
 
-Ide kerül a planner tartalma.
+<div style="
+display:flex;
+gap:18px;
+margin-bottom:18px;
+">
+
+<div>
+
+Beérkezés:
+
+<br>
+
+<input
+
+id="arrivalTime"
+
+placeholder="2026-06-01 20:00:00"
+
+style="
+width:260px;
+padding:5px;
+"
+
+>
+
+</div>
+
+<div>
+
+Egység:
+
+<br>
+
+<select
+
+id="plannerUnit"
+
+style="
+width:140px;
+padding:5px;
+"
+
+>
+
+<option value="ram">Kos</option>
+
+<option value="snob">Nemes</option>
+
+</select>
+
+</div>
+
+</div>
+
+
+<div style="
+display:flex;
+gap:20px;
+">
+
+<div>
+
+Forrás falvak
+
+<br>
+
+<textarea
+
+id="plannerSources"
+
+style="
+width:280px;
+height:260px;
+resize:none;
+"
+
+placeholder="500|500&#10;501|500"
+
+></textarea>
+
+</div>
+
+<div>
+
+Cél falvak
+
+<br>
+
+<textarea
+
+id="plannerTargets"
+
+style="
+width:280px;
+height:260px;
+resize:none;
+"
+
+placeholder="510|510&#10;511|511"
+
+></textarea>
+
+</div>
+
+</div>
+
+
+<div style="
+margin-top:18px;
+display:flex;
+gap:12px;
+">
+
+<button
+
+id="plannerCalc"
+
+class="btn"
+
+>
+
+Számolás
+
+</button>
+
+<button
+
+id="plannerCopy"
+
+class="btn"
+
+>
+
+Másolás
+
+</button>
+
+</div>
+
+
+<textarea
+
+id="plannerOutput"
+
+readonly
+
+style="
+margin-top:18px;
+width:100%;
+height:170px;
+resize:none;
+"
+
+></textarea>
 
 </div>
 
@@ -3627,6 +3780,170 @@ dragging=false;
 });
 
 }
+
+
+
+
+
+function plannerDistance(a,b){
+
+const A=a.split("|");
+
+const B=b.split("|");
+
+return Math.sqrt(
+
+Math.pow(
+A[0]-B[0],
+2
+)
+
++
+
+Math.pow(
+A[1]-B[1],
+2
+)
+
+);
+
+}
+
+
+
+function plannerSpeed(unit){
+
+if(unit==="snob")
+return 35;
+
+return 30;
+
+}
+
+
+
+$(document).on(
+
+"click",
+
+"#plannerCalc",
+
+function(){
+
+const arrival=
+$("#arrivalTime").val();
+
+const unit=
+$("#plannerUnit").val();
+
+const speed=
+plannerSpeed(unit);
+
+const sources=
+
+$("#plannerSources")
+
+.val()
+
+.split(/\n+/)
+
+.map(x=>x.trim())
+
+.filter(Boolean);
+
+const targets=
+
+$("#plannerTargets")
+
+.val()
+
+.split(/\n+/)
+
+.map(x=>x.trim())
+
+.filter(Boolean);
+
+let output=[];
+
+targets.forEach(target=>{
+
+sources.forEach(source=>{
+
+const dist=
+
+plannerDistance(
+source,
+target
+);
+
+const minutes=
+dist*speed;
+
+const send=
+
+new Date(arrival);
+
+send.setMinutes(
+
+send.getMinutes()
+
+-
+
+minutes
+
+);
+
+output.push(
+
+source+
+
+" -> "+
+
+target+
+
+" = "+
+
+send.toLocaleString()
+
+);
+
+});
+
+});
+
+$("#plannerOutput")
+
+.val(
+
+output.join("\n")
+
+);
+
+}
+
+);
+
+
+
+$(document).on(
+
+"click",
+
+"#plannerCopy",
+
+function(){
+
+navigator.clipboard.writeText(
+
+$("#plannerOutput").val()
+
+);
+
+UI.SuccessMessage(
+"Kimásolva"
+);
+
+});
 
 
 
