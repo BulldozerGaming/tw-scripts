@@ -2844,6 +2844,8 @@ $(document).ready(function(){
 
 createCoordButton();
 
+createMassPlannerButton();
+
 $(document)
 
 .on(
@@ -3343,6 +3345,289 @@ UI.SuccessMessage(
 );
 
 updateForumFake();
+
+
+
+
+function createMassPlannerButton(){
+
+if($("#crytekMassBtn").length)
+return;
+
+const btn=$(`
+
+<a id="crytekMassBtn"
+
+style="
+
+position:fixed;
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+width:30px;
+
+height:30px;
+
+background:
+
+linear-gradient(
+180deg,
+#7d1d1d,
+#521010
+);
+
+border:1px solid #2e0505;
+
+border-radius:7px;
+
+box-shadow:
+0 2px 5px rgba(0,0,0,.35);
+
+cursor:pointer;
+
+z-index:999999;
+
+"
+
+>
+
+<img
+
+src="https://dshu.innogamescdn.com/asset/9b796836/graphic/buildings/barracks.png"
+
+style="
+width:18px;
+height:18px;
+pointer-events:none;
+"
+
+>
+
+</a>
+
+`);
+
+$("body").append(btn);
+
+function positionBtn(){
+
+const coordBtn=$("#coordPickerBtn");
+
+if(!coordBtn.length)
+return;
+
+btn.css({
+
+left:
+coordBtn.offset().left+"px",
+
+top:
+(
+coordBtn.offset().top+
+42
+)+"px"
+
+});
+
+}
+
+positionBtn();
+
+$(window).on(
+"resize.massPlanner",
+positionBtn
+);
+
+btn.on(
+"click",
+toggleMassPlannerHud
+);
+
+}
+
+
+
+
+
+
+function toggleMassPlannerHud(){
+
+let hud=$("#crytekMassHud");
+
+if(
+hud.length
+){
+
+hud.toggle();
+
+return;
+
+}
+
+$("body").append(`
+
+<div id="crytekMassHud"
+
+style="
+
+position:fixed;
+
+left:120px;
+
+top:80px;
+
+width:900px;
+
+height:700px;
+
+background:#e7d7af;
+
+border:2px solid #4f7f2a;
+
+border-radius:10px;
+
+padding:15px;
+
+z-index:999999;
+
+overflow:auto;
+
+box-shadow:
+0 4px 12px rgba(0,0,0,.35);
+
+"
+
+>
+
+<div style="
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:15px;
+">
+
+<div style="
+font-size:28px;
+font-weight:bold;
+">
+
+Mass Attack Planner
+
+</div>
+
+<div id="closeMassPlanner"
+
+style="
+cursor:pointer;
+font-size:34px;
+font-weight:bold;
+">
+
+×
+
+</div>
+
+</div>
+
+<div id="massPlannerContent">
+
+Ide kerül a planner tartalma.
+
+</div>
+
+</div>
+
+`);
+
+hud=$("#crytekMassHud");
+
+$("#closeMassPlanner")
+.click(
+()=>hud.hide()
+);
+
+enableMassDrag();
+
+}
+
+
+
+
+
+function enableMassDrag(){
+
+const hud=$("#crytekMassHud");
+
+let dragging=false;
+
+let ox=0;
+
+let oy=0;
+
+hud.on(
+"mousedown",
+function(e){
+
+if(
+$(e.target).closest(
+"input,textarea,button,select"
+).length
+){
+return;
+}
+
+dragging=true;
+
+ox=
+e.clientX-
+hud.offset().left;
+
+oy=
+e.clientY-
+hud.offset().top;
+
+});
+
+$(document)
+
+.on(
+"mousemove.massPlanner",
+function(e){
+
+if(!dragging)
+return;
+
+hud.css({
+
+left:
+(
+e.clientX-ox
+)+"px",
+
+top:
+(
+e.clientY-oy
+)+"px"
+
+});
+
+})
+
+.on(
+"mouseup.massPlanner",
+
+function(){
+
+dragging=false;
+
+});
+
+}
+
 
 
 
