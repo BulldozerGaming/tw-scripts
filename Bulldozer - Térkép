@@ -4082,9 +4082,19 @@ margin-top:6px;
 
 
 <div style="
+
 margin-top:18px;
+
 display:flex;
-gap:12px;
+
+justify-content:space-between;
+
+align-items:center;
+
+width:540px;
+
+max-width:100%;
+
 ">
 
 <button
@@ -4099,6 +4109,15 @@ Tervezés
 
 </button>
 
+
+<div style="
+
+display:flex;
+
+gap:10px;
+
+">
+
 <button
 
 id="plannerCopy"
@@ -4110,6 +4129,21 @@ class="btn"
 Másolás
 
 </button>
+
+
+<button
+
+id="plannerNotes"
+
+class="btn"
+
+>
+
+Jegyzetek
+
+</button>
+
+</div>
 
 </div>
 
@@ -4990,6 +5024,29 @@ UI.SuccessMessage(
 );
 
 });
+
+
+
+
+$(document).on(
+
+"click",
+
+"#plannerNotes",
+
+function(){
+
+window.open(
+
+"/game.php?screen=memo",
+
+"_blank"
+
+);
+
+}
+
+);
 
 
 
