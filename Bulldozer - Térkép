@@ -3548,25 +3548,13 @@ Beérkezés:
 <br>
 
 <input
-
 id="arrivalTime"
-
-placeholder="2026-06-01 20:00:00"
 
 style="
 width:260px;
 padding:5px;
 "
-
 >
-
-</div>
-
-<div>
-
-Egység:
-
-<br>
 
 </div>
 
@@ -3727,6 +3715,53 @@ $("#closeMassPlanner")
 );
 
 enableMassDrag();
+
+
+const now = new Date();
+
+const pad=n=>
+String(n).padStart(
+2,
+"0"
+);
+
+$("#arrivalTime").val(
+
+now.getFullYear()
+
++"-"+
+
+pad(
+now.getMonth()+1
+)
+
++"-"+
+
+pad(
+now.getDate()
+)
+
++" "+
+
+pad(
+now.getHours()
+)
+
++":"+
+
+pad(
+now.getMinutes()
+)
+
++":"+
+
+pad(
+now.getSeconds()
+)
+
+);
+
+
 
 }
 
@@ -3930,7 +3965,7 @@ $("#plannerSnobCount").val()
 let output=[];
 
 
-/* NUKE */
+/* NUKE OPTIMALIZER */
 
 let allNukes=[];
 
@@ -3939,6 +3974,7 @@ targets.forEach(target=>{
 nukes.forEach(from=>{
 
 const launch=
+
 calcLaunch(
 arrival,
 from,
@@ -3951,10 +3987,10 @@ allNukes.push({
 from,
 target,
 
+launch,
+
 time:
 launch.getTime(),
-
-launch,
 
 type:
 "NUKE"
@@ -3965,30 +4001,20 @@ type:
 
 });
 
-const avgTime=
-arrival.getTime();
-
 allNukes.sort(
 (a,b)=>
-
-Math.abs(
-a.time-avgTime
-)
-
--
-
-Math.abs(
-b.time-avgTime
-)
-
+a.time-b.time
 );
 
-const needed=
+let best=null;
 
-targets.length*
-nukePer;
+for(
+let start=0;
+start<allNukes.length;
+start++
+){
 
-let used=
+let usedSources=
 new Set();
 
 let targetCount={};
@@ -3998,31 +4024,101 @@ t=>
 targetCount[t]=0
 );
 
+let picked=[];
+
 for(
-const a of allNukes
+let end=start;
+end<allNukes.length;
+end++
 ){
 
+const x=
+allNukes[end];
+
 if(
-used.has(a.from)
+usedSources.has(
+x.from
+)
 )
 continue;
 
 if(
 targetCount[
-a.target
+x.target
 ]>=nukePer
 )
 continue;
 
-used.add(
-a.from
+usedSources.add(
+x.from
 );
 
 targetCount[
-a.target
+x.target
 ]++;
 
-output.push(a);
+picked.push(
+x
+);
+
+const valid=
+
+targets.every(
+
+t=>
+
+targetCount[t]
+>=
+nukePer
+
+);
+
+if(valid){
+
+const spread=
+
+picked[
+picked.length-1
+].time
+
+-
+
+picked[0]
+.time;
+
+if(
+
+!best ||
+
+spread<
+best.spread
+
+){
+
+best={
+
+spread,
+
+picked:
+[...picked]
+
+};
+
+}
+
+break;
+
+}
+
+}
+
+}
+
+if(best){
+
+output.push(
+...best.picked
+);
 
 }
 
