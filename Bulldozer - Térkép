@@ -4,22 +4,133 @@
 // @license      Bulldozer Gaming
 // @version      2.0
 // @description  Térkép funkciók
-// @match        https://*.klanhaboru.hu/game.php*screen=map*
+// @match        https://*.klanhaboru.hu/game.php*
 // @grant        none
 // @connect      klanhaboru.hu
 // ==/UserScript==
 
 (function(){
- 
+
 'use strict';
 
-if(
-!location.search.includes(
+const isMap=
+
+location.search.includes(
 "screen=map"
-)
+);
+
+const isPlace=
+
+location.search.includes(
+"screen=place"
+);
+
+if(
+
+!isMap &&
+!isPlace
+
 ){
+
 return;
+
 }
+
+
+
+
+
+/* ==========================
+AUTO PLACE FILL
+========================== */
+
+if(isPlace){
+
+$(function(){
+
+const params=
+new URLSearchParams(
+location.search
+);
+
+if(
+
+params.get(
+"crytekAuto"
+)!=="1"
+
+){
+
+return;
+
+}
+
+const target=
+
+params.get(
+"crytekTarget"
+);
+
+setTimeout(()=>{
+
+/* koordináta */
+
+const coordInput=
+
+$("input[name=input]")
+.first();
+
+if(
+coordInput.length &&
+target
+){
+
+coordInput.val(
+target
+);
+
+}
+
+/* összes egység betöltése */
+
+$(".unitsInput").each(function(){
+
+const input = $(this);
+
+const max =
+
+input
+.parent()
+.find(".units-entry-all")
+.first()
+.text()
+.replace(/\D/g,"");
+
+if(max){
+
+input.val(max);
+
+}
+
+});
+
+UI.SuccessMessage(
+"Célpont és seregek betöltve"
+);
+
+},100);
+
+});
+
+return;
+
+}
+
+
+
+
+
+
 
 
 /**
@@ -4366,7 +4477,7 @@ location.origin;
 
 const WATCH_ICON =
 baseUrl +
-"/graphic/buildings/watchtower.png";
+"/graphic/unit/att.png";
 
 const NUKE_ICON =
 baseUrl +
@@ -5065,7 +5176,13 @@ return(
 
 `[|][b][color=green]${launch}[/color][/b]`+
 
-`[|][url=${baseUrl}/game.php?village=${fromId}&screen=place&target=${targetId}]`+
+`[|][url=${baseUrl}/game.php?village=${fromId}&screen=place&target=${targetId}`+
+
+`&crytekAuto=1`+
+
+`&crytekTarget=${encodeURIComponent(x.target)}`+
+
+`]`+
 
 `[img]${attackIcon}[/img]`+
 
@@ -5217,6 +5334,109 @@ UI.SuccessMessage(
 );
 
 });
+
+
+
+
+/* ==========================
+AUTO PLACE FILL
+========================== */
+
+(function(){
+
+const params=
+
+new URLSearchParams(
+location.search
+);
+
+if(
+
+params.get(
+"screen"
+)!=="place"
+
+)
+
+return;
+
+if(
+
+params.get(
+"crytekAuto"
+)!=="1"
+
+)
+
+return;
+
+const target=
+
+params.get(
+"crytekTarget"
+);
+
+if(!target)
+return;
+
+
+
+
+
+
+function fillArmy(){
+
+/* koordináta */
+
+const coordInput=
+
+$("#place_target input")
+.first();
+
+if(
+coordInput.length
+){
+
+coordInput.val(
+target
+);
+
+}
+
+/* összes csapat */
+
+if(
+
+typeof insertUnit ===
+"function"
+
+){
+
+insertUnit(
+true
+);
+
+}
+
+UI.SuccessMessage(
+"Célpont és seregek betöltve"
+);
+
+}
+
+setTimeout(
+fillArmy,
+500
+);
+
+})();
+
+
+
+
+
+
+
 
 
 
