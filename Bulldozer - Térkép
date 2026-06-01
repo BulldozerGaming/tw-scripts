@@ -3704,7 +3704,7 @@ Beérkezés
 
 <button class="plannerReset"
 
-data-reset="targets"
+data-reset="arrival"
 
 title="Reset"
 
@@ -3810,7 +3810,7 @@ Nemes
 
 <button class="plannerReset"
 
-data-reset="targets"
+data-reset="snobs"
 
 title="Reset"
 
@@ -3880,7 +3880,7 @@ Nuke
 
 <button class="plannerReset"
 
-data-reset="targets"
+data-reset="nukes"
 
 title="Reset"
 
