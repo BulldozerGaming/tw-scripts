@@ -1581,6 +1581,8 @@ Spoiler
 
 id="simpleFakeOutput"
 
+class="crytekFancyInput"
+
 readonly
 
 placeholder="Először válaszd ki a koordinátákat a térképen."
@@ -1747,6 +1749,8 @@ border-radius:4px;
 
 id="forumFakeOutput"
 
+class="crytekFancyInput"
+
 readonly
 
 placeholder="Először add meg a Fórum és Thread ID-t."
@@ -1899,6 +1903,8 @@ Kód
 
 id="coordPickerInput"
 
+class="crytekFancyInput"
+
 readonly
 
 style="
@@ -1923,6 +1929,9 @@ cursor:text;
 
 <div style="
 margin-top:10px;
+display:flex;
+gap:8px;
+align-items:center;
 ">
 
 <button
@@ -1936,10 +1945,9 @@ Másolás
 
 <button
 id="resetCoordOutput"
-class="btn"
-style="
-margin-left:8px;
-"
+class="btn crytekResetBtn"
+title="Törlés"
+
 >
 
 ↺
@@ -2268,7 +2276,7 @@ border-radius:8px;
 
 <ul>
 
-<li>Beérkezés mezőbe írd a kívánt csapódási időt</li>
+<li>Csapódás mezőbe írd a kívánt csapódási időt</li>
 
 <li>Cél falvak mezőbe kerülnek a cél koordináták</li>
 
@@ -3582,6 +3590,89 @@ background:#f7f1df;
 
 }
 
+
+
+.crytekResetBtn{
+
+width:26px;
+
+height:26px;
+
+padding:0;
+
+display:inline-flex;
+
+align-items:center;
+
+justify-content:center;
+
+border-radius:6px;
+
+border:1px solid #7a5325;
+
+background:
+
+linear-gradient(
+180deg,
+#f5e7c5,
+#d7bd8d
+);
+
+cursor:pointer;
+
+font-weight:bold;
+
+box-shadow:
+
+0 1px 2px rgba(0,0,0,.2);
+
+}
+
+.crytekResetBtn:hover{
+
+transform:translateY(-1px);
+
+}
+
+.crytekFancyInput{
+
+background:#f7f1df;
+
+border:1px solid #8b642e;
+
+border-radius:7px;
+
+padding:7px;
+
+box-shadow:
+
+inset 0 1px 3px rgba(0,0,0,.12);
+
+transition:.15s;
+
+}
+
+.crytekFancyInput:focus{
+
+outline:none;
+
+box-shadow:
+
+0 0 0 2px rgba(79,127,42,.25);
+
+}
+
+.crytekCheckbox{
+
+transform:scale(1.15);
+
+cursor:pointer;
+
+}
+
+
+
+
 .crytekMainInput{
 
 padding:7px;
@@ -3702,7 +3793,7 @@ font-weight:bold;
 margin-bottom:8px;
 ">
 
-Beérkezés
+Csapódás
 
 <button class="plannerReset"
 
@@ -3710,10 +3801,7 @@ data-reset="arrival"
 
 title="Reset"
 
-style="
-margin-left:8px;
-cursor:pointer;
-"
+class="plannerReset crytekResetBtn"
 
 >
 
@@ -3763,10 +3851,7 @@ data-reset="targets"
 
 title="Reset"
 
-style="
-margin-left:8px;
-cursor:pointer;
-"
+class="plannerReset crytekResetBtn"
 
 >
 
@@ -3816,10 +3901,7 @@ data-reset="snobs"
 
 title="Reset"
 
-style="
-margin-left:8px;
-cursor:pointer;
-"
+class="plannerReset crytekResetBtn"
 
 >
 
@@ -3886,10 +3968,7 @@ data-reset="nukes"
 
 title="Reset"
 
-style="
-margin-left:8px;
-cursor:pointer;
-"
+class="plannerReset crytekResetBtn"
 
 >
 
@@ -4926,10 +5005,6 @@ $(".coordVillageMark")
 drawVillageSelection();
 
 updateCoordInput();
-
-UI.SuccessMessage(
-"Törölve"
-);
 
 UI.SuccessMessage(
 "Törölve"
