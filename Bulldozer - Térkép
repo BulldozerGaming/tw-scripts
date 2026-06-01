@@ -759,6 +759,20 @@ playerData=[];
 $(".coordVillageMark")
 .remove();
 
+/* eredeti click vissza */
+
+if(
+window.coordOldClick
+){
+
+TWMap.mapHandler.onClick=
+window.coordOldClick;
+
+window.coordPickerInitialized=
+false;
+
+}
+
 setTimeout(
 drawVillageSelection,
 100
