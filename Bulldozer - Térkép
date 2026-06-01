@@ -4123,7 +4123,7 @@ output.push(
 }
 
 
-/* NOBLE */
+/* NOBLE OPTIMIZER */
 
 if(
 snobs.length
@@ -4136,6 +4136,7 @@ targets.forEach(target=>{
 snobs.forEach(from=>{
 
 const launch=
+
 calcLaunch(
 arrival,
 from,
@@ -4148,10 +4149,10 @@ allSnobs.push({
 from,
 target,
 
+launch,
+
 time:
 launch.getTime(),
-
-launch,
 
 type:
 "NEMES"
@@ -4162,91 +4163,128 @@ type:
 
 });
 
-const avgTime2=
-arrival.getTime();
-
 allSnobs.sort(
-(a,b)=>
-
-Math.abs(
-a.time-avgTime2
-)
-
--
-
-Math.abs(
-b.time-avgTime2
-)
-
-);
-
-let usedSnob=
-new Set();
-
-let targetSnob={};
-
-targets.forEach(
-t=>
-targetSnob[t]=0
-);
-
-for(
-const a of allSnobs
-){
-
-if(
-usedSnob.has(a.from)
-)
-continue;
-
-if(
-targetSnob[
-a.target
-]>=snobPer
-)
-continue;
-
-usedSnob.add(
-a.from
-);
-
-targetSnob[
-a.target
-]++;
-
-output.push(a);
-
-}
-
-}
-
-output.sort(
 (a,b)=>
 a.time-b.time
 );
 
-$("#plannerOutput")
-.val(
+let best=null;
 
-output.map(x=>
+for(
+let start=0;
+start<allSnobs.length;
+start++
+){
 
-`${x.type}
+let usedSources=
+new Set();
 
-${x.from}
+let targetCount={};
 
-->
+targets.forEach(
+t=>
+targetCount[t]=0
+);
 
-${x.target}
+let picked=[];
 
-=
+for(
+let end=start;
+end<allSnobs.length;
+end++
+){
 
-${x.launch.toLocaleString()}`
+const x=
+allSnobs[end];
 
-).join("\n")
+if(
+usedSources.has(
+x.from
+)
+)
+continue;
+
+if(
+targetCount[
+x.target
+]>=snobPer
+)
+continue;
+
+usedSources.add(
+x.from
+);
+
+targetCount[
+x.target
+]++;
+
+picked.push(
+x
+);
+
+const valid=
+
+targets.every(
+
+t=>
+
+targetCount[t]
+>=
+snobPer
 
 );
 
-});
+if(valid){
+
+const spread=
+
+picked[
+picked.length-1
+].time
+
+-
+
+picked[0]
+.time;
+
+if(
+
+!best ||
+
+spread<
+best.spread
+
+){
+
+best={
+
+spread,
+
+picked:
+[...picked]
+
+};
+
+}
+
+break;
+
+}
+
+}
+
+}
+
+if(best){
+
+output.push(
+...best.picked
+);
+
+}
+
+}
 
 
 
