@@ -2065,6 +2065,12 @@ hud.hide();
 
 window.coordPickerEnabled=false;
 
+/* teljes reset */
+
+window.selectedVillages=[];
+
+updateCoordInput();
+
 $(".coordVillageMark").remove();
 
 $("#coordInfoBtn").hide();
