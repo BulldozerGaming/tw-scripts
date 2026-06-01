@@ -4168,18 +4168,6 @@ parseInt(
 $("#plannerSnobCount").val()
 )||1;
 
-
-const requiredNukes =
-targets.length * nukePer;
-
-const requiredSnobs =
-targets.length * snobPer;
-
-/*
-csak info
-nem állítjuk meg a számolást
-*/
-
 /* =====================
    VALIDÁLÁS
 ===================== */
