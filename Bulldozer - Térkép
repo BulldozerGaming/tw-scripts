@@ -778,7 +778,13 @@ ctx.restore();
             `);
             $villageInfoContainer.appendTo($('#map_popup'));
         } else {
-            const $villageInfoContainer = $(`<div id="overwatch_info" style="background-color:#e5d7b2;"><h1>No info on this village</h1><div>`);
+            const $villageInfoContainer = $(`<div id="overwatch_info" style="background-color:#e5d7b2; padding:10px;
+
+font-weight:600;
+
+font-size:13px;
+
+line-height:20px;"><h1>Nincs elérhető információ erről a faluról.</h1><div>`);
             $villageInfoContainer.appendTo($('#map_popup'));
         }
     },
