@@ -4558,9 +4558,15 @@ messages.push(
 
 /* összes üzenet */
 
-messages.forEach(
-x=>UI.InfoMessage(x)
+if(messages.length){
+
+UI.InfoMessage(
+
+messages.join("<br>")
+
 );
+
+}
 
 let output=[];
 
