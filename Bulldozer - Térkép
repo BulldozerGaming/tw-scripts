@@ -1731,16 +1731,10 @@ placeholder="Thread ID"
 
 inputmode="numeric"
 
+class="crytekFancyInput"
+
 style="
-
 width:90px;
-
-padding:5px;
-
-border:1px solid #8b642e;
-
-border-radius:4px;
-
 "
 
 >
