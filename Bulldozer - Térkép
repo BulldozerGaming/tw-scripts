@@ -4321,8 +4321,7 @@ output.sort(
 a.time-b.time
 );
 
-$("#plannerOutput")
-.val(
+$("#plannerOutput").val(
 
 output.map(x=>{
 
@@ -4330,64 +4329,40 @@ const d=x.launch;
 
 const pad=n=>
 String(n).padStart(
-2,
-"0"
-);
+2,"0");
 
 return(
 
 x.type+
-
 " | "+
-
 x.from+
-
 " -> "+
-
 x.target+
-
 " | "+
 
-pad(
-d.getHours()
-)
-
-+":"+
-
-pad(
-d.getMinutes()
-)
-
-+":"+
-
-pad(
-d.getSeconds()
-)
+pad(d.getHours())+
+":"+
+pad(d.getMinutes())+
+":"+
+pad(d.getSeconds())
 
 );
 
-})
-
-.join("\n")
+}).join("\n")
 
 );
 
-
+}); // <-- EZ ZÁRJA LE A plannerCalc clicket
 
 
 
 $(document).on(
-
 "click",
-
 "#plannerCopy",
-
 function(){
 
 navigator.clipboard.writeText(
-
 $("#plannerOutput").val()
-
 );
 
 UI.SuccessMessage(
@@ -4395,9 +4370,6 @@ UI.SuccessMessage(
 );
 
 });
-
-
-
 
 
 
