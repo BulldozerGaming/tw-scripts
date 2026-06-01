@@ -1339,11 +1339,15 @@ toggleGlobalInfo
 }
 
 
+
+
+
+
+
+
 $(document).ready(async function(){
 
-createArmyMapButton();
-
-let isAdmin=true;
+let isAdmin=false;
 
 try{
 
@@ -1351,7 +1355,7 @@ const html=await $.get(
 "/game.php?screen=ally&mode=members_defense"
 );
 
-const hasSelect=
+isAdmin =
 
 $(html)
 
@@ -1360,13 +1364,6 @@ $(html)
 )
 
 .length>1;
-
-/*
-ha több játékost tudsz kiválasztani
-akkor van jogosultságod
-*/
-
-isAdmin=hasSelect;
 
 }catch(e){
 
@@ -1377,18 +1374,17 @@ e
 
 }
 
-if(!isAdmin){
+if(isAdmin){
 
-$("#owLiteBtn").hide();
+createArmyMapButton();
 
-}
-
-/* FONTOS */
-/* coord gomb újrapozicionálás */
+/* coord újrapozicionálás */
 
 $(window).trigger(
 "resize"
 );
+
+}
 
 });
 
