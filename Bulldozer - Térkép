@@ -1019,7 +1019,7 @@ $(e.target).closest(
 return;
 
 }
-
+e.preventDefault();
 dragging=true;
 
 offsetX=
@@ -1440,6 +1440,7 @@ z-index:999999;
 display:none;
 
 cursor:move;
+user-select:none;
 
 box-shadow:
 0 4px 12px rgba(0,0,0,.35);
@@ -1925,14 +1926,23 @@ margin-top:10px;
 ">
 
 <button
-
 id="copyCoordOutput"
-
 class="btn"
-
 >
 
 Másolás
+
+</button>
+
+<button
+id="resetCoordOutput"
+class="btn"
+style="
+margin-left:8px;
+"
+>
+
+↺
 
 </button>
 
@@ -2035,7 +2045,7 @@ dragging=false;
 return;
 
 }
-
+e.preventDefault();
 dragging=true;
 
 ox=
@@ -2135,6 +2145,7 @@ z-index:999999;
 display:none;
 box-shadow:0 4px 12px rgba(0,0,0,.35);
 cursor:move;
+user-select:none;
 ">
 
 <div style="
@@ -2350,7 +2361,7 @@ $(e.target).closest(
 return;
 
 }
-
+e.preventDefault();
 dragging=true;
 
 ox=
@@ -3691,6 +3702,23 @@ margin-bottom:8px;
 
 Beérkezés
 
+<button class="plannerReset"
+
+data-reset="targets"
+
+title="Reset"
+
+style="
+margin-left:8px;
+cursor:pointer;
+"
+
+>
+
+↺
+
+</button>
+
 </div>
 
 <input
@@ -3727,6 +3755,23 @@ margin-bottom:8px;
 
 Célpont
 
+<button class="plannerReset"
+
+data-reset="targets"
+
+title="Reset"
+
+style="
+margin-left:8px;
+cursor:pointer;
+"
+
+>
+
+↺
+
+</button>
+
 </div>
 
 <textarea
@@ -3762,6 +3807,23 @@ margin-bottom:8px;
 ">
 
 Nemes
+
+<button class="plannerReset"
+
+data-reset="targets"
+
+title="Reset"
+
+style="
+margin-left:8px;
+cursor:pointer;
+"
+
+>
+
+↺
+
+</button>
 
 </div>
 
@@ -3815,6 +3877,23 @@ margin-bottom:8px;
 ">
 
 Nuke
+
+<button class="plannerReset"
+
+data-reset="targets"
+
+title="Reset"
+
+style="
+margin-left:8px;
+cursor:pointer;
+"
+
+>
+
+↺
+
+</button>
 
 </div>
 
@@ -3876,7 +3955,7 @@ class="btn"
 
 >
 
-Számolás
+Tervezés
 
 </button>
 
@@ -4022,7 +4101,7 @@ $(e.target).closest(
 ){
 return;
 }
-
+e.preventDefault();
 dragging=true;
 
 ox=
@@ -4158,6 +4237,18 @@ parseCoords(
 $("#plannerSnobs").val()
 );
 
+$("#plannerTargets").val(
+targets.join(" ")
+);
+
+$("#plannerNukes").val(
+nukes.join(" ")
+);
+
+$("#plannerSnobs").val(
+snobs.join(" ")
+);
+
 const nukePer=
 parseInt(
 $("#plannerNukeCount").val()
@@ -4244,17 +4335,22 @@ return;
 
 /* kevés nuke */
 
-const requiredNukes=
-targets.length*nukePer;
-
 if(
 
 nukes.length>0 &&
 
-nukes.length<
-requiredNukes
+nukes.length <
+(targets.length*nukePer)
 
 ){
+
+messages.push(
+
+`Kevés Nuke koordináta (${nukes.length}/${targets.length*nukePer}) - Részleges tervezés`
+
+);
+
+}
 
 messages.push(
 
@@ -4266,17 +4362,22 @@ messages.push(
 
 /* kevés nemes */
 
-const requiredSnobs=
-targets.length*snobPer;
-
 if(
 
 snobs.length>0 &&
 
-snobs.length<
-requiredSnobs
+snobs.length <
+(targets.length*snobPer)
 
 ){
+
+messages.push(
+
+`Kevés Nemes koordináta (${snobs.length}/${targets.length*snobPer}) - Részleges tervezés`
+
+);
+
+}
 
 messages.push(
 
@@ -4758,6 +4859,99 @@ UI.SuccessMessage(
 );
 
 });
+
+
+
+
+
+$(document).on(
+"click",
+".plannerReset",
+function(){
+
+const type=
+$(this).data(
+"reset"
+);
+
+const now=
+new Date();
+
+const pad=n=>
+String(n).padStart(
+2,
+"0"
+);
+
+if(type==="arrival"){
+
+$("#arrivalTime").val(
+
+now.getFullYear()+"-"+
+pad(now.getMonth()+1)+"-"+
+pad(now.getDate())+" "+
+pad(now.getHours())+":"+
+pad(now.getMinutes())+":"+
+pad(now.getSeconds())
+
+);
+
+}
+
+if(type==="targets"){
+
+$("#plannerTargets").val("");
+
+}
+
+if(type==="nukes"){
+
+$("#plannerNukes").val("");
+
+$("#plannerNukeCount").val(1);
+
+}
+
+if(type==="snobs"){
+
+$("#plannerSnobs").val("");
+
+$("#plannerSnobCount").val(1);
+
+}
+
+});
+
+
+
+
+
+
+$(document).on(
+"click",
+"#resetCoordOutput",
+function(){
+
+window.selectedVillages=[];
+
+$("#coordPickerInput")
+.val("");
+
+$(".coordVillageMark")
+.remove();
+
+drawVillageSelection();
+
+updateCoordInput();
+
+UI.SuccessMessage(
+"Törölve"
+);
+
+});
+
+
+
 
 
 
