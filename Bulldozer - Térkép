@@ -4143,32 +4143,6 @@ $(document).on(
 
 function(){
 
-const arrival=
-new Date(
-
-$("#arrivalTime")
-.val()
-.replace(
-" ",
-"T"
-)
-
-);
-
-if(
-isNaN(
-arrival.getTime()
-)
-){
-
-UI.ErrorMessage(
-"Rossz idő"
-);
-
-return;
-
-}
-
 const targets=
 parseCoords(
 $("#plannerTargets").val()
@@ -4206,35 +4180,129 @@ csak info
 nem állítjuk meg a számolást
 */
 
+/* =====================
+   VALIDÁLÁS
+===================== */
+
+const messages=[];
+
+/* idő */
+
+const arrivalRaw=
+$("#arrivalTime")
+.val()
+.trim();
+
+if(!arrivalRaw){
+
+UI.ErrorMessage(
+"Add meg a csapódási időt."
+);
+
+return;
+
+}
+
+const arrival=
+new Date(
+arrivalRaw.replace(
+" ",
+"T"
+)
+);
+
 if(
-nukes.length <
-requiredNukes
+isNaN(
+arrival.getTime()
+)
 ){
 
-UI.InfoMessage(
+UI.ErrorMessage(
+"A Csapódási idő rossz formátumban van megadva."
+);
 
-`Kevés NUKE coord (${nukes.length}/${requiredNukes}) - részleges optimalizálás`
+return;
+
+}
+
+/* célpont */
+
+if(
+targets.length===0
+){
+
+UI.ErrorMessage(
+"Helyezz el koordinátát a Célpont mezőbe."
+);
+
+return;
+
+}
+
+/* nincs forrás */
+
+if(
+nukes.length===0 &&
+snobs.length===0
+){
+
+UI.ErrorMessage(
+"Helyezz el koordinátát a Nemes vagy Nuke mezőbe."
+);
+
+return;
+
+}
+
+/* kevés nuke */
+
+const requiredNukes=
+targets.length*nukePer;
+
+if(
+
+nukes.length>0 &&
+
+nukes.length<
+requiredNukes
+
+){
+
+messages.push(
+
+`Kevés Nuke koordináta (${nukes.length}/${requiredNukes}) - Részleges tervezés`
 
 );
 
 }
 
+/* kevés nemes */
+
+const requiredSnobs=
+targets.length*snobPer;
+
 if(
 
-snobs.length &&
+snobs.length>0 &&
 
-snobs.length <
+snobs.length<
 requiredSnobs
 
 ){
 
-UI.InfoMessage(
+messages.push(
 
-`Kevés NEMES coord (${snobs.length}/${requiredSnobs}) - részleges optimalizálás`
+`Kevés Nemes koordináta (${snobs.length}/${requiredSnobs}) - Részleges tervezés`
 
 );
 
 }
+
+/* összes üzenet */
+
+messages.forEach(
+x=>UI.InfoMessage(x)
+);
 
 let output=[];
 
