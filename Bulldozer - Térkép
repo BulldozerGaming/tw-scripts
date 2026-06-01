@@ -2805,24 +2805,34 @@ const visible=
 $("#coordPickerHud")
 .is(":visible");
 
-/* koordináta vagy OW fut */
-
 if(
 visible ||
 window.owLiteStarted
 ){
 
-$("#owFloatingInfo").css({
+$("#owFloatingInfo")
+.css({
 
-display:"flex"
+display:"flex",
+
+justifyContent:"center",
+
+alignItems:"center"
 
 });
 
-$("#owInfoBtn").show();
+$("#owInfoBtn")
+.css({
+
+display:"block"
+
+});
 
 }else{
 
 $("#owFloatingInfo").hide();
+
+$("#owInfoBtn").hide();
 
 }
 
