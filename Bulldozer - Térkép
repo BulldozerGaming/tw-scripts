@@ -2280,7 +2280,7 @@ border-radius:8px;
 
 <li>Nemes / cél adja meg hány nemes menjen célonként</li>
 
-<li>Számolás globálisan optimalizálja indításokat</li>
+<li>Tervezés globálisan optimalizálja indításokat</li>
 
 <li>Másolás BB formátumban kimásolja az eredményt</li>
 
@@ -3651,6 +3651,8 @@ overflow:auto;
 
 box-shadow:
 0 4px 12px rgba(0,0,0,.35);
+cursor:move;
+user-select:none;
 
 "
 
@@ -4352,14 +4354,6 @@ messages.push(
 
 }
 
-messages.push(
-
-`Kevés Nuke koordináta (${nukes.length}/${requiredNukes}) - Részleges tervezés`
-
-);
-
-}
-
 /* kevés nemes */
 
 if(
@@ -4374,14 +4368,6 @@ snobs.length <
 messages.push(
 
 `Kevés Nemes koordináta (${snobs.length}/${targets.length*snobPer}) - Részleges tervezés`
-
-);
-
-}
-
-messages.push(
-
-`Kevés Nemes koordináta (${snobs.length}/${requiredSnobs}) - Részleges tervezés`
 
 );
 
