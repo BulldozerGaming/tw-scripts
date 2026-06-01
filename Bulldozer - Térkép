@@ -4036,32 +4036,65 @@ a.time-b.time
 
 let bestNuke=null;
 
-for(
-let start=0;
-start<allNukes.length;
-start++
+function searchNuke(
+current,
+usedSources,
+targetCount,
+startIndex
 ){
 
-let usedSources=
-new Set();
-
-let targetCount={};
-
-targets.forEach(
+const valid=
+targets.every(
 t=>
-targetCount[t]=0
+targetCount[t]>=nukePer
 );
 
-let picked=[];
+if(valid){
+
+const times=
+current
+.map(
+x=>x.time
+)
+.sort(
+(a,b)=>a-b
+);
+
+const spread=
+times[
+times.length-1
+]-
+times[0];
+
+if(
+!bestNuke ||
+spread<
+bestNuke.spread
+){
+
+bestNuke={
+
+spread,
+
+picked:
+[...current]
+
+};
+
+}
+
+return;
+
+}
 
 for(
-let end=start;
-end<allNukes.length;
-end++
+let i=startIndex;
+i<allNukes.length;
+i++
 ){
 
 const x=
-allNukes[end];
+allNukes[i];
 
 if(
 usedSources.has(
@@ -4085,63 +4118,46 @@ targetCount[
 x.target
 ]++;
 
-picked.push(
-x
-);
+current.push(x);
 
-const valid=
+searchNuke(
 
-targets.every(
-
-t=>
-
-targetCount[t]
->=
-nukePer
+current,
+usedSources,
+targetCount,
+i+1
 
 );
 
-if(valid){
+current.pop();
 
-const spread=
+usedSources.delete(
+x.from
+);
 
-picked[
-picked.length-1
-].time
-
--
-
-picked[0]
-.time;
-
-if(
-
-!bestNuke ||
-
-spread<
-bestNuke.spread
-
-){
-
-bestNuke={
-
-spread,
-
-picked:
-[...picked]
-
-};
-
-}
-
-break;
+targetCount[
+x.target
+]--;
 
 }
 
 }
 
-}
+searchNuke(
 
+[],
+
+new Set(),
+
+Object.fromEntries(
+targets.map(
+t=>[t,0]
+)
+),
+
+0
+
+);
 if(bestNuke){
 
 output.push(
@@ -4198,32 +4214,69 @@ a.time-b.time
 
 let bestSnob=null;
 
-for(
-let start=0;
-start<allSnobs.length;
-start++
+function searchSnob(
+current,
+usedSources,
+targetCount,
+startIndex
 ){
 
-let usedSources=
-new Set();
-
-let targetCount={};
-
-targets.forEach(
+const valid=
+targets.every(
 t=>
-targetCount[t]=0
+targetCount[t]>=snobPer
 );
 
-let picked=[];
+if(valid){
+
+const times=
+current
+.map(
+x=>x.time
+)
+.sort(
+(a,b)=>a-b
+);
+
+const spread=
+
+times[
+times.length-1
+]
+
+-
+
+times[0];
+
+if(
+!bestSnob ||
+spread<
+bestSnob.spread
+){
+
+bestSnob={
+
+spread,
+
+picked:
+[...current]
+
+};
+
+}
+
+return;
+
+}
 
 for(
-let end=start;
-end<allSnobs.length;
-end++
+let i=startIndex;
+i<allSnobs.length;
+i++
 ){
 
 const x=
-allSnobs[end];
+allSnobs[i];
 
 if(
 usedSources.has(
@@ -4247,63 +4300,46 @@ targetCount[
 x.target
 ]++;
 
-picked.push(
-x
-);
+current.push(x);
 
-const valid=
+searchSnob(
 
-targets.every(
-
-t=>
-
-targetCount[t]
->=
-snobPer
+current,
+usedSources,
+targetCount,
+i+1
 
 );
 
-if(valid){
+current.pop();
 
-const spread=
+usedSources.delete(
+x.from
+);
 
-picked[
-picked.length-1
-].time
-
--
-
-picked[0]
-.time;
-
-if(
-
-!bestSnob ||
-
-spread<
-bestSnob.spread
-
-){
-
-bestSnob={
-
-spread,
-
-picked:
-[...picked]
-
-};
-
-}
-
-break;
+targetCount[
+x.target
+]--;
 
 }
 
 }
 
-}
+searchSnob(
 
+[],
+
+new Set(),
+
+Object.fromEntries(
+targets.map(
+t=>[t,0]
+)
+),
+
+0
+
+);
 if(bestSnob){
 
 output.push(
