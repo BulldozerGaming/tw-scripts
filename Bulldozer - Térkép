@@ -2005,7 +2005,13 @@ updateCoordInput();
 
 $(".coordVillageMark").remove();
 
-$("#coordInfoBtn").hide();
+if(
+!window.owLiteStarted
+){
+
+$("#owFloatingInfo").hide();
+
+}
 
 }
 );
@@ -2281,6 +2287,72 @@ hud=$("#globalInfoHud");
 
 $("#closeGlobalInfo").click(
 ()=>hud.hide()
+);
+
+let dragging=false;
+
+let ox=0;
+
+let oy=0;
+
+hud.on(
+"mousedown",
+function(e){
+
+if(
+$(e.target).closest(
+"textarea,input,select,label,button"
+).length
+){
+
+return;
+
+}
+
+dragging=true;
+
+ox=
+e.clientX-
+hud.offset().left;
+
+oy=
+e.clientY-
+hud.offset().top;
+
+}
+);
+
+$(document).on(
+"mousemove.globalInfo",
+function(e){
+
+if(!dragging)
+return;
+
+hud.css({
+
+left:
+(
+e.clientX-ox
+)+"px",
+
+top:
+(
+e.clientY-oy
+)+"px"
+
+});
+
+}
+);
+
+$(document).on(
+"mouseup.globalInfo",
+function(){
+
+dragging=false;
+
+}
 );
 
 }
