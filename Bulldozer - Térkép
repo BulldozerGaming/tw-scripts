@@ -2291,7 +2291,7 @@ border-radius:8px;
 
 <li>Zöld gomb = koordináta rendszer</li>
 
-<li>Kaszárnya ikon = Mass Attack Planner</li>
+<li>Kaszárnya ikon = Támadás tervező</li>
 
 <li>ⓘ gomb közös segítségpanel</li>
 
@@ -3657,7 +3657,7 @@ font-size:28px;
 font-weight:bold;
 ">
 
-Mass Attack Planner
+Támadás tervező
 
 </div>
 
