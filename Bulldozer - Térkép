@@ -4980,15 +4980,12 @@ const formatted =
 
 +
 
-output.map(x=>{
+output.map((x,i)=>{
 
 const d=x.launch;
 
 const pad=n=>
-String(n).padStart(
-2,
-"0"
-);
+String(n).padStart(2,"0");
 
 const launch=
 
@@ -5006,7 +5003,7 @@ return(
 
 `[|][b][color=green]${launch}[/color][/b]`+
 
-`[|][button]Indítás[/button]`
+`[|]<button class="plannerLaunchBtn" data-from="${x.from}" data-target="${x.target}">Indítás</button>`
 
 );
 
@@ -5014,8 +5011,7 @@ return(
 
 +
 
-`
-[/table]`;
+`[/table]`;
 
 
 
