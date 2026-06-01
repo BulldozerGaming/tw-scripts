@@ -771,6 +771,9 @@ window.coordOldClick;
 window.coordPickerInitialized=
 false;
 
+window.coordPickerEnabled=
+false;
+
 }
 
 setTimeout(
