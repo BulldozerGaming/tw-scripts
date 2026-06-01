@@ -4964,11 +4964,21 @@ a.time-b.time
 const arrivalText=
 $("#arrivalTime").val();
 
-const formatted=
 
-`[b]Csapódás:[/b] ${arrivalText}
 
-`+
+
+
+const formatted =
+
+`[size=12][b]Csapódás: [color=#0000ff]${arrivalText}[/color][/b][/size]
+
+[size=11][b]Indítások[/b][/size]
+
+[table]
+[**]Indító[||]Célpont[||]Indítás[||]Indít[/**]
+`
+
++
 
 output.map(x=>{
 
@@ -4982,35 +4992,37 @@ String(n).padStart(
 
 const launch=
 
-pad(
-d.getHours()
-)+":"+
-
-pad(
-d.getMinutes()
-)+":"+
-
-pad(
-d.getSeconds()
-);
-
-const color=
-
-x.type==="NUKE"
-? "red"
-: "green";
+pad(d.getHours())+
+":"+
+pad(d.getMinutes())+
+":"+
+pad(d.getSeconds());
 
 return(
 
-`[b]Innen:[/b] [coord]${x.from}[/coord]
-[b]Ide:[/b] [coord]${x.target}[/coord]
-[b]Indítás:[/b] [color=${color}]${launch}[/color]
+`[*][coord]${x.from}[/coord]`+
 
-`
+`[|][coord]${x.target}[/coord]`+
+
+`[|][b][color=green]${launch}[/color][/b]`+
+
+`[|][button]Indítás[/button]`
 
 );
 
-}).join("");
+}).join("\n")
+
++
+
+`
+
+[/table]`;
+
+
+
+
+
+
 
 $("#plannerOutput").val(
 formatted
