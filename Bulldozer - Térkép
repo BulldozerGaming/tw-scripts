@@ -784,7 +784,7 @@ font-weight:600;
 
 font-size:13px;
 
-line-height:20px;"><h1>Nincs elérhető információ erről a faluról.</h1><div>`);
+line-height:20px;"><h3>Nincs elérhető információ erről a faluról.</h3><div>`);
             $villageInfoContainer.appendTo($('#map_popup'));
         }
     },
