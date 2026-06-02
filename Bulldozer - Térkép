@@ -13,6 +13,13 @@
 
 'use strict';
 
+function initCrytek(){
+
+console.log(
+"Crytek init:",
+location.href
+);
+
 let crytekLastUrl = location.href;
 
 setInterval(()=>{
@@ -33,28 +40,32 @@ location.reload();
 
 },300);
 
-const isMap=
+function isSupportedScreen(){
 
-location.search.includes(
-"screen=map"
+return location.search.includes("screen=map")
+||
+location.search.includes("screen=place");
+
+}
+
+function waitSupportedScreen(){
+
+if(!isSupportedScreen()){
+
+setTimeout(
+waitSupportedScreen,
+500
 );
-
-const isPlace=
-
-location.search.includes(
-"screen=place"
-);
-
-if(
-
-!isMap &&
-!isPlace
-
-){
 
 return;
 
 }
+
+initCrytek();
+
+}
+
+waitSupportedScreen();
 
 
 
