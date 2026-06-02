@@ -13,7 +13,22 @@
 
 'use strict';
 
+const isMap =
+location.search.includes(
+"screen=map"
+);
 
+const isPlace =
+location.search.includes(
+"screen=place"
+);
+
+if(
+!isMap &&
+!isPlace
+){
+return;
+}
 
 
 
@@ -23,6 +38,11 @@
 /* ==========================
 AUTO PLACE FILL
 ========================== */
+
+const isPlace =
+location.search.includes(
+"screen=place"
+);
 
 if(isPlace){
 
