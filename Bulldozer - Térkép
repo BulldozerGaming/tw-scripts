@@ -13,6 +13,26 @@
 
 'use strict';
 
+let crytekLastUrl = location.href;
+
+setInterval(()=>{
+
+if(location.href!==crytekLastUrl){
+
+crytekLastUrl=location.href;
+
+if(
+location.search.includes("screen=place")
+){
+
+location.reload();
+
+}
+
+}
+
+},300);
+
 const isMap=
 
 location.search.includes(
