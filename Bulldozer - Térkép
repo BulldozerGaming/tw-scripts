@@ -23,12 +23,7 @@ location.search.includes(
 "screen=place"
 );
 
-if(
-!isMap &&
-!isPlace
-){
-return;
-}
+
 
 
 
