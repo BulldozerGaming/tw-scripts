@@ -5449,10 +5449,50 @@ UI.SuccessMessage(
 
 }
 
-setTimeout(
-fillArmy,
-500
+let tries=0;
+
+const waitForPlace=setInterval(()=>{
+
+tries++;
+
+const coordInput=
+$("#place_target input")
+.first();
+
+const unitsExist=
+
+typeof insertUnit==="function" ||
+
+$(".unitsInput").length;
+
+if(
+coordInput.length &&
+unitsExist
+){
+
+clearInterval(
+waitForPlace
 );
+
+fillArmy();
+
+}
+
+if(
+tries>40
+){
+
+clearInterval(
+waitForPlace
+);
+
+console.log(
+"Crytek Auto timeout"
+);
+
+}
+
+},250);
 
 })();
 
