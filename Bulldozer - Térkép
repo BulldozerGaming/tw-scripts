@@ -4500,12 +4500,19 @@ dragging=false;
 
 const worldSpeed =
 parseFloat(
-game_data.speed
+game_data.speed || window.game_data?.speed || 1
 );
 
 const unitSpeed =
 parseFloat(
-game_data.unit_speed
+game_data.unit_speed || window.game_data?.unit_speed || 1
+);
+
+console.log(
+"worldSpeed:",
+worldSpeed,
+"unitSpeed:",
+unitSpeed
 );
 
 const RAM_SPEED =
@@ -4720,12 +4727,27 @@ return;
 
 }
 
-const arrival=
-new Date(
-arrivalRaw.replace(
-" ",
-"T"
-)
+const parts = arrivalRaw.match(
+/(\d+)-(\d+)-(\d+)\s+(\d+):(\d+):(\d+)/
+);
+
+if(!parts){
+
+UI.ErrorMessage(
+"A Csapódási idő rossz formátumú."
+);
+
+return;
+
+}
+
+const arrival = new Date(
+parts[1],
+parts[2]-1,
+parts[3],
+parts[4],
+parts[5],
+parts[6]
 );
 
 if(
@@ -5389,16 +5411,35 @@ target
 
 /* összes csapat */
 
-if(
+try{
 
-typeof insertUnit ===
-"function"
+if(typeof insertUnit==="function"){
 
-){
+insertUnit(true);
 
-insertUnit(
-true
+}else{
+
+$(".unitsInput").each(function(){
+
+const max=$(this)
+.parent()
+.find(".units-entry-all");
+
+if(max.length){
+
+$(this).val(
+max.text().match(/\d+/)?.[0]||0
 );
+
+}
+
+});
+
+}
+
+}catch(e){
+
+console.log(e);
 
 }
 
