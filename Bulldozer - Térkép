@@ -13,59 +13,8 @@
 
 'use strict';
 
-function initCrytek(){
 
-console.log(
-"Crytek init:",
-location.href
-);
 
-let crytekLastUrl = location.href;
-
-setInterval(()=>{
-
-if(location.href!==crytekLastUrl){
-
-crytekLastUrl=location.href;
-
-if(
-location.search.includes("screen=place")
-){
-
-location.reload();
-
-}
-
-}
-
-},300);
-
-function isSupportedScreen(){
-
-return location.search.includes("screen=map")
-||
-location.search.includes("screen=place");
-
-}
-
-function waitSupportedScreen(){
-
-if(!isSupportedScreen()){
-
-setTimeout(
-waitSupportedScreen,
-500
-);
-
-return;
-
-}
-
-initCrytek();
-
-}
-
-waitSupportedScreen();
 
 
 
