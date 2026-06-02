@@ -39,11 +39,6 @@ return;
 AUTO PLACE FILL
 ========================== */
 
-const isPlace =
-location.search.includes(
-"screen=place"
-);
-
 if(isPlace){
 
 $(function(){
