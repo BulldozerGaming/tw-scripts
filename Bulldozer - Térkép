@@ -15,21 +15,50 @@
 
 
 
-let crytekLastUrl = location.href;
+let crytekLastPath =
+location.pathname +
+location.search;
 
 setInterval(()=>{
 
-if(location.href!==crytekLastUrl){
+const currentPath =
 
-crytekLastUrl=location.href;
+location.pathname +
+location.search;
 
 if(
-location.search.includes("screen=place")
+currentPath === crytekLastPath
+){
+return;
+}
+
+crytekLastPath =
+currentPath;
+
+const params =
+new URLSearchParams(
+location.search
+);
+
+if(
+
+params.get(
+"screen"
+)==="place"
+
+&&
+
+params.get(
+"crytekAuto"
+)==="1"
+
+&&
+
+!window.fakeScriptWriting
+
 ){
 
 location.reload();
-
-}
 
 }
 
