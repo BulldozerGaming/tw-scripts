@@ -91,9 +91,14 @@ return;
 
 
 
-/* ==========================
-AUTO PLACE FILL
-========================== */
+
+
+
+
+
+/* ============================================================================================================================================================
+   START AUTO PLACE FILL
+============================================================================================================================================================ */
 
 if(isPlace){
 
@@ -187,6 +192,9 @@ return;
 
 }
 
+/* ============================================================================================================================================================
+   END AUTO PLACE FILL
+============================================================================================================================================================ */
 
 
 
@@ -194,9 +202,13 @@ return;
 
 
 
-/**
- * Start of Overwatch code
- */
+
+
+
+/* ============================================================================================================================================================
+   START OVERWATCH MODULE
+============================================================================================================================================================ */
+
 // Constants and Global Variables
 var WATCHTOWER_RADIUS = [1.1, 1.3, 1.5, 1.7, 2, 2.3, 2.6, 3, 3.4, 3.9, 4.4, 5.1, 5.8, 6.7, 7.6, 8.7, 10, 11.5, 13.1, 15];
 
@@ -228,7 +240,12 @@ $("#contentContainer").eq(0).prepend(`<style>
 
 
 
-// DataManager Module
+
+
+/* ===========================
+   START DATA MANAGER MODULE
+=========================== */
+
 var DataManager = {
     async fetchPlayerIDs() {
         const membersDef = await $.get("/game.php?screen=ally&mode=members_defense");
@@ -458,6 +475,17 @@ MapRenderer.makeOutput(e);
     }
 };
 
+/* ===========================
+   END DATA MANAGER MODULE
+=========================== */
+
+
+
+
+
+/* ===========================
+   START CALCULATOR MODULE
+=========================== */
 
 var Calculator = {
 
@@ -494,6 +522,18 @@ return "rgba(0,120,255,0.65)";
 }
 
 };
+
+/* ===========================
+   END CALCULATOR MODULE
+=========================== */
+
+
+
+
+
+/* ===========================
+   START MAP RENDERER MODULE
+=========================== */
 
 var MapRenderer = {
     makeMap() {
@@ -855,6 +895,18 @@ line-height:20px;"><h3>Nincs elérhető információ erről a faluról.</h3><div
     }
 };
 
+/* ===========================
+   END MAP RENDERER MODULE
+=========================== */
+
+
+
+
+
+/* ===========================
+   START SHOW NOTIFICATION FUNCTION
+=========================== */
+
 function showNotification(msg) {
     const x = document.getElementById("overwatchNotification");
     if(!x) return;
@@ -863,6 +915,18 @@ function showNotification(msg) {
     setTimeout(() => x.className = x.className.replace("show", ""), 3000);
 }
 
+/* ===========================
+   END SHOW NOTIFICATION FUNCTION
+=========================== */
+
+
+
+
+
+/* ===========================
+   START NUMBER WITH COMMAS FUNCTION
+=========================== */
+
 function numberWithCommas(x) {
     x = x.toString();
     const pattern = /(-?\d+)(\d{3})/;
@@ -870,11 +934,35 @@ function numberWithCommas(x) {
     return x;
 }
 
+/* ===========================
+   END NUMBER WITH COMMAS FUNCTION
+=========================== */
+
+
+
+
+
+/* ===========================
+   START SAVE SETTINGS AND REDRAW FUNCTION
+=========================== */
+
 function saveSettingsAndRedraw() {
 
     recalculate();
     MapRenderer.makeMap();
 }
+
+/* ===========================
+   END SAVE SETTINGS AND REDRAW FUNCTION
+=========================== */
+
+
+
+
+
+/* ===========================
+   START RECALCULATE FUNCTION
+=========================== */
 
 function recalculate() {
     targetData = [];
@@ -905,6 +993,17 @@ function recalculate() {
     });
 }
 
+/* ===========================
+   END RECALCULATE FUNCTION
+=========================== */
+
+
+
+
+
+/* ===========================
+   START OVERWATCH GLOBAL CONFIG
+=========================== */
 
 playerData=[];
 
@@ -935,6 +1034,18 @@ mediumStack=40000;
 bigStack=60000;
 
 targetStackSize=bigStack;
+
+/* ===========================
+   END OVERWATCH GLOBAL CONFIG
+=========================== */
+
+
+
+
+
+/* ===========================
+   START START OVERWATCH LITE FUNCTION
+=========================== */
 
 async function startOverwatchLite(){
 
@@ -1021,6 +1132,18 @@ display:"block"
 // nothing
 
 }
+
+/* ===========================
+   END START OVERWATCH LITE FUNCTION
+=========================== */
+
+
+
+
+
+/* ===========================
+   START TOGGLE OW INFO FUNCTION
+=========================== */
 
 function toggleOWInfo(){
 
@@ -1317,6 +1440,18 @@ dragging=false;
 hud.toggle();
 
 }
+
+/* ===========================
+   END TOGGLE OW INFO FUNCTION
+=========================== */
+
+
+
+
+
+/* ===========================
+   START CREATE ARMY MAP BUTTON FUNCTION
+=========================== */
 
 function createArmyMapButton(){
 
@@ -1623,12 +1758,17 @@ toggleGlobalInfo
 
 }
 
+/* ===========================
+   END CREATE ARMY MAP BUTTON FUNCTION
+=========================== */
 
 
 
 
 
-
+/* ===========================
+   START OVERWATCH EVENT BINDINGS
+=========================== */
 
 $(document).ready(function(){
 
@@ -1640,18 +1780,45 @@ $(window).trigger(
 
 });
 
+/* ===========================
+   END OVERWATCH EVENT BINDINGS
+=========================== */
 
+/* ============================================================================================================================================================
+   END OVERWATCH MODULE
+============================================================================================================================================================ */
+
+
+
+
+
+
+
+
+
+
+/* ============================================================================================================================================================
+   START COORD PICKER MODULE
+============================================================================================================================================================ */
+
+/* ===========================
+   START COORD GLOBAL VARIABLES
+=========================== */
+
+window.selectedVillages=
+window.selectedVillages || [];
+
+/* ===========================
+   END COORD GLOBAL VARIABLES
+=========================== */
 
 
 
 
 
 /* ===========================
-   COORD PICKER MODULE
+   START TOGGLE COORD HUD FUNCTION
 =========================== */
-
-window.selectedVillages=
-window.selectedVillages || [];
 
 function toggleCoordHud(){
 
@@ -2340,21 +2507,6 @@ hud.offset().top;
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 $("#coordPickerInput").on(
 "mousedown mousemove mouseup",
 function(e){
@@ -2398,12 +2550,17 @@ hud.toggle();
 
 }
 
+/* ===========================
+   END TOGGLE COORD HUD FUNCTION
+=========================== */
 
 
 
 
 
-
+/* ===========================
+   START GLOBAL HUD Z INDEX SYSTEM
+=========================== */
 
 let crytekTopZ = 999999;
 
@@ -2418,11 +2575,21 @@ crytekTopZ
 
 }
 
+/* ===========================
+   END GLOBAL HUD Z INDEX SYSTEM
+=========================== */
 
 
 
 
 
+/* ============================================================================================================================================================
+   START GLOBAL INFO MODULE
+============================================================================================================================================================ */
+
+/* ===========================
+   START TOGGLE GLOBAL INFO FUNCTION
+=========================== */
 
 function toggleGlobalInfo(){
 
@@ -2834,11 +3001,30 @@ hud.toggle();
 
 }
 
+/* ===========================
+   END TOGGLE GLOBAL INFO FUNCTION
+=========================== */
+
+/* ============================================================================================================================================================
+   END GLOBAL INFO MODULE
+============================================================================================================================================================ */
 
 
 
 
 
+
+
+
+
+
+/* ============================================================================================================================================================
+   START COORD PICKER LOGIC MODULE
+============================================================================================================================================================ */
+
+/* ===========================
+   START UPDATE COORD INPUT FUNCTION
+=========================== */
 
 function updateCoordInput(){
 
@@ -2913,8 +3099,17 @@ output;
 
 }
 
+/* ===========================
+   END UPDATE COORD INPUT FUNCTION
+=========================== */
 
 
+
+
+
+/* ===========================
+   START DRAW VILLAGE SELECTION FUNCTION
+=========================== */
 
 function drawVillageSelection(){
 
@@ -2988,6 +3183,18 @@ coord;
 });
 
 }
+
+/* ===========================
+   END DRAW VILLAGE SELECTION FUNCTION
+=========================== */
+
+
+
+
+
+/* ===========================
+   START ENABLE COORD PICKER FUNCTION
+=========================== */
 
 function enableCoordPicker(){
 
@@ -3090,9 +3297,17 @@ return false;
 
 }
 
+/* ===========================
+   END ENABLE COORD PICKER FUNCTION
+=========================== */
 
 
 
+
+
+/* ===========================
+   START CREATE COORD BUTTON FUNCTION
+=========================== */
 
 function createCoordButton(){
 
@@ -3313,6 +3528,18 @@ $("#owInfoBtn").hide();
 
 }
 
+/* ===========================
+   END CREATE COORD BUTTON FUNCTION
+=========================== */
+
+
+
+
+
+/* ===========================
+   START COORD EVENT BINDINGS
+=========================== */
+
 $(document).ready(function(){
 
 createCoordButton();
@@ -3399,7 +3626,30 @@ label
 
 });
 
+/* ===========================
+   END COORD EVENT BINDINGS
+=========================== */
 
+/* ============================================================================================================================================================
+   END COORD PICKER LOGIC MODULE
+============================================================================================================================================================ */
+
+
+
+
+
+
+
+
+
+
+/* ============================================================================================================================================================
+   START SIMPLE FAKE MODULE
+============================================================================================================================================================ */
+
+/* ===========================
+   START UPDATE SIMPLE FAKE FUNCTION
+=========================== */
 
 function updateSimpleFake(){
 
@@ -3586,6 +3836,18 @@ $("#simpleFakeOutput")
 
 } // updateSimpleFake vége
 
+/* ===========================
+   END UPDATE SIMPLE FAKE FUNCTION
+=========================== */
+
+
+
+
+
+/* ===========================
+   START SIMPLE FAKE EVENTS
+=========================== */
+
 $(document)
 
 .on(
@@ -3632,7 +3894,30 @@ updateSimpleFake();
 
 updateSimpleFake();
 
+/* ===========================
+   END SIMPLE FAKE EVENTS
+=========================== */
 
+/* ============================================================================================================================================================
+   END SIMPLE FAKE MODULE
+============================================================================================================================================================ */
+
+
+
+
+
+
+
+
+
+
+/* ============================================================================================================================================================
+   START FORUM FAKE MODULE
+============================================================================================================================================================ */
+
+/* ===========================
+   START UPDATE FORUM FAKE FUNCTION
+=========================== */
 
 function updateForumFake(){
 
@@ -3782,6 +4067,14 @@ $("#forumFakeOutput")
 
 }
 
+/* ===========================
+   END UPDATE FORUM FAKE FUNCTION
+=========================== */
+
+
+
+
+
 $(document)
 
 .on(
@@ -3819,8 +4112,26 @@ UI.SuccessMessage(
 
 updateForumFake();
 
+/* ============================================================================================================================================================
+   END FORUM FAKE MODULE
+============================================================================================================================================================ */
 
 
+
+
+
+
+
+
+
+
+/* ============================================================================================================================================================
+   START MASS ATTACK PLANNER MODULE
+============================================================================================================================================================ */
+
+/* ===========================
+   START CREATE MASS PLANNER BUTTON FUNCTION
+=========================== */
 
 function createMassPlannerButton(){
 
@@ -3957,9 +4268,17 @@ $("#owFloatingInfo").hide();
 
 }
 
+/* ===========================
+   END CREATE MASS PLANNER BUTTON FUNCTION
+=========================== */
 
 
 
+
+
+/* ===========================
+   START MASS PLANNER STYLE BLOCK
+=========================== */
 
 if(!$("#crytekMassStyles").length){
 
@@ -4001,8 +4320,6 @@ border-radius:6px;
 background:#f7f1df;
 
 }
-
-
 
 
 .crytekResetBtn{
@@ -4057,13 +4374,6 @@ background: linear-gradient(to bottom, #b69471 0%, #9f764d 22%, #8f6133 30%, #6c
 transform:none;
 
 }
-
-
-
-
-
-
-
 
 .crytekCheckLabel{
 
@@ -4157,10 +4467,17 @@ background:#f7f1df;
 
 }
 
+/* ===========================
+   END MASS PLANNER STYLE BLOCK
+=========================== */
 
 
 
 
+
+/* ===========================
+   START TOGGLE MASS PLANNER HUD FUNCTION
+=========================== */
 
 function toggleMassPlannerHud(){
 
@@ -4701,13 +5018,19 @@ now.getSeconds()
 
 );
 
-
-
 }
 
+/* ===========================
+   END TOGGLE MASS PLANNER HUD FUNCTION
+=========================== */
 
 
 
+
+
+/* ===========================
+   START ENABLE MASS DRAG FUNCTION
+=========================== */
 
 function enableMassDrag(){
 
@@ -4785,9 +5108,17 @@ dragging=false;
 
 }
 
+/* ===========================
+   END ENABLE MASS DRAG FUNCTION
+=========================== */
 
 
 
+
+
+/* ===========================
+   START MASS PLANNER SPEED CONFIG
+=========================== */
 
 let worldSpeed =
 
@@ -4893,7 +5224,17 @@ recalcPlannerSpeeds();
 
 }
 
+/* ===========================
+   END MASS PLANNER SPEED CONFIG
+=========================== */
 
+
+
+
+
+/* ===========================
+   START VILLAGE CACHE HELPERS
+=========================== */
 
 const coordToVillageId=
 Object.create(null);
@@ -4930,7 +5271,17 @@ return id;
 
 }
 
+/* ===========================
+   END VILLAGE CACHE HELPERS
+=========================== */
 
+
+
+
+
+/* ===========================
+   START PLANNER CONSTANTS
+=========================== */
 
 const baseUrl =
 location.origin;
@@ -4952,9 +5303,17 @@ const SNOB_ICON =
 baseUrl +
 "/graphic/unit/unit_snob.png";
 
+/* ===========================
+   END PLANNER CONSTANTS
+=========================== */
 
 
 
+
+
+/* ===========================
+   START PARSE COORDS FUNCTION
+=========================== */
 
 function parseCoords(text){
 
@@ -4981,6 +5340,18 @@ return true;
 });
 
 }
+
+/* ===========================
+   END PARSE COORDS FUNCTION
+=========================== */
+
+
+
+
+
+/* ===========================
+   START COORD CACHE HELPERS
+=========================== */
 
 const coordCache=
 Object.create(null);
@@ -5020,8 +5391,17 @@ dx*dx + dy*dy
 
 }
 
+/* ===========================
+   END COORD CACHE HELPERS
+=========================== */
 
 
+
+
+
+/* ===========================
+   START PLANNER CALCULATE EVENT
+=========================== */
 
 $(document).on(
 
@@ -5578,7 +5958,17 @@ formatted
 
 }); // <-- EZ ZÁRJA LE A plannerCalc clicket
 
+/* ===========================
+   END PLANNER CALCULATE EVENT
+=========================== */
 
+
+
+
+
+/* ===========================
+   START PLANNER COPY EVENT
+=========================== */
 
 $(document).on(
 "click",
@@ -5595,8 +5985,17 @@ UI.SuccessMessage(
 
 });
 
+/* ===========================
+   END PLANNER COPY EVENT
+=========================== */
 
 
+
+
+
+/* ===========================
+   START PLANNER NOTES EVENT
+=========================== */
 
 $(document).on(
 
@@ -5618,9 +6017,17 @@ window.open(
 
 );
 
+/* ===========================
+   END PLANNER NOTES EVENT
+=========================== */
 
 
 
+
+
+/* ===========================
+   START PLANNER RESET EVENT
+=========================== */
 
 $(document).on(
 "click",
@@ -5680,10 +6087,17 @@ $("#plannerSnobCount").val(1);
 
 });
 
+/* ===========================
+   END PLANNER RESET EVENT
+=========================== */
 
 
 
 
+
+/* ===========================
+   START RESET COORD OUTPUT EVENT
+=========================== */
 
 $(document).on(
 "click",
@@ -5705,12 +6119,26 @@ UI.SuccessMessage(
 
 });
 
+/* ===========================
+   END RESET COORD OUTPUT EVENT
+=========================== */
+
+/* ============================================================================================================================================================
+   END MASS ATTACK PLANNER MODULE
+============================================================================================================================================================ */
 
 
 
-/* ==========================
-AUTO PLACE FILL
-========================== */
+
+
+
+
+
+
+
+/* ============================================================================================================================================================
+   START AUTO PLACE FILL
+============================================================================================================================================================ */
 
 (function(){
 
@@ -5882,6 +6310,9 @@ console.log(
 
 })();
 
+/* ============================================================================================================================================================
+   END AUTO PLACE FILL
+============================================================================================================================================================ */
 
 
 
@@ -5892,14 +6323,13 @@ console.log(
 
 
 
+/* ============================================================================================================================================================
+   START FRONTLINE MODULE
+============================================================================================================================================================ */
 
-
-
-
-
-/* =====================================
-   FRONTLINE MODULE
-===================================== */
+/* ===========================
+   START FRONTLINE GLOBAL DATA
+=========================== */
 
 window.frontlineData = {
 
@@ -5933,13 +6363,17 @@ Object.create(null);
 window.frontlineDefenseLoading=
 Object.create(null);
 
+/* ===========================
+   END FRONTLINE GLOBAL DATA
+=========================== */
 
 
 
 
 
-
-
+/* ===========================
+   START CREATE FRONTLINE BUTTON FUNCTION
+=========================== */
 
 function createFrontlineButton(){
 
@@ -6084,6 +6518,18 @@ $("#owFloatingInfo")
 );
 
 }
+
+/* ===========================
+   END CREATE FRONTLINE BUTTON FUNCTION
+=========================== */
+
+
+
+
+
+/* ===========================
+   START TOGGLE FRONTLINE HUD FUNCTION
+=========================== */
 
 function toggleFrontlineHud(){
 
@@ -6898,11 +7344,19 @@ ownAlly
 
 });
 
-
-
 }
 
+/* ===========================
+   END TOGGLE FRONTLINE HUD FUNCTION
+=========================== */
 
+
+
+
+
+/* ===========================
+   START UPDATE FRONTLINE SPEED INFO FUNCTION
+=========================== */
 
 function updateFrontlineSpeedInfo(){
 
@@ -7120,14 +7574,17 @@ distance
 
 }
 
+/* ===========================
+   END UPDATE FRONTLINE SPEED INFO FUNCTION
+=========================== */
 
 
 
 
 
-
-
-
+/* ===========================
+   START UPDATE FRONTLINE PROGRESS FUNCTION
+=========================== */
 
 function updateFrontlineProgress(
 percent
@@ -7183,10 +7640,17 @@ $("#frontlineProgressWrap")
 
 }
 
+/* ===========================
+   END UPDATE FRONTLINE PROGRESS FUNCTION
+=========================== */
 
 
 
 
+
+/* ===========================
+   START ENABLE FRONTLINE DRAG FUNCTION
+=========================== */
 
 function enableFrontlineDrag(){
 
@@ -7265,6 +7729,17 @@ dragging=false;
 
 }
 
+/* ===========================
+   END ENABLE FRONTLINE DRAG FUNCTION
+=========================== */
+
+
+
+
+
+/* ===========================
+   START FRONTLINE EVENT BINDINGS
+=========================== */
 
 $(document).ready(function(){
 
@@ -7272,6 +7747,9 @@ createFrontlineButton();
 
 });
 
+/* ===========================
+   END FRONTLINE EVENT BINDINGS
+=========================== */
 
 
 
@@ -7282,9 +7760,13 @@ createFrontlineButton();
 
 
 
-/* =====================================
-   FRONTLINE CLAN PICKER
-===================================== */
+/* ============================================================================================================================================================
+   START FRONTLINE CLAN PICKER MODULE
+============================================================================================================================================================ */
+
+/* ===========================
+   START FRONTLINE CLAN GLOBALS
+=========================== */
 
 window.frontlineClanCache=
 window.frontlineClanCache || [];
@@ -7297,6 +7779,17 @@ window.frontlineTribes=[];
 const FRONTLINE_API_BASE=
 location.origin;
 
+/* ===========================
+   END FRONTLINE CLAN GLOBALS
+=========================== */
+
+
+
+
+
+/* ===========================
+   START LOAD FRONTLINE TRIBES FUNCTION
+=========================== */
 
 async function loadFrontlineTribes(){
 
@@ -7352,6 +7845,17 @@ window.frontlineApiLoaded=true;
 
 }
 
+/* ===========================
+   END LOAD FRONTLINE TRIBES FUNCTION
+=========================== */
+
+
+
+
+
+/* ===========================
+   START SEARCH FRONTLINE CLANS FUNCTION
+=========================== */
 
 async function searchFrontlineClans(term){
 
@@ -7407,12 +7911,17 @@ x.name
 
 }
 
+/* ===========================
+   END SEARCH FRONTLINE CLANS FUNCTION
+=========================== */
 
 
 
 
 
-
+/* ===========================
+   START RENDER FRONTLINE SELECTED FUNCTION
+=========================== */
 
 function renderFrontlineSelected(){
 
@@ -7514,6 +8023,18 @@ ${x.name}
 
 }
 
+/* ===========================
+   END RENDER FRONTLINE SELECTED FUNCTION
+=========================== */
+
+
+
+
+
+/* ===========================
+   START CREATE FRONTLINE DROPDOWN FUNCTION
+=========================== */
+
 function createFrontlineDropdown(input,mode){
 
 $(".frontlineDropdown").remove();
@@ -7613,6 +8134,18 @@ drop
 
 }
 
+/* ===========================
+   END CREATE FRONTLINE DROPDOWN FUNCTION
+=========================== */
+
+
+
+
+
+/* ===========================
+   START ADD FRONTLINE CLAN FUNCTION
+=========================== */
+
 function addFrontlineClan(
 mode,
 id,
@@ -7645,20 +8178,17 @@ renderFrontlineSelected();
 
 }
 
+/* ===========================
+   END ADD FRONTLINE CLAN FUNCTION
+=========================== */
 
 
 
 
 
-
-
-
-
-
-
-
-
-
+/* ===========================
+   START FRONTLINE INPUT EVENTS
+=========================== */
 
 $(document)
 
@@ -7869,15 +8399,26 @@ renderFrontlineSelected();
 
 );
 
+/* ===========================
+   END FRONTLINE INPUT EVENTS
+=========================== */
 
 
 
 
 
 
-/* =====================================
-   FRONTLINE SCANNER
-===================================== */
+
+
+
+
+/* ============================================================================================================================================================
+   START FRONTLINE SCANNER MODULE
+============================================================================================================================================================ */
+
+/* ===========================
+   START FRONTLINE SCANNER GLOBALS
+=========================== */
 
 window.frontlineVillageCache =
 window.frontlineVillageCache || {};
@@ -7926,6 +8467,17 @@ window.frontlineCoordOwnerCache || {};
 window.frontlineCoordMetaCache=
 window.frontlineCoordMetaCache || {};
 
+/* ===========================
+   END FRONTLINE SCANNER GLOBALS
+=========================== */
+
+
+
+
+
+/* ===========================
+   START PARSE COORD FUNCTION
+=========================== */
 
 function parseCoord(text){
 
@@ -7947,6 +8499,18 @@ y:parseInt(m[2])
 
 }
 
+/* ===========================
+   END PARSE COORD FUNCTION
+=========================== */
+
+
+
+
+
+/* ===========================
+   START FRONTLINE DISTANCE FUNCTION
+=========================== */
+
 function frontlineDistance(a,b){
 
 const dx=
@@ -7961,6 +8525,18 @@ dy*dy
 );
 
 }
+
+/* ===========================
+   END FRONTLINE DISTANCE FUNCTION
+=========================== */
+
+
+
+
+
+/* ===========================
+   START LOAD FRONTLINE PLAYERS FUNCTION
+=========================== */
 
 async function loadFrontlinePlayers(){
 
@@ -8026,11 +8602,17 @@ window.frontlinePlayersLoaded=true;
 
 }
 
+/* ===========================
+   END LOAD FRONTLINE PLAYERS FUNCTION
+=========================== */
 
 
 
 
-/* IDE */
+
+/* ===========================
+   START LOAD FRONTLINE ALLIES FUNCTION
+=========================== */
 
 async function loadFrontlineAllies(){
 
@@ -8089,11 +8671,17 @@ window.frontlineAlliesLoaded=true;
 
 }
 
+/* ===========================
+   END LOAD FRONTLINE ALLIES FUNCTION
+=========================== */
 
 
 
 
 
+/* ===========================
+   START GET CLAN PLAYERS FUNCTION
+=========================== */
 
 async function getClanPlayers(clanId){
 
@@ -8124,13 +8712,17 @@ x=>x.id
 }
 
 
+/* ===========================
+   END GET CLAN PLAYERS FUNCTION
+=========================== */
 
 
 
 
 
-
-
+/* ===========================
+   START BUILD FRONTLINE COORD OWNER CACHE FUNCTION
+=========================== */
 
 function buildFrontlineCoordOwnerCache(){
 
@@ -8177,22 +8769,17 @@ v.coord
 
 }
 
+/* ===========================
+   END BUILD FRONTLINE COORD OWNER CACHE FUNCTION
+=========================== */
 
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
+/* ===========================
+   START LOAD FRONTLINE VILLAGES FUNCTION
+=========================== */
 
 async function loadFrontlineVillages(){
 
@@ -8262,7 +8849,17 @@ window.frontlineVillagesLoaded=true;
 
 }
 
+/* ===========================
+   END LOAD FRONTLINE VILLAGES FUNCTION
+=========================== */
 
+
+
+
+
+/* ===========================
+   START GET PLAYER VILLAGES FUNCTION
+=========================== */
 
 async function getPlayerVillages(playerId){
 
@@ -8291,6 +8888,19 @@ x=>x.coord
 );
 
 }
+
+/* ===========================
+   END GET PLAYER VILLAGES FUNCTION
+=========================== */
+
+
+
+
+
+/* ===========================
+   START GET CLAN VILLAGES FUNCTION
+=========================== */
+
 async function getClanVillages(
 clans,
 label
@@ -8400,12 +9010,17 @@ return [
 
 }
 
+/* ===========================
+   END GET CLAN VILLAGES FUNCTION
+=========================== */
 
 
 
 
 
-
+/* ===========================
+   START APPLY OWN CLAN FILTER FUNCTION
+=========================== */
 
 async function applyOwnClanFilter(){
 
@@ -8543,14 +9158,17 @@ TWMap.reload();
 
 }
 
+/* ===========================
+   END APPLY OWN CLAN FILTER FUNCTION
+=========================== */
 
 
 
 
 
-
-
-
+/* ===========================
+   START GET FRONTLINE COORD META FUNCTION
+=========================== */
 
 function getFrontlineCoordMeta(
 coord
@@ -8598,9 +9216,17 @@ player
 
 }
 
+/* ===========================
+   END GET FRONTLINE COORD META FUNCTION
+=========================== */
 
 
 
+
+
+/* ===========================
+   START LOAD PLAYER DEFENSE PAGE FUNCTION
+=========================== */
 
 async function loadPlayerDefensePage(
 playerId
@@ -8645,9 +9271,17 @@ return null;
 
 }
 
+/* ===========================
+   END LOAD PLAYER DEFENSE PAGE FUNCTION
+=========================== */
 
 
 
+
+
+/* ===========================
+   START PARSE DEFENSE UNITS FUNCTION
+=========================== */
 
 function parseDefenseUnits(html){
 
@@ -8878,10 +9512,17 @@ return result;
 
 }
 
+/* ===========================
+   END PARSE DEFENSE UNITS FUNCTION
+=========================== */
 
 
 
 
+
+/* ===========================
+   START UPDATE FRONTLINE COORD OUTPUT FUNCTION
+=========================== */
 
 function updateFrontlineCoordOutput(){
 
@@ -9110,14 +9751,17 @@ $("#frontlineCoords")
 
 }
 
+/* ===========================
+   END UPDATE FRONTLINE COORD OUTPUT FUNCTION
+=========================== */
 
 
 
 
 
-
-
-
+/* ===========================
+   START DRAW FRONTLINE VILLAGES FUNCTION
+=========================== */
 
 function drawFrontlineVillages(){
 
@@ -9174,7 +9818,17 @@ enemy,
 
 }
 
+/* ===========================
+   END DRAW FRONTLINE VILLAGES FUNCTION
+=========================== */
 
+
+
+
+
+/* ===========================
+   START HOOK FRONTLINE MAP FUNCTION
+=========================== */
 
 function hookFrontlineMap(){
 
@@ -9215,10 +9869,17 @@ drawFrontlineVillages,
 
 }
 
+/* ===========================
+   END HOOK FRONTLINE MAP FUNCTION
+=========================== */
 
 
 
 
+
+/* ===========================
+   START DRAW FRONT VILLAGE FUNCTION
+=========================== */
 
 function drawFrontVillage(
 coord,
@@ -9293,6 +9954,17 @@ el.parent()
 
 }
 
+/* ===========================
+   END DRAW FRONT VILLAGE FUNCTION
+=========================== */
+
+
+
+
+
+/* ===========================
+   START HEX TO RGBA FUNCTION
+=========================== */
 
 function hexToRGBA(
 hex,
@@ -9321,12 +9993,17 @@ return `rgba(${r},${g},${b},${a})`;
 
 }
 
+/* ===========================
+   END HEX TO RGBA FUNCTION
+=========================== */
 
 
 
 
 
-
+/* ===========================
+   START FRONTLINE SCAN EVENT
+=========================== */
 
 $(document)
 
@@ -9434,11 +10111,27 @@ window.frontlineData.distance
 const enemyGrid=
 Object.create(null);
 
+/* ===========================
+   END FRONTLINE SCAN EVENT
+=========================== */
+
+
+
+
+
+/* ===========================
+   START CELL KEY FUNCTION
+=========================== */
+
 function cellKey(x,y){
 
 return x+"_"+y;
 
 }
+
+/* ===========================
+   END CELL KEY FUNCTION
+=========================== */
 
 /* enemy villages gridbe */
 
@@ -9847,13 +10540,23 @@ found.length+
 
 )
 
+/* ===========================
+   END FRONTLINE SCAN EVENT
+=========================== */
+
+
+
+
+
+/* ===========================
+   START FRONTLINE COPY EVENT
+=========================== */
+
 .on(
 
 "click",
 
 "#frontlineCopy",
-
-
 
 function(){
 
@@ -9872,6 +10575,17 @@ UI.SuccessMessage(
 
 );
 
+/* ===========================
+   END FRONTLINE COPY EVENT
+=========================== */
+
+
+
+
+
+/* ===========================
+   START FRONTLINE OWN CLAN EVENT
+=========================== */
 
 $(document)
 
@@ -9889,7 +10603,17 @@ applyOwnClanFilter();
 
 );
 
+/* ===========================
+   END FRONTLINE OWN CLAN EVENT
+=========================== */
 
+
+
+
+
+/* ===========================
+   START FRONTLINE INITIAL LOADER
+=========================== */
 
 (async ()=>{
 
@@ -9932,7 +10656,9 @@ ownClan.tag
 
 })();
 
-
+/* ===========================
+   END FRONTLINE INITIAL LOADER
+=========================== */
 
 
 
