@@ -518,6 +518,13 @@ ${left}
 
 
 
+function stopFakeLock(){
+
+window.fakeScriptWriting =
+false;
+
+}
+
 
 function updateStatus(msg=""){
 
@@ -2177,6 +2184,8 @@ updateStatus(
 "Nincs Fórum ID vagy Thread ID"
 );
 
+stopFakeLock();
+
 return;
 
 }
@@ -2196,6 +2205,8 @@ if(!coords){
 updateStatus(
 "Nincs koordináta megadva"
 );
+
+stopFakeLock();
 
 return;
 
@@ -2244,14 +2255,14 @@ localStorage.getItem(
 || "ram";
 
 if(
-
 !AVAILABLE_UNITS.length
-
 ){
 
 updateStatus(
 "Nincs támogatott egység"
 );
+
+stopFakeLock();
 
 return;
 
@@ -2298,6 +2309,8 @@ nightStart
 updateStatus(
 "Nincs éjszakai kezdete"
 );
+
+stopFakeLock();
 
 return;
 
@@ -2400,6 +2413,8 @@ updateStatus(
 );
 
 updateStats();
+
+stopFakeLock();
 
 return;
 
@@ -2735,12 +2750,12 @@ $("input[name='y']")
 parts[1]
 );
 
-$("input[type='radio']")
-.first()
+$("input[name='attack']")
 .prop(
 "checked",
 true
-);
+)
+.trigger("change");
 
 AVAILABLE_UNITS.forEach(unit=>{
 
@@ -2797,11 +2812,10 @@ UI.SuccessMessage(
 "Koordináta betöltve"
 );
 
-setTimeout(function(){
-
-window.fakeScriptWriting = false;
-
-},300);
+setTimeout(
+stopFakeLock,
+300
+);
 
 return false;
 
