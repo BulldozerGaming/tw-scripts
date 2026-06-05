@@ -7853,6 +7853,8 @@ FRONTLINE_CACHE_KEY
 );
 
 window.frontlinePlayersLoaded=false;
+
+window.frontlinePlayersLoaded=false;
 window.frontlineVillagesLoaded=false;
 
 window.frontlinePlayers=[];
@@ -9287,6 +9289,13 @@ async function(){
 
 updateFrontlineProgress(
 1
+);
+
+window.frontlineClanVillageCache = {};
+
+localStorage.removeItem(
+"frontlineClanVillageCache_" +
+game_data.world
 );
 
 const btn=$(this);
