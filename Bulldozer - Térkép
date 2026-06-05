@@ -5685,11 +5685,16 @@ AUTO PLACE FILL
 
 (function(){
 
+window.crytekAutoPlaceRunning =
+true;
+
 const params=
 
 new URLSearchParams(
 location.search
 );
+
+
 
 if(
 
@@ -5726,6 +5731,17 @@ return;
 
 
 function fillArmy(){
+
+if(
+window.fakeScriptWriting
+){
+
+window.crytekAutoPlaceRunning =
+false;
+
+return;
+
+}
 
 /* koordináta */
 
@@ -5809,9 +5825,15 @@ clearInterval(
 waitForPlace
 );
 
+window.crytekAutoPlaceRunning =
+false;
+
 fillArmy();
 
 }
+
+window.crytekAutoPlaceRunning =
+false;
 
 if(
 tries>40
