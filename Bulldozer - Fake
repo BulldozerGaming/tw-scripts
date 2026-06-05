@@ -2104,6 +2104,8 @@ $(document).on(
 "#crytekFakeBtn",
 function(e){
 
+window.fakeScriptWriting = true;
+
 e.preventDefault();
 e.stopPropagation();
 
@@ -2794,6 +2796,12 @@ previewIndex
 UI.SuccessMessage(
 "Koordináta betöltve"
 );
+
+setTimeout(function(){
+
+window.fakeScriptWriting = false;
+
+},300);
 
 return false;
 
