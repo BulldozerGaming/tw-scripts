@@ -2102,7 +2102,10 @@ false
 $(document).on(
 "click",
 "#crytekFakeBtn",
-function(){
+function(e){
+
+e.preventDefault();
+e.stopPropagation();
 
 updateStatus("");
 
@@ -2791,6 +2794,8 @@ previewIndex
 UI.SuccessMessage(
 "Koordináta betöltve"
 );
+
+return false;
 
 }
 );
