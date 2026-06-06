@@ -216,6 +216,22 @@ return text
 
 .replace(
 
+/\[\/coord\]\n\s*\n\[b\]Hűség:/g,
+
+'[/coord]\n[b]Hűség:'
+
+)
+
+.replace(
+
+/\[\/b\]\s*\n\s*\n\s*\[command\]/g,
+
+'[/b]\n\n[command]'
+
+)
+
+.replace(
+
 /\n{3,}/g,
 
 '\n\n'
