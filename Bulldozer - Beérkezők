@@ -209,14 +209,6 @@ return text
 
 .replace(
 
-/^\[b\]Falu:\[\/b\]\s*/gim,
-
-'[img]https://dshu.innogamescdn.com/asset/84278ce6/graphic/icons/village.png[/img=16x16] '
-
-)
-
-.replace(
-
 /\[coord\]([^\n]*)\[\/coord\]\s*\n+\s*\[b\]Hűség:/g,
 
 '[coord]$1[/coord]\n[b]Hűség:'
