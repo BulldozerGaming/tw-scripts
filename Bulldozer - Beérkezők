@@ -1,0 +1,374 @@
+// ==UserScript==
+// @name         Bulldozer - Beérkezők
+// @namespace    bulldozer
+// @license      Bulldozer Gaming
+// @version      2.0
+// @description  Beérkező támadások és erősítésekhez funkciók
+// @match        https://*.klanhaboru.hu/game.php*
+// @grant        GM_setClipboard
+// @connect      klanhaboru.hu
+// @require      https://raw.githubusercontent.com/BulldozerGaming/tw-scripts/refs/heads/main/Bulldozer%20-%20Kl%C3%A1n%20Tagok%20(admin)
+// ==/UserScript==
+
+
+(function(){
+
+'use strict';
+
+if(
+typeof game_data==="undefined" ||
+game_data.screen!=="reqdef"
+){
+return;
+}
+
+const SECTION_ID="bd_reqdef_custom";
+
+function waitFor(){
+
+const simple=
+document.querySelector(
+'#reqdef_form textarea'
+);
+
+const extended=
+document.querySelectorAll(
+'#reqdef_form textarea'
+)[1];
+
+if(!simple){
+
+setTimeout(
+waitFor,
+300
+);
+
+return;
+
+}
+
+init(
+simple,
+extended
+);
+
+}
+
+function createSection(
+title,
+opened=false
+){
+
+const wrap=
+document.createElement(
+'div'
+);
+
+wrap.className='vis';
+
+wrap.style.margin=
+'8px 0';
+
+const header=
+document.createElement(
+'h4'
+);
+
+header.style.cursor=
+'pointer';
+
+header.style.padding=
+'6px';
+
+header.textContent=
+(opened?'▼ ':'► ')
++title;
+
+const body=
+document.createElement(
+'div'
+);
+
+body.style.display=
+opened?
+'block':
+'none';
+
+const textarea=
+document.createElement(
+'textarea'
+);
+
+textarea.rows=10;
+
+textarea.style.width='100%';
+
+textarea.style.boxSizing=
+'border-box';
+
+textarea.style.resize=
+'vertical';
+
+textarea.style.minHeight=
+'180px';
+
+textarea.style.maxHeight=
+'450px';
+
+const copy=
+document.createElement(
+'button'
+);
+
+copy.textContent=
+'Másolás';
+
+copy.className=
+'btn';
+
+copy.style.margin=
+'5px 0 5px 5px';
+
+copy.style.minWidth=
+'90px';
+
+copy.style.fontWeight=
+'600';
+
+copy.style.cursor=
+'pointer';
+
+copy.onclick=()=>{
+
+navigator.clipboard.writeText(
+textarea.value
+);
+
+UI.SuccessMessage(
+'Kimásolva'
+);
+
+};
+
+header.onclick=()=>{
+
+const open=
+body.style.display==='block';
+
+body.style.display=
+open?
+'none':
+'block';
+
+header.textContent=
+(open?'► ':'▼ ')
++title;
+
+};
+
+body.appendChild(
+textarea
+);
+
+body.appendChild(
+copy
+);
+
+wrap.appendChild(
+header
+);
+
+wrap.appendChild(
+body
+);
+
+return{
+
+wrap,
+textarea,
+body
+
+};
+
+}
+
+function removeDefense(
+text
+){
+
+return text
+
+.replace(
+/\[b\]Falszint:\[\/b\].*?\n/gi,
+''
+)
+
+.replace(
+/\[b\]Védekező:\[\/b\][\s\S]*?(?=\[command\])/i,
+''
+)
+
+.replace(
+/\n{3,}/g,
+'\n\n'
+);
+
+}
+
+function init(
+simple,
+extended
+){
+
+if(
+document.getElementById(
+SECTION_ID
+)
+){
+return;
+}
+
+const container=
+document.createElement(
+'div'
+);
+
+container.id=
+SECTION_ID;
+
+const originalSections =
+document.querySelectorAll(
+'#reqdef_form fieldset'
+);
+
+originalSections.forEach(
+section=>{
+
+const legend=
+section.querySelector(
+'legend'
+);
+
+if(!legend)return;
+
+const txt=
+legend.textContent.trim();
+
+if(
+
+txt==='Egyszerű'
+
+||
+
+txt==='Kibővített'
+
+){
+
+section.style.display=
+'none';
+
+}
+
+}
+);
+
+const noDef=
+createSection(
+'Védelem / Fal nélkül',
+true
+);
+
+const simp=
+createSection(
+'Egyszerű'
+);
+
+const ext=
+createSection(
+'Kibővített'
+);
+
+container.append(
+noDef.wrap,
+simp.wrap,
+ext.wrap
+);
+
+const reqForm =
+document.getElementById(
+'reqdef_form'
+);
+
+reqForm.after(
+container
+);
+
+function update(){
+
+const simpleText=
+simple.value||'';
+
+const extText=
+extended?
+extended.value:
+'';
+
+simp.textarea.value=
+simpleText;
+
+ext.textarea.value=
+extText;
+
+noDef.textarea.value=
+removeDefense(
+simpleText
+);
+
+}
+
+update();
+
+const observer=
+new MutationObserver(
+update
+);
+
+observer.observe(
+document.body,
+{
+subtree:true,
+childList:true,
+characterData:true
+}
+);
+
+document.addEventListener(
+'change',
+e=>{
+
+if(
+e.target.matches(
+'input[type="checkbox"]'
+)
+){
+
+setTimeout(
+update,
+50
+);
+
+}
+
+}
+);
+
+setInterval(
+update,
+1000
+);
+
+}
+
+waitFor();
+
+})();
