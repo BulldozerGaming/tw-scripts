@@ -199,19 +199,30 @@ text
 return text
 
 .replace(
-/\[b\]Falszint:\[\/b\].*?\n/gi,
+
+/^\[b\]Falszint:\[\/b\].*$/gim,
+
 ''
+
 )
 
 .replace(
-/\[b\]Védekező:\[\/b\][\s\S]*?(?=\[command\])/i,
+
+/^\[b\]Védekező:\[\/b\].*$/gim,
+
 ''
+
 )
 
 .replace(
+
 /\n{3,}/g,
+
 '\n\n'
-);
+
+)
+
+.trim();
 
 }
 
