@@ -12,6 +12,14 @@
 
 (function () {
 
+/* ============================================================================================================================================================
+   START SCRIPT INIT MODULE
+============================================================================================================================================================ */
+
+/* ===========================
+   START WINDOW CONTEXT SETUP
+=========================== */
+
     var win = typeof unsafeWindow != 'undefined'
         ? unsafeWindow
         : window;
@@ -24,7 +32,18 @@
         cache: true
     });
 
-    /* Script API */
+/* ===========================
+   END WINDOW CONTEXT SETUP
+=========================== */
+
+
+
+
+
+/* ===========================
+   START SCRIPT API REGISTER
+=========================== */
+
     var api = typeof unsafeWindow != 'undefined'
         ? unsafeWindow.ScriptAPI
         : window.ScriptAPI;
@@ -35,6 +54,18 @@
         'MKich, skatecram, Osse',
         'support-nur-im-forum@die-staemme.de'
     );
+
+/* ===========================
+   END SCRIPT API REGISTER
+=========================== */
+
+
+
+
+
+/* ===========================
+   START GET URL PARAMETER FUNCTION
+=========================== */
 
     function getUrlParameter(sParam) {
 
@@ -56,6 +87,18 @@
             }
         }
     }
+
+/* ===========================
+   END GET URL PARAMETER FUNCTION
+=========================== */
+
+
+
+
+
+/* ===========================
+   START GENERATE DSULT IMAGE FUNCTION
+=========================== */
 
     function generateDSUltimateImage(
         s,
@@ -89,6 +132,18 @@
         return data;
     }
 
+/* ===========================
+   END GENERATE DSULT IMAGE FUNCTION
+=========================== */
+
+
+
+
+
+/* ===========================
+   START GLOBAL VARIABLES
+=========================== */
+
     let worldFull = win.game_data.world;
 
     let server = win.game_data.market;
@@ -111,7 +166,31 @@ getUrlParameter('screen') ===
 return;
 }
 
-    // ===== JÁTÉKOS =====
+/* ===========================
+   END GLOBAL VARIABLES
+=========================== */
+
+/* ============================================================================================================================================================
+   END SCRIPT INIT MODULE
+============================================================================================================================================================ */
+
+
+
+
+
+
+
+
+
+
+/* ============================================================================================================================================================
+   START PLAYER / ALLY DIAGRAM MODULE
+============================================================================================================================================================ */
+
+/* ===========================
+   START SCREEN DETECTION BLOCK
+=========================== */
+
     if (getUrlParameter('screen') == 'info_player') {
 
         element =
@@ -173,11 +252,27 @@ return;
         ];
     }
 
+/* ===========================
+   END SCREEN DETECTION BLOCK
+=========================== */
+
+
+
+
+
+/* ===========================
+   START DIAGRAM GENERATION BLOCK
+=========================== */
+
     width = element.width();
 
     if (element) {
 
       let aData = "";
+
+/* ===========================
+   START DIAGRAM LOOP CALLBACK
+=========================== */
 
         diagrams.forEach(function (elmD) {
 
@@ -241,12 +336,30 @@ return;
             }
         });
 
-
+/* ===========================
+   END DIAGRAM LOOP CALLBACK
+=========================== */
 
 $('tbody', element).append(aData);
     }
 
+/* ===========================
+   END DIAGRAM GENERATION BLOCK
+=========================== */
+
+
+
+
+
+/* ===========================
+   START SELECT EVENT MODULE
+=========================== */
+
     $(function () {
+
+/* ===========================
+   START SELECT CHANGE EVENT
+=========================== */
 
         $('.DSULT-select').on('change', function () {
 
@@ -264,6 +377,18 @@ $('tbody', element).append(aData);
             );
         });
 
+/* ===========================
+   END SELECT CHANGE EVENT
+=========================== */
+
+
+
+
+
+/* ===========================
+   START INITIAL SELECT TRIGGER
+=========================== */
+
        $('.DSULT-select').each(function () {
 
     if (
@@ -275,9 +400,24 @@ $('tbody', element).append(aData);
         $(this).trigger('change');
     }
 });
+
+/* ===========================
+   END INITIAL SELECT TRIGGER
+=========================== */
+
     });
 
-// ===== CLEAN STAT UI =====
+/* ===========================
+   END SELECT EVENT MODULE
+=========================== */
+
+
+
+
+
+/* ===========================
+   START CLEAN UI STYLE BLOCK
+=========================== */
 
 $('<style>')
 .prop('type', 'text/css')
@@ -381,8 +521,17 @@ $('<style>')
 `)
 .appendTo('head');
 
+/* ===========================
+   END CLEAN UI STYLE BLOCK
+=========================== */
 
-// ===== CÍM HOZZÁADÁS =====
+
+
+
+
+/* ===========================
+   START TITLE INSERTION BLOCK
+=========================== */
 
 $('.DSULT-select').each(function (index) {
 
@@ -420,7 +569,17 @@ $('.DSULT-select').each(function (index) {
     `);
 });
 
-// ===== VILÁG DOMINANCIA =====
+/* ===========================
+   END TITLE INSERTION BLOCK
+=========================== */
+
+
+
+
+
+/* ===========================
+   START LOAD DOMINANCE STAT FUNCTION
+=========================== */
 
 async function loadDominanceStat() {
 
@@ -547,7 +706,17 @@ async function loadDominanceStat() {
     }
 }
 
-// ===== PLAYER - LEGYŐZÖTT ELLENFELEK =====
+/* ===========================
+   END LOAD DOMINANCE STAT FUNCTION
+=========================== */
+
+
+
+
+
+/* ===========================
+   START LOAD PLAYER KILL STATS FUNCTION
+=========================== */
 
 async function loadPlayerKillStats() {
 
@@ -714,11 +883,17 @@ async function loadPlayerKillStats() {
     $('#DSULT_KILL_BOX').html(html);
 }
 
+/* ===========================
+   END LOAD PLAYER KILL STATS FUNCTION
+=========================== */
 
 
 
 
-// ===== PLAYER - LEGJOBB NAPI EREDMÉNYEK =====
+
+/* ===========================
+   START LOAD DAILY STATS FUNCTION
+=========================== */
 
 async function loadDailyStats() {
 
@@ -932,7 +1107,17 @@ async function loadDailyStats() {
     $('#DSULT_DAILY_BOX').html(html);
 }
 
-// ===== KLÁN LEGYŐZÖTT ELLENFELEK =====
+/* ===========================
+   END LOAD DAILY STATS FUNCTION
+=========================== */
+
+
+
+
+
+/* ===========================
+   START LOAD ALLY KILL STATS FUNCTION
+=========================== */
 
 async function loadAllyKillStats() {
 
@@ -1078,11 +1263,17 @@ async function loadAllyKillStats() {
     $('#DSULT_ALLY_KILL_BOX').html(rows);
 }
 
+/* ===========================
+   END LOAD ALLY KILL STATS FUNCTION
+=========================== */
 
 
 
 
-// ===== KLÁN KONTINENS ADATOK =====
+
+/* ===========================
+   START LOAD ALLY CONTINENT STATS FUNCTION
+=========================== */
 
 async function loadAllyContinentStats() {
 
@@ -1217,7 +1408,17 @@ async function loadAllyContinentStats() {
     $('#DSULT_CONT_BOX').html(rows);
 }
 
-// ===== CSS =====
+/* ===========================
+   END LOAD ALLY CONTINENT STATS FUNCTION
+=========================== */
+
+
+
+
+
+/* ===========================
+   START DAILY BOX STYLE MODULE
+=========================== */
 
 $('<style>')
 .prop('type', 'text/css')
@@ -1301,8 +1502,18 @@ $('<style>')
 `)
 .appendTo('head');
 
+/* ===========================
+   END DAILY BOX STYLE MODULE
+=========================== */
 
-// ===== FUTTATÁS =====
+
+
+
+
+/* ===========================
+   START RUN BLOCK
+=========================== */
+
 loadDominanceStat();
 
 loadPlayerKillStats();
@@ -1311,9 +1522,26 @@ loadAllyKillStats();
 loadDailyStats();
 loadAllyContinentStats();
 
-// =========================================
-// LENYITHATÓ STATISZTIKA
-// =========================================
+/* ===========================
+   END RUN BLOCK
+=========================== */
+
+
+
+
+
+
+
+
+
+
+/* ============================================================================================================================================================
+   START COLLAPSIBLE STATS MODULE
+============================================================================================================================================================ */
+
+/* ===========================
+   START COLLAPSIBLE STATS INIT
+=========================== */
 
 $(function () {
 
@@ -1394,8 +1622,9 @@ $(function () {
     }
 
     // minden rejtett stat
-    const rows =
+const rows =
         $('.DSULT-hidden-stat');
+
 rows.hide();
 
     // katt
@@ -1425,5 +1654,16 @@ rows.hide();
     });
 });
 
+/* ===========================
+   END COLLAPSIBLE STATS INIT
+=========================== */
+
+/* ============================================================================================================================================================
+   END COLLAPSIBLE STATS MODULE
+============================================================================================================================================================ */
+
+/* ============================================================================================================================================================
+   END PLAYER / ALLY DIAGRAM MODULE
+============================================================================================================================================================ */
 
 })();
