@@ -7,7 +7,6 @@
 // @match        https://*.klanhaboru.hu/game.php*
 // @grant        GM_setClipboard
 // @connect      klanhaboru.hu
-// @require      https://raw.githubusercontent.com/BulldozerGaming/tw-scripts/refs/heads/main/Bulldozer%20-%20Kl%C3%A1n%20Tagok%20(admin)
 // ==/UserScript==
 
 
@@ -209,13 +208,27 @@ return text
 )
 
 .replace(
-/\[coord\]\s*\n\s*\n\[b\]Hűség:/g,
-'[/coord]\n[b]Hűség:'
+
+/\[coord\]([^\n]*)\[\/coord\]\s*\n+\s*\[b\]Hűség:/g,
+
+'[coord]$1[/coord]\n[b]Hűség:'
+
 )
 
 .replace(
+
+/(\[player\].*?\[\/player\])\s*\n+\s*(?=\[b\]Falu:\[\/b\])/g,
+
+'$1\n\n--------------------\n\n'
+
+)
+
+.replace(
+
 /\n{3,}/g,
+
 '\n\n'
+
 )
 
 .trim();
