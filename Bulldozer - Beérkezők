@@ -169,8 +169,53 @@ body.appendChild(
 textarea
 );
 
+const forum=
+document.createElement(
+'button'
+);
+
+forum.textContent=
+'Fórum';
+
+forum.className=
+'btn';
+
+forum.style.margin=
+'5px 0 5px 5px';
+
+forum.style.minWidth=
+'90px';
+
+forum.style.fontWeight=
+'600';
+
+forum.style.cursor=
+'pointer';
+
+forum.onclick=()=>{
+
+window.open(
+
+`${location.protocol}//${game_data.world}.klanhaboru.hu/game.php?village=${game_data.village.id}&screen=forum`,
+
+'_blank'
+
+);
+
+};
+
+const buttonWrap=
+document.createElement(
+'div'
+);
+
+buttonWrap.append(
+copy,
+forum
+);
+
 body.appendChild(
-copy
+buttonWrap
 );
 
 wrap.appendChild(
