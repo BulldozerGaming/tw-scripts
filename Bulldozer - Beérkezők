@@ -209,9 +209,9 @@ return text
 
 .replace(
 
-/^\[b\]Falu:\[\/b\]/gim,
+/^\[b\]Falu:\[\/b\]\s*/gim,
 
-'[img]https://dshu.innogamescdn.com/asset/84278ce6/graphic/icons/village.png[/img] [b]Falu:[/b]'
+'[img]https://dshu.innogamescdn.com/asset/84278ce6/graphic/icons/village.png[/img=16x16] '
 
 )
 
