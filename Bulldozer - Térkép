@@ -1824,6 +1824,10 @@ function toggleCoordHud(){
 
 let hud=$("#coordPickerHud");
 
+bringHudToFront(
+hud
+);
+
 if(!hud.length){
 
 $("body").append(`
@@ -2444,6 +2448,10 @@ Crytek
 
 hud=$("#coordPickerHud");
 
+bringHudToFront(
+hud
+);
+
 $("#closeCoordHud").on(
 "click",
 function(){
@@ -2702,6 +2710,10 @@ crytekTopZ
 function toggleGlobalInfo(){
 
 let hud=$("#globalInfoHud");
+
+bringHudToFront(
+hud
+);
 
 if(!hud.length){
 
@@ -5179,6 +5191,12 @@ box-sizing:border-box;
 
 hud=$("#crytekMassHud");
 
+bringHudToFront(
+hud
+);
+
+hud.show();
+
 $("#closeMassPlanner")
 .click(
 function(){
@@ -6820,6 +6838,10 @@ function toggleFrontlineHud(){
 
 let hud=$("#frontlineHud");
 
+bringHudToFront(
+hud
+);
+
 if(
 hud.length
 ){
@@ -7585,12 +7607,12 @@ $("#owFloatingInfo")
 );
 
 enableFrontlineDrag();
+
 updateFrontlineSpeedInfo();
 
-
-
-
-
+bringHudToFront(
+$("#frontlineHud")
+);
 
 loadFrontlineTribes()
 
