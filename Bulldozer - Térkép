@@ -2648,11 +2648,11 @@ hud.hide();
 
 }else{
 
+hud.show();
+
 bringHudToFront(
 hud
 );
-
-hud.show();
 
 }
 
@@ -3192,11 +3192,11 @@ hud.hide();
 
 }else{
 
+hud.show();
+
 bringHudToFront(
 hud
 );
-
-hud.show();
 
 }
 
@@ -4696,11 +4696,11 @@ hud.hide();
 
 }else{
 
+hud.show();
+
 bringHudToFront(
 hud
 );
-
-hud.show();
 
 }
 
@@ -6839,11 +6839,11 @@ hud.hide();
 
 }else{
 
+hud.show();
+
 bringHudToFront(
 hud
 );
-
-hud.show();
 
 }
 
