@@ -2284,17 +2284,51 @@ hud.id=
 hud.style.cssText=`
 
 position:fixed;
-left:140px;
-top:120px;
-width:520px;
-max-height:75vh;
+
+left:50%;
+top:50%;
+
+transform:
+translate(
+-50%,
+-50%
+);
+
+width:min(
+560px,
+92vw
+);
+
+min-width:
+320px;
+
+max-width:
+92vw;
+
+max-height:
+85vh;
+
 overflow:auto;
+
 background:#f4e4bc;
-border:2px solid #7d5a32;
-border-radius:10px;
-padding:15px;
-z-index:${Date.now()};
-box-shadow:0 4px 20px rgba(0,0,0,.35);
+
+border:
+2px solid #7d5a32;
+
+border-radius:
+10px;
+
+padding:
+15px;
+
+box-sizing:
+border-box;
+
+z-index:
+${Date.now()};
+
+box-shadow:
+0 4px 20px rgba(0,0,0,.35);
 
 `;
 
@@ -2438,15 +2472,29 @@ document.getElementById(
 'mousedown',
 e=>{
 
+const rect=
+hud.getBoundingClientRect();
+
 drag=true;
 
 offsetX=
 e.clientX-
-hud.offsetLeft;
+rect.left;
 
 offsetY=
 e.clientY-
-hud.offsetTop;
+rect.top;
+
+/* első fogásnál kivesszük a center transformot */
+
+hud.style.transform=
+'none';
+
+hud.style.left=
+rect.left+'px';
+
+hud.style.top=
+rect.top+'px';
 
 }
 );
@@ -2461,17 +2509,33 @@ if(
 return;
 }
 
+const newLeft=
+Math.max(
+0,
+Math.min(
+window.innerWidth-
+hud.offsetWidth,
+
+e.clientX-offsetX
+)
+);
+
+const newTop=
+Math.max(
+0,
+Math.min(
+window.innerHeight-
+hud.offsetHeight,
+
+e.clientY-offsetY
+)
+);
+
 hud.style.left=
-
-(e.clientX-offsetX)
-
-+'px';
+newLeft+'px';
 
 hud.style.top=
-
-(e.clientY-offsetY)
-
-+'px';
+newTop+'px';
 
 }
 );
