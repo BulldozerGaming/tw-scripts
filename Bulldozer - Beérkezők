@@ -853,12 +853,71 @@ reset.innerHTML=
 reset.style.marginLeft=
 '5px';
 
+const info=
+document.createElement(
+'button'
+);
+
+info.className=
+'btn';
+
+info.innerHTML=
+'<span style="font-size:15px;font-weight:700;line-height:1;">ⓘ</span>';
+
+info.style.display=
+'inline-flex';
+
+info.style.alignItems=
+'center';
+
+info.style.justifyContent=
+'center';
+
+info.style.marginLeft=
+'auto';
+
+info.style.width=
+'26px';
+
+info.style.height=
+'26px';
+
+info.style.padding=
+'0';
+
+info.style.lineHeight=
+'1';
+
+info.style.padding=
+'0';
+
+info.style.fontSize=
+'15px';
+
+info.style.verticalAlign=
+'middle';
+
+info.onclick=
+openIncomingInfoHud;
+
+info.style.marginLeft=
+'6px';
+
 filterButton.after(
-btn,
-gear,
+btn
+);
+
+btn.after(
+gear
+);
+
+gear.after(
 reset
 );
 
+reset.after(
+info
+);
 btn.onclick=
 async()=>{
 
@@ -2187,6 +2246,257 @@ return;
 );
 
 }
+
+
+
+
+
+
+
+
+
+function openIncomingInfoHud(){
+
+const existing=
+document.getElementById(
+'bdIncomingInfoHud'
+);
+
+if(
+existing
+){
+
+existing.style.zIndex=
+Date.now();
+
+return;
+
+}
+
+const hud=
+document.createElement(
+'div'
+);
+
+hud.id=
+'bdIncomingInfoHud';
+
+hud.style.cssText=`
+
+position:fixed;
+left:140px;
+top:120px;
+width:520px;
+max-height:75vh;
+overflow:auto;
+background:#f4e4bc;
+border:2px solid #7d5a32;
+border-radius:10px;
+padding:15px;
+z-index:${Date.now()};
+box-shadow:0 4px 20px rgba(0,0,0,.35);
+
+`;
+
+let drag=false;
+
+let offsetX=0;
+
+let offsetY=0;
+
+hud.innerHTML=`
+
+<div
+id="bdInfoHeader"
+
+style="
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:10px;
+cursor:move;
+user-select:none;
+"
+
+>
+
+<div style="
+font-size:18px;
+font-weight:700;
+">
+
+Támadások címkézése
+
+</div>
+
+<button
+class="btn"
+id="bdInfoClose"
+style="
+    padding: 3px 8px;
+    line-height: 1.5;
+"
+>
+
+✕
+
+</button>
+
+</div>
+
+<hr style="
+border:none;
+border-top:1px solid #b79b6d;
+margin:0 0 15px;
+">
+
+<div style="
+line-height:1.65;
+font-size:13px;
+">
+
+<h3>Általános</h3>
+
+• Ez a modul csak a Beérkező támadások oldalon működik.<br>
+• A script csak látható támadásokon dolgozik.<br><br>
+
+<h3>Külső Címkézés gomb</h3>
+
+• Mindig alapértelmezett címkézést használ.<br>
+• Figyelmen kívül hagyja a HUD beállításait.<br>
+• Ha nincs kijelölve semmi, minden látható támadást használ.<br><br>
+
+<h3>HUD Címkézés</h3>
+
+• Alapértelmezett módban ugyanúgy működik mint a külső gomb.<br>
+• Egyéni módban saját címkét ír minden támadásra.<br>
+• Egyéni címkézés felülírja a korábbi címkéket is.<br><br>
+
+<h3>Rendezés / Szűrés</h3>
+
+• Lehetséges vonatok = azonos célpont + idő közeli érkezések.<br>
+• Azonos származási hely = ugyanarról a koordinátáról jövő támadások.<br>
+• Oszlop rendezés a találatokon működik.<br>
+• Reset minden szűrést töröl.<br><br>
+
+<h3>Kijelölések</h3>
+
+• Ha kijelölsz támadásokat, csak azokkal dolgozik.<br>
+• Ha nincs kijelölés, automatikusan mindent használ.<br><br>
+
+<hr style="
+border:none;
+border-top:1px solid #b79b6d;
+margin:15px 0 10px;
+">
+
+<div style="
+text-align:center;
+padding-top:6px;
+font-style:italic;
+font-size:12px;
+">
+
+<span>
+
+By
+
+</span>
+
+<span style="
+color:#9f0000;
+font-weight:700;
+">
+
+Crytek
+
+</span>
+
+</div>
+
+</div>
+
+`;
+
+document.body.appendChild(
+hud
+);
+
+hud.addEventListener(
+'mousedown',
+()=>{
+
+hud.style.zIndex=
+Date.now();
+
+}
+);
+
+document.getElementById(
+'bdInfoHeader'
+).addEventListener(
+'mousedown',
+e=>{
+
+drag=true;
+
+offsetX=
+e.clientX-
+hud.offsetLeft;
+
+offsetY=
+e.clientY-
+hud.offsetTop;
+
+}
+);
+
+document.addEventListener(
+'mousemove',
+e=>{
+
+if(
+!drag
+){
+return;
+}
+
+hud.style.left=
+
+(e.clientX-offsetX)
+
++'px';
+
+hud.style.top=
+
+(e.clientY-offsetY)
+
++'px';
+
+}
+);
+
+document.addEventListener(
+'mouseup',
+()=>{
+
+drag=false;
+
+}
+);
+
+document.getElementById(
+'bdInfoClose'
+).onclick=
+()=>{
+
+hud.remove();
+
+};
+
+}
+
+
 
 
 
