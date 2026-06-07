@@ -1834,39 +1834,74 @@ style="
 
 position:fixed;
 
-left:90px;
+cursor:move;
 
-top:170px;
+left:50%;
 
-display:inline-block;
+top:50%;
 
-width:auto;
+transform:
+translate(
+-50%,
+-50%
+);
+
+width:min(
+520px,
+88vw
+);
+
+min-width:
+300px;
+
+max-width:
+92vw;
+
+max-height:
+85vh;
+
+overflow:auto;
 
 background:#e7d7af;
 
-border:2px solid #4f7f2a;
+border:
+2px solid #4f7f2a;
 
-border-radius:10px;
+border-radius:
+10px;
 
-padding:14px;
+padding:
+16px;
+
+box-sizing:border-box;
+
+box-shadow:
+0 4px 12px rgba(0,0,0,.35);
 
 z-index:999999;
 
 display:none;
 
-cursor:move;
-user-select:none;
-
-box-shadow:
-0 4px 12px rgba(0,0,0,.35);
+">
 
 ">
 
-<div style="
+
+<div
+
+id="coordHudHeader"
+
+style="
 display:flex;
 justify-content:space-between;
 align-items:center;
+
 margin-bottom:10px;
+
+cursor:move;
+
+user-select:none;
+
 ">
 
 <div style="
@@ -2476,32 +2511,57 @@ hud.on(
 function(e){
 
 if(
+
 $(e.target).closest(
-"textarea,input,label,select"
+
+'textarea,input,button,label,select,.coordCollapse'
+
 ).length
+
 ){
 
-dragging=false;
+hud.css(
+"cursor",
+"default"
+);
 
 return;
 
 }
 
+hud.css(
+"cursor",
+"move"
+);
+
 bringHudToFront(
 hud
 );
 
-e.preventDefault();
-
 dragging=true;
+
+const rect=
+hud[0].getBoundingClientRect();
 
 ox=
 e.clientX-
-hud.offset().left;
+rect.left;
 
 oy=
 e.clientY-
-hud.offset().top;
+rect.top;
+
+hud.css({
+
+transform:"none",
+
+left:
+rect.left+"px",
+
+top:
+rect.top+"px"
+
+});
 
 });
 
@@ -2524,13 +2584,47 @@ function(e){
 
 if(!dragging)return;
 
+const newLeft=
+
+Math.max(
+
+0,
+
+Math.min(
+
+window.innerWidth-
+hud.outerWidth(),
+
+e.clientX-ox
+
+)
+
+);
+
+const newTop=
+
+Math.max(
+
+0,
+
+Math.min(
+
+window.innerHeight-
+hud.outerHeight(),
+
+e.clientY-oy
+
+)
+
+);
+
 hud.css({
 
 left:
-(e.clientX-ox)+"px",
+newLeft+"px",
 
 top:
-(e.clientY-oy)+"px"
+newTop+"px"
 
 });
 
@@ -2546,7 +2640,21 @@ dragging=false;
 
 }
 
-hud.toggle();
+if(
+hud.is(":visible")
+){
+
+hud.hide();
+
+}else{
+
+bringHudToFront(
+hud
+);
+
+hud.show();
+
+}
 
 }
 
@@ -2603,18 +2711,52 @@ $("body").append(`
 
 style="
 position:fixed;
-left:70px;
-top:140px;
-width:700px;
+
+left:50%;
+top:50%;
+
+transform:
+translate(
+-50%,
+-50%
+);
+
+width:min(
+900px,
+92vw
+);
+
+min-width:
+340px;
+
+max-width:
+92vw;
+
+max-height:
+88vh;
+
+overflow:auto;
+
 background:#e7d7af;
+
 border:2px solid #4f7f2a;
+
 border-radius:10px;
+
 padding:16px;
+
+box-sizing:border-box;
+
 z-index:999999;
+
 display:none;
+
 box-shadow:0 4px 12px rgba(0,0,0,.35);
+
 cursor:move;
+
 user-select:none;
+
 ">
 
 <div style="
@@ -2952,13 +3094,28 @@ e.preventDefault();
 
 dragging=true;
 
+const rect=
+hud[0].getBoundingClientRect();
+
 ox=
 e.clientX-
-hud.offset().left;
+rect.left;
 
 oy=
 e.clientY-
-hud.offset().top;
+rect.top;
+
+hud.css({
+
+transform:"none",
+
+left:
+rect.left+"px",
+
+top:
+rect.top+"px"
+
+});
 
 });
 
@@ -2969,17 +3126,47 @@ function(e){
 if(!dragging)
 return;
 
+const newLeft=
+
+Math.max(
+
+0,
+
+Math.min(
+
+window.innerWidth-
+hud.outerWidth(),
+
+e.clientX-ox
+
+)
+
+);
+
+const newTop=
+
+Math.max(
+
+0,
+
+Math.min(
+
+window.innerHeight-
+hud.outerHeight(),
+
+e.clientY-oy
+
+)
+
+);
+
 hud.css({
 
 left:
-(
-e.clientX-ox
-)+"px",
+newLeft+"px",
 
 top:
-(
-e.clientY-oy
-)+"px"
+newTop+"px"
 
 });
 
@@ -2997,7 +3184,21 @@ dragging=false;
 
 }
 
-hud.toggle();
+if(
+hud.is(":visible")
+){
+
+hud.hide();
+
+}else{
+
+bringHudToFront(
+hud
+);
+
+hud.show();
+
+}
 
 }
 
@@ -4487,7 +4688,21 @@ if(
 hud.length
 ){
 
-hud.toggle();
+if(
+hud.is(":visible")
+){
+
+hud.hide();
+
+}else{
+
+bringHudToFront(
+hud
+);
+
+hud.show();
+
+}
 
 return;
 
@@ -4501,13 +4716,29 @@ style="
 
 position:fixed;
 
-left:120px;
+left:50%;
 
-top:80px;
+top:50%;
 
-width:auto;
+transform:
+translate(
+-50%,
+-50%
+);
 
-max-width:620px;
+width:min(
+544px,
+92vw
+);
+
+min-width:
+320px;
+
+max-width:
+92vw;
+
+max-height:
+88vh;
 
 height:auto;
 
@@ -4669,8 +4900,13 @@ id="plannerTargets"
 class="crytekInputArea"
 
 style="
-width:420px;
+width:540px;
+
+max-width:100%;
+
 height:150px;
+
+box-sizing:border-box;
 "
 
 ></textarea>
@@ -4729,8 +4965,13 @@ id="plannerSnobs"
 class="crytekInputArea"
 
 style="
-width:260px;
+width:100%;
+
+max-width:100%;
+
 height:120px;
+
+box-sizing:border-box;
 "
 
 ></textarea>
@@ -4853,9 +5094,7 @@ justify-content:space-between;
 
 align-items:center;
 
-width:540px;
-
-max-width:100%;
+width:100%;
 
 ">
 
@@ -5062,13 +5301,29 @@ e.preventDefault();
 
 dragging=true;
 
+const rect=
+hud[0]
+.getBoundingClientRect();
+
 ox=
 e.clientX-
-hud.offset().left;
+rect.left;
 
 oy=
 e.clientY-
-hud.offset().top;
+rect.top;
+
+hud.css({
+
+transform:"none",
+
+left:
+rect.left+"px",
+
+top:
+rect.top+"px"
+
+});
 
 });
 
@@ -5081,17 +5336,47 @@ function(e){
 if(!dragging)
 return;
 
+const newLeft=
+
+Math.max(
+
+0,
+
+Math.min(
+
+window.innerWidth-
+hud.outerWidth(),
+
+e.clientX-ox
+
+)
+
+);
+
+const newTop=
+
+Math.max(
+
+0,
+
+Math.min(
+
+window.innerHeight-
+hud.outerHeight(),
+
+e.clientY-oy
+
+)
+
+);
+
 hud.css({
 
 left:
-(
-e.clientX-ox
-)+"px",
+newLeft+"px",
 
 top:
-(
-e.clientY-oy
-)+"px"
+newTop+"px"
 
 });
 
@@ -6535,7 +6820,9 @@ function toggleFrontlineHud(){
 
 let hud=$("#frontlineHud");
 
-if(hud.length){
+if(
+hud.length
+){
 
 const visible=
 hud.is(":visible");
@@ -6548,14 +6835,21 @@ visible
 
 TWMap.reload();
 
-}
+hud.hide();
 
-hud.toggle();
+}else{
+
+bringHudToFront(
+hud
+);
+
+hud.show();
+
+}
 
 return;
 
 }
-
 $("body").append(`
 
 <div id="frontlineHud"
@@ -6564,19 +6858,29 @@ style="
 
 position:fixed;
 
-left:150px;
+left:50%;
 
-top:120px;
+top:50%;
+
+transform:
+translate(
+-50%,
+-50%
+);
 
 background:#e7d7af;
 
-border:2px solid #4f7f2a;
+border:
+2px solid #4f7f2a;
 
-border-radius:10px;
+border-radius:
+10px;
 
-padding:15px;
+padding:
+15px;
 
-z-index:999999;
+z-index:
+999999;
 
 box-shadow:
 0 4px 12px rgba(0,0,0,.35);
@@ -6585,10 +6889,25 @@ cursor:move;
 
 user-select:none;
 
-width:500px;
+box-sizing:border-box;
+
+width:min(
+520px,
+92vw
+);
+
+min-width:
+320px;
+
+max-width:
+92vw;
+
+max-height:
+88vh;
+
+overflow:auto;
 
 "
-
 >
 
 <div style="
@@ -7682,13 +8001,29 @@ e.preventDefault();
 
 dragging=true;
 
+const rect=
+hud[0]
+.getBoundingClientRect();
+
 ox=
 e.clientX-
-hud.offset().left;
+rect.left;
 
 oy=
 e.clientY-
-hud.offset().top;
+rect.top;
+
+hud.css({
+
+transform:"none",
+
+left:
+rect.left+"px",
+
+top:
+rect.top+"px"
+
+});
 
 });
 
@@ -7701,17 +8036,47 @@ function(e){
 if(!dragging)
 return;
 
+const newLeft=
+
+Math.max(
+
+0,
+
+Math.min(
+
+window.innerWidth-
+hud.outerWidth(),
+
+e.clientX-ox
+
+)
+
+);
+
+const newTop=
+
+Math.max(
+
+0,
+
+Math.min(
+
+window.innerHeight-
+hud.outerHeight(),
+
+e.clientY-oy
+
+)
+
+);
+
 hud.css({
 
 left:
-(
-e.clientX-ox
-)+"px",
+newLeft+"px",
 
 top:
-(
-e.clientY-oy
-)+"px"
+newTop+"px"
 
 });
 
