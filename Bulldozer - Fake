@@ -247,6 +247,19 @@ return;
 
 
 
+let crytekTopZ=999999;
+
+function bringHudToFront(el){
+
+crytekTopZ++;
+
+$(el).css(
+"z-index",
+crytekTopZ
+);
+
+}
+
 
 function toggleMode(mode){
 
@@ -757,23 +770,53 @@ padding-bottom: 5px;
 <div id="crytekSettingsHud"
 style="
 display:none;
+
 position:fixed;
-top:120px;
-left:120px;
-z-index:99999;
+
+left:50%;
+
+top:50%;
+
+transform:
+translate(
+-50%,
+-50%
+);
 
 background:#f0e1bd;
 
 border:2px solid #8f6420;
 
-box-shadow:
-
-0 4px 12px rgba(0,0,0,.25);
 border-radius:8px;
 
 padding:12px;
 
-width:420px;
+box-shadow:
+0 4px 12px rgba(0,0,0,.35);
+
+cursor:move;
+
+user-select:none;
+
+box-sizing:border-box;
+
+width:min(
+520px,
+92vw
+);
+
+min-width:
+320px;
+
+max-width:
+92vw;
+
+max-height:
+88vh;
+
+overflow:auto;
+
+z-index:999999;
 
 box-shadow:
 0 2px 8px rgba(0,0,0,.35);
@@ -1119,27 +1162,53 @@ value="Mentés"
 <div id="crytekInfoHud"
 style="
 display:none;
+
 position:fixed;
 
-top:150px;
-left:170px;
+left:50%;
 
-z-index:99999;
+top:50%;
+
+transform:
+translate(
+-50%,
+-50%
+);
 
 background:#f0e1bd;
 
 border:2px solid #8f6420;
 
-box-shadow:
-
-0 4px 12px rgba(0,0,0,.25);
-
 border-radius:8px;
 
 padding:12px;
 
-width:760px;
-max-width:90vw;
+box-shadow:
+0 4px 12px rgba(0,0,0,.35);
+
+cursor:move;
+
+user-select:none;
+
+box-sizing:border-box;
+
+width:min(
+900px,
+92vw
+);
+
+min-width:
+340px;
+
+max-width:
+92vw;
+
+max-height:
+88vh;
+
+overflow:auto;
+
+z-index:999999;
 
 ">
 
@@ -1827,9 +1896,24 @@ $(document).on(
 "#crytekSettingsBtn",
 function(){
 
-$("#crytekSettingsHud")
+const hud=
+$("#crytekSettingsHud");
 
-.toggle();
+if(
+hud.is(":visible")
+){
+
+hud.hide();
+
+}else{
+
+hud.show();
+
+bringHudToFront(
+hud
+);
+
+}
 
 }
 );
@@ -1987,9 +2071,24 @@ $(document).on(
 "#crytekInfoBtn",
 function(){
 
-$("#crytekInfoHud")
+const hud=
+$("#crytekInfoHud");
 
-.toggle();
+if(
+hud.is(":visible")
+){
+
+hud.hide();
+
+}else{
+
+hud.show();
+
+bringHudToFront(
+hud
+);
+
+}
 
 }
 );
@@ -2961,78 +3060,122 @@ $(this)
 $(document)
 
 .on(
+
 "mousedown",
-".crytekHudHeader",
+
+"#crytekSettingsHud,#crytekInfoHud",
+
 function(e){
 
 if(
 
-$(e.target)
+$(e.target).closest(
 
-.is(
-
-"textarea,input,select"
+"textarea,input,button,select,label"
 
 )
 
-)
+.length
+
+){
 
 return;
 
+}
 
+const hud=$(this);
 
-const hud=
+bringHudToFront(
+hud
+);
 
-$(this)
+const rect=
 
-.parent();
+hud[0]
 
+.getBoundingClientRect();
 
 const ox=
 
-e.pageX
-
--
-
-hud.offset().left;
-
+e.clientX-
+rect.left;
 
 const oy=
 
-e.pageY
+e.clientY-
+rect.top;
 
--
+hud.css({
 
-hud.offset().top;
+transform:"none",
 
+left:
+rect.left+"px",
 
+top:
+rect.top+"px"
+
+});
 
 $(document)
 
 .on(
 "mousemove.crytekDrag",
+
 function(ev){
+
+const newLeft=
+
+Math.max(
+
+0,
+
+Math.min(
+
+window.innerWidth-
+hud.outerWidth(),
+
+ev.clientX-ox
+
+)
+
+);
+
+const newTop=
+
+Math.max(
+
+0,
+
+Math.min(
+
+window.innerHeight-
+hud.outerHeight(),
+
+ev.clientY-oy
+
+)
+
+);
 
 hud.css({
 
 left:
-
-ev.pageX-ox,
+newLeft+"px",
 
 top:
-
-ev.pageY-oy
-
-});
+newTop+"px"
 
 });
 
-
+});
 
 $(document)
 
 .one(
+
 "mouseup",
+
 function(){
 
 $(document)
@@ -3041,11 +3184,11 @@ $(document)
 ".crytekDrag"
 );
 
-});
+}
+
+);
 
 });
-
-
 
 
 
