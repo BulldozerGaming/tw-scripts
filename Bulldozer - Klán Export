@@ -1,0 +1,1515 @@
+// ==UserScript==
+// @name         Bulldozer - Klán Export
+// @namespace    bulldozer
+// @version      2.0
+// @description  Advanced Clan Export
+// @match        https://*.klanhaboru.hu/game.php*
+// @grant        none
+// @require      https://cdn.jsdelivr.net/npm/exceljs/dist/exceljs.min.js
+// @require      https://cdn.jsdelivr.net/npm/file-saver/dist/FileSaver.min.js
+// ==/UserScript==
+
+(function(){
+
+'use strict';
+
+const params=new URLSearchParams(location.search);
+
+if(
+game_data.screen!=="ally"||
+params.get("mode")!=="members"
+)return;
+
+const UNIT_NAMES={
+
+spear:'Lándzsás',
+sword:'Kardforgató',
+axe:'Bárdos',
+archer:'Íjász',
+spy:'Kém',
+
+light:'Könnyűlovas',
+marcher:'Lovasíjász',
+heavy:'Nehézlovas',
+
+ram:'Kos',
+catapult:'Katapult',
+
+knight:'Lovag',
+snob:'Nemes'
+
+};
+
+/* ================================= */
+
+function getPlayers(){
+
+const map=new Map();
+
+$('a[href*="info_player"]').each(function(){
+
+const href=
+$(this).attr(
+'href'
+);
+
+const id=
+href.match(
+/id=(\d+)/
+)?.[1];
+
+if(!id)
+return;
+
+map.set(
+id,
+{
+
+id,
+
+name:
+$(this)
+.text()
+.trim()
+
+}
+
+);
+
+});
+
+return [
+
+...map.values()
+
+]
+
+.sort(
+(a,b)=>
+
+a.name.localeCompare(
+b.name,
+'hu'
+)
+
+);
+
+}
+
+/* ================================= */
+
+function parseUnits(table){
+
+const units=[];
+
+table.querySelectorAll(
+'th img'
+).forEach(img=>{
+
+const m=
+img.src.match(
+/unit_(.*?)\./
+);
+
+if(
+!m||
+m[1]==='militia'
+)
+return;
+
+units.push(
+m[1]
+);
+
+});
+
+return units;
+
+}
+
+function villageInfo(text){
+
+const coord=
+text.match(
+/\d+\|\d+/
+)?.[0];
+
+if(!coord)
+return null;
+
+return{
+
+coord,
+
+name:
+text.trim()
+
+};
+
+}
+
+/* ================================= */
+
+async function fetchHtml(url){
+
+return await $.get(url);
+
+}
+
+/* ================================= */
+
+async function collect(mode,players,btn){
+
+const rows=[];
+
+for(
+let i=0;
+i<players.length;
+i++
+){
+
+btn.innerText=
+
+`${mode==="members_troops"?'Csapatok':'Védekezés'} ${i+1}/${players.length}`;
+
+const p=
+players[i];
+
+const html=
+
+await fetchHtml(
+
+`${location.origin}/game.php?village=${game_data.village.id}&screen=ally&mode=${mode}&player_id=${p.id}`
+
+);
+
+const doc=
+new DOMParser()
+.parseFromString(
+html,
+'text/html'
+);
+
+const table=
+
+[...doc.querySelectorAll(
+'table.vis'
+)]
+
+.find(
+t=>
+t.innerText.includes(
+'Falu'
+)
+);
+
+if(!table)
+continue;
+
+const units=
+parseUnits(
+table
+);
+
+const trs=[
+...table.querySelectorAll(
+'tr'
+)
+];
+
+
+for(
+let x=0;
+x<trs.length;
+x++
+){
+
+const troopOffset=
+
+mode==='members_defense'
+
+?3
+
+:2;
+
+const td=
+[
+...trs[x]
+.querySelectorAll(
+'td'
+)
+];
+
+if(
+td.length<3
+)
+continue;
+
+const village=
+villageInfo(
+td[0].innerText
+);
+
+if(!village)
+continue;
+
+const row=[
+
+p.name,
+
+village.name,
+
+village.coord
+
+];
+
+if(
+mode==='members_defense'
+){
+
+row.push(
+'Faluban'
+);
+
+}
+
+units.forEach(
+(unit,index)=>{
+
+row.push(
+
+parseInt(
+
+(
+td[
+troopOffset+index
+]
+
+?.innerText
+
+||'0'
+
+)
+
+.replace(
+/\./g,
+'')
+
+)||0
+
+);
+
+});
+
+
+rows.push(
+row
+);
+
+if(
+mode!=='members_defense'
+)
+continue;
+
+const next=
+trs[x+1];
+
+if(!next)
+continue;
+
+const td2=
+[
+...next.querySelectorAll(
+'td'
+)
+];
+
+const transit=[
+
+p.name,
+
+village.name,
+
+village.coord,
+
+'Úton'
+
+];
+
+const startIndex=
+td2.length-units.length-1;
+
+units.forEach(
+(unit,index)=>{
+
+transit.push(
+
+parseInt(
+
+(
+td2[
+startIndex+index
+]
+
+?.innerText
+
+||'0'
+
+)
+
+.replace(
+/\./g,
+'')
+
+)||0
+
+);
+
+});
+
+rows.push(
+transit);
+
+x++;
+
+}
+
+}
+
+return rows;
+
+}
+
+/* ================================= */
+
+function styleCell(cell){
+
+cell.border={
+
+top:{style:'thin'},
+bottom:{style:'thin'},
+left:{style:'thin'},
+right:{style:'thin'}
+
+};
+
+cell.alignment={
+
+vertical:'middle',
+
+horizontal:'left'
+
+};
+
+if(
+cell.col===3
+){
+
+cell.alignment.horizontal=
+'center';
+
+}
+
+/* egység oszlopok */
+
+if(
+cell.col>=4
+){
+
+cell.alignment.horizontal=
+'right';
+
+}
+
+}
+
+function styleRow(row){
+
+row.eachCell(
+c=>styleCell(c)
+);
+
+}
+
+function autosize(ws){
+
+ws.columns.forEach(col=>{
+
+let maxPx=0;
+
+col.eachCell(
+{includeEmpty:true},
+cell=>{
+
+const text=
+
+String(
+
+cell.text ||
+
+cell.value ||
+
+''
+
+);
+
+let px=0;
+
+for(
+const ch of text
+){
+
+if(
+/[WwMmÁÉŐŰÜÖÓÍ]/.test(ch)
+){
+
+px+=1.45;
+
+}else if(
+/[Iil1]/.test(ch)
+){
+
+px+=0.55;
+
+}else{
+
+px+=1;
+
+}
+
+}
+
+if(
+px>maxPx
+){
+
+maxPx=px;
+
+}
+
+});
+
+col.width=
+
+Math.min(
+
+40,
+
+Math.max(
+
+maxPx+2,
+
+5
+
+)
+
+);
+
+});
+
+}
+/* ================================= */
+
+function fillSheet(
+ws,
+headers,
+data
+){
+
+ws.views=[{
+state:'frozen',
+ySplit:1
+}];
+
+ws.properties.outlineProperties={
+summaryBelow:false
+};
+
+const header=
+ws.addRow(headers);
+
+header.font={
+bold:true,
+color:{argb:'FFFFFF'}
+};
+
+header.fill={
+type:'pattern',
+pattern:'solid',
+fgColor:{argb:'8B5A2B'}
+};
+
+header.eachCell(c=>{
+
+c.alignment={
+horizontal:'center',
+vertical:'middle'
+};
+
+c.border={
+top:{style:'thin'},
+bottom:{style:'thin'},
+left:{style:'thin'},
+right:{style:'thin'}
+};
+
+});
+
+let current='';
+let sums;
+
+let playerDataStart=null;
+let playerDataEnd=null;
+
+function closePlayerBlock(){
+
+if(
+playerDataStart===null ||
+playerDataEnd===null ||
+playerDataEnd<playerDataStart
+)return;
+
+ws.mergeCells(
+
+playerDataStart,
+1,
+
+playerDataEnd,
+1
+
+);
+
+const c=
+
+ws.getCell(
+playerDataStart,
+1
+);
+
+c.alignment={
+
+horizontal:'center',
+vertical:'middle'
+
+};
+
+}
+
+function addSummary(){
+
+if(!sums)return;
+
+const rowData=
+new Array(headers.length)
+.fill('');
+
+rowData[0]=current;
+
+rowData[1]='Összesen';
+
+const start=
+
+headers.includes(
+'Típus'
+)
+
+?4
+
+:3;
+
+for(
+let i=start;
+i<sums.length;
+i++
+){
+
+rowData[i]=sums[i];
+
+}
+
+const row=
+ws.addRow(
+rowData
+);
+
+row.hidden=true;
+row.outlineLevel=1;
+
+row.fill={
+type:'pattern',
+pattern:'solid',
+fgColor:{
+argb:'C0504D'
+}
+};
+
+row.font={
+bold:true,
+color:{
+argb:'FFFFFF'
+}
+};
+
+ws.mergeCells(
+
+row.number,
+2,
+
+row.number,
+3
+
+);
+
+row.getCell(
+2
+).alignment={
+
+horizontal:'center',
+vertical:'middle'
+
+};
+
+styleRow(
+row
+);
+
+}
+
+for(
+let idx=0;
+idx<data.length;
+idx++
+){
+
+const r=data[idx];
+
+if(
+current!==r[0]
+){
+
+closePlayerBlock();
+
+addSummary();
+
+current=r[0];
+
+const playerRow=
+
+ws.addRow([
+current
+]);
+
+playerRow.font={
+bold:true
+};
+
+playerRow.fill={
+type:'pattern',
+pattern:'solid',
+fgColor:{
+argb:'DCC28A'
+}
+};
+
+playerDataStart=
+playerRow.number+1;
+
+playerDataEnd=
+null;
+
+sums=
+new Array(
+headers.length
+).fill(0);
+
+}
+
+const row=
+ws.addRow(
+r
+);
+
+row.hidden=true;
+
+row.outlineLevel=1;
+
+styleRow(
+row
+);
+
+/* player merge content */
+
+if(
+playerDataEnd===null
+){
+
+row.getCell(1).value=r[0];
+
+}else{
+
+row.getCell(1).value='';
+
+}
+
+playerDataEnd=
+row.number;
+
+/* defense merge */
+
+if(
+headers.includes(
+'Típus'
+)
+){
+
+const prev=
+data[idx-1];
+
+const sameVillage=
+
+prev &&
+
+prev[0]===r[0] &&
+
+prev[1]===r[1] &&
+
+prev[2]===r[2];
+
+if(
+sameVillage
+){
+
+row.getCell(2).value='';
+row.getCell(3).value='';
+
+ws.mergeCells(
+
+row.number-1,
+2,
+
+row.number,
+2
+
+);
+
+ws.mergeCells(
+
+row.number-1,
+3,
+
+row.number,
+3
+
+);
+
+}
+
+}
+
+const start=
+
+headers.includes(
+'Típus'
+)
+
+?4
+
+:3;
+
+for(
+let i=start;
+i<r.length;
+i++
+){
+
+sums[i]+=r[i];
+
+}
+
+}
+
+closePlayerBlock();
+
+addSummary();
+
+ws.eachRow(row=>{
+
+row.eachCell(cell=>{
+
+if(
+typeof cell.value===
+'number'
+){
+
+cell.numFmt=
+'# ##0';
+
+}
+
+});
+
+});
+
+autosize(
+ws
+);
+
+}
+
+/* ================================= */
+
+async function exportExcel(
+troops,
+defense
+){
+
+const wb=
+new ExcelJS.Workbook();
+
+const troopSheet=
+
+wb.addWorksheet(
+'Csapatok',
+{
+properties:{
+outlineLevelRow:1
+}
+}
+);
+
+const defenseSheet=
+
+wb.addWorksheet(
+'Védekezés',
+{
+properties:{
+outlineLevelRow:1
+}
+}
+);
+
+fillSheet(
+
+troopSheet,
+
+[
+'Játékos',
+'Falu',
+'Koordináta',
+
+...Object.values(
+UNIT_NAMES
+)
+
+],
+
+troops
+
+);
+
+fillSheet(
+
+defenseSheet,
+
+[
+'Játékos',
+'Falu',
+'Koordináta',
+'Típus',
+
+...Object.values(
+UNIT_NAMES
+)
+
+],
+
+defense
+
+);
+
+const buffer=
+
+await wb.xlsx
+.writeBuffer();
+
+saveAs(
+
+new Blob(
+[buffer]
+),
+
+'Bulldozer_Klan_Export.xlsx'
+
+);
+
+}
+
+
+
+
+
+
+
+
+
+
+function openInfoHud(){
+
+const existing=
+document.getElementById(
+'bdInfoHud'
+);
+
+if(existing){
+
+existing.style.zIndex=
+999999;
+
+return;
+
+}
+
+const hud=
+document.createElement(
+'div'
+);
+
+hud.id=
+'bdInfoHud';
+
+hud.innerHTML=`
+
+<div id="bdInfoHeader">
+
+Információk
+
+<span id="bdInfoClose">
+
+✕
+
+</span>
+
+</div>
+
+<div id="bdInfoBody">
+
+<h3 style="
+margin-top:0;
+margin-bottom:12px;
+">
+
+Bulldozer - Klán Tagok
+
+</h3>
+
+<b>Támadók</b>
+
+<br><br>
+
+A klántagok falvainak támadóerejét vizsgálja.
+
+Segít gyorsan megtalálni:
+
+<br><br>
+
+• nagy támadó seregeket
+
+• nukékat
+
+• off falvakat
+
+• kiemelkedő támadó játékosokat
+
+<br><br>
+
+<b>Védők</b>
+
+<br><br>
+
+A klántagok falvainak védelmi seregeit vizsgálja.
+
+Segít áttekinteni:
+
+<br><br>
+
+• hol van jelentős védelem
+
+• mely játékosoknál van sok védekező egység
+
+• védelmi eloszlást
+
+<br><br>
+
+<b>Támogatások</b>
+
+<br><br>
+
+Megmutatja az egymás között küldött támogatásokat.
+
+Használható:
+
+<br><br>
+
+• támogatások keresésére
+
+• nagyobb stackek megtalálására
+
+• védelem mozgatásának követésére
+
+<br><br>
+
+<b>Beérkező Támadások</b>
+
+<br><br>
+
+A klántagok falvaira érkező támadások áttekintése.
+
+Segít:
+
+<br><br>
+
+• veszélyeztetett falvak keresésében
+
+• nagyobb támadások felismerésében
+
+• gyors reagálásban
+
+<br><br>
+
+<h3>
+
+Bulldozer - Klán Export
+
+</h3>
+
+<b>Export</b>
+
+<br><br>
+
+Excel export készítése a klántagok adataiból.
+
+Az export automatikusan létrehoz egy Excel fájlt, amely külön munkalapokra bontva tartalmazza:
+
+<br><br>
+
+• Csapatok
+
+• Védekezések
+
+<br><br>
+
+Az export célja:
+
+<br><br>
+
+• egyszerűbb elemzés
+
+• gyors kereshetőség
+
+• klánadatok tárolása
+
+• külső feldolgozás Excelben
+
+</div>
+
+<div id="bdInfoFooter">
+
+<hr style="
+margin:0;
+border:none;
+border-top:2px solid #8a6331;
+box-shadow:0 -1px 0 rgba(255,255,255,.25);
+">
+
+<div style="
+padding:10px;
+
+font-size:12px;
+
+font-style:italic;
+
+text-align:center;
+">
+
+<span style="
+font-weight:bold;
+color:#555;
+">
+
+By
+
+</span>
+
+<span style="
+font-weight:bold;
+color:#8b0000;
+">
+
+Crytek
+
+</span>
+
+</div>
+
+</div>
+
+`;
+
+document.body.appendChild(
+hud
+);
+
+hud.dataset.centered='1';
+
+hud.style.cssText=`
+
+position:fixed;
+
+top:50%;
+
+left:50%;
+
+transform:translate(-50%,-50%);
+
+width:520px;
+
+max-width:90vw;
+
+height:650px;
+
+background:#f4e4bc;
+
+border:2px solid #6f4b1f;
+
+box-shadow:
+0 0 25px rgba(0,0,0,.45);
+
+z-index:999999;
+
+font-size:13px;
+
+display:flex;
+
+flex-direction:column;
+
+overflow:hidden;
+
+`;
+
+document.getElementById(
+'bdInfoHeader'
+).style.cssText=`
+
+cursor:move;
+
+background:#8B5A2B;
+
+color:white;
+
+padding:8px;
+
+font-weight:bold;
+
+display:flex;
+
+justify-content:space-between;
+
+user-select:none;
+
+`;
+
+document.getElementById(
+'bdInfoBody'
+).style.cssText=`
+
+padding:12px;
+
+overflow-y:auto;
+
+overflow-x:hidden;
+
+flex:1;
+
+min-height:0;
+
+`;
+
+document.getElementById(
+'bdInfoFooter'
+).style.cssText=`
+
+flex-shrink:0;
+
+background:#f4e4bc;
+
+`;
+
+const closeBtn=
+document.getElementById(
+'bdInfoClose'
+);
+
+closeBtn.style.cursor=
+'pointer';
+
+closeBtn.onclick=()=>{
+
+hud.remove();
+
+};
+
+makeDraggable(
+hud,
+document.getElementById(
+'bdInfoHeader'
+)
+);
+
+hud.addEventListener(
+'mousedown',
+()=>{
+
+hud.style.zIndex=
+999999;
+
+}
+);
+
+}
+
+function makeDraggable(
+el,
+handle
+){
+
+let offsetX=0;
+let offsetY=0;
+
+handle.onmousedown=start;
+
+function start(e){
+
+e.preventDefault();
+
+const rect=
+el.getBoundingClientRect();
+
+if(
+el.dataset.centered!=='0'
+){
+
+el.style.transform='none';
+
+el.style.left=
+rect.left+'px';
+
+el.style.top=
+rect.top+'px';
+
+el.dataset.centered='0';
+
+}
+
+offsetX=
+e.clientX-rect.left;
+
+offsetY=
+e.clientY-rect.top;
+
+document.onmousemove=
+move;
+
+document.onmouseup=
+stop;
+
+}
+
+function move(e){
+
+const rect=
+el.getBoundingClientRect();
+
+let left=
+e.clientX-offsetX;
+
+let top=
+e.clientY-offsetY;
+
+left=Math.max(
+0,
+Math.min(
+window.innerWidth-rect.width,
+left
+)
+);
+
+top=Math.max(
+0,
+Math.min(
+window.innerHeight-rect.height,
+top
+)
+);
+
+el.style.left=
+left+'px';
+
+el.style.top=
+top+'px';
+
+}
+
+function stop(){
+
+document.onmousemove=
+null;
+
+document.onmouseup=
+null;
+
+}
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ================================= */
+
+async function start(){
+
+const btn=
+document.getElementById(
+'bdExport'
+);
+
+const old=
+btn.innerText;
+
+btn.style.pointerEvents=
+'none';
+
+const players=
+getPlayers();
+
+const troops=
+await collect(
+'members_troops',
+players,
+btn
+);
+
+const defense=
+await collect(
+'members_defense',
+players,
+btn
+);
+
+btn.innerText=
+'Excel';
+
+await exportExcel(
+troops,
+defense
+);
+
+btn.innerText=
+old;
+
+btn.style.pointerEvents=
+'';
+
+}
+
+function initButtons(){
+
+const row=
+
+document.querySelector(
+'#ally_content table.vis.modemenu tr'
+);
+
+if(
+!row ||
+document.getElementById(
+'bdExport'
+)
+)
+return;
+
+row.insertAdjacentHTML(
+
+'beforeend',
+
+`
+<td>
+<a href="#" id="bdExport">
+<b>Export</b>
+</a>
+</td>
+
+<td>
+<a href="#" id="bdInfo">
+<b>Infó</b>
+</a>
+</td>
+`
+
+);
+
+$('#bdExport').on(
+'click',
+e=>{
+
+e.preventDefault();
+
+start();
+
+}
+);
+
+$('#bdInfo').on(
+'click',
+e=>{
+
+e.preventDefault();
+
+openInfoHud();
+
+}
+);
+
+}
+
+new MutationObserver(
+initButtons
+).observe(
+document.body,
+{
+childList:true,
+subtree:true
+}
+);
+
+initButtons();
+
+
+
+
+
+
+
+
+})();
