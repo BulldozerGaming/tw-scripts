@@ -2,7 +2,7 @@
 // @name         Bulldozer - Klán Export
 // @namespace    bulldozer
 // @version      2.0
-// @description  Advanced Clan Export
+// @description  Klán csapatok és védekezés export
 // @match        https://*.klanhaboru.hu/game.php*
 // @grant        none
 // @require      https://cdn.jsdelivr.net/npm/exceljs/dist/exceljs.min.js
