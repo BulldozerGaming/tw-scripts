@@ -2,8 +2,15 @@
 'use strict';
 
 if (!location.href.includes('screen=am_farm')) {
-alert('Csak Farmkezelő oldalon használható!');
-return;
+    alert('Csak Farmkezelő oldalon használható!');
+    return;
+}
+
+if (
+    typeof window.FarmGod === 'undefined'
+) {
+    alert('Futtasd először a FarmGod scriptet!');
+    return;
 }
 
 if (document.getElementById('crytekEnterButton')) {
