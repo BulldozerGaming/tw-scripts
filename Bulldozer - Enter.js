@@ -45,7 +45,7 @@ btn.addEventListener('mousedown', function () {
 
 sendFarmGod();
 
-timer = setInterval(sendFarmGod, 100);
+timer = setInterval(sendFarmGod, 250);
 
 });
 
