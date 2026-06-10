@@ -41,19 +41,33 @@ if (farmBtn) {
 
 }
 
-btn.addEventListener('mousedown', function () {
+function startHold(e) {
+
+e.preventDefault();
 
 sendFarmGod();
 
+clearInterval(timer);
+
 timer = setInterval(sendFarmGod, 250);
 
-});
+}
 
-document.addEventListener('mouseup', function () {
+function stopHold() {
 
 clearInterval(timer);
+
 timer = null;
 
-});
+}
+
+btn.addEventListener('mousedown', startHold);
+btn.addEventListener('touchstart', startHold, { passive: false });
+
+document.addEventListener('mouseup', stopHold);
+document.addEventListener('mouseleave', stopHold);
+
+document.addEventListener('touchend', stopHold);
+document.addEventListener('touchcancel', stopHold);
 
 })();
