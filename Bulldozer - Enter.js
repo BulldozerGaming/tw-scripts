@@ -2,15 +2,13 @@
 'use strict';
 
 if (!location.href.includes('screen=am_farm')) {
-    alert('Csak Farmkezelő oldalon használható!');
-    return;
+UI.ErrorMessage('Csak Farmkezelő oldalon használható!');
+return;
 }
 
-if (
-    typeof window.FarmGod === 'undefined'
-) {
-    alert('Futtasd először a FarmGod scriptet!');
-    return;
+if (typeof window.FarmGod === 'undefined') {
+UI.ErrorMessage('Futtasd először a FarmGod scriptet!');
+return;
 }
 
 if (document.getElementById('crytekEnterButton')) {
@@ -38,13 +36,28 @@ saveBtn.parentNode.appendChild(btn);
 
 let timer = null;
 
+function stopHold() {
+
+clearInterval(timer);
+
+timer = null;
+
+}
+
 function sendFarmGod() {
 
 const farmBtn = document.querySelector('.farmGod_icon');
 
-if (farmBtn) {
-    farmBtn.click();
+if (!farmBtn) {
+
+    stopHold();
+
+    UI.ErrorMessage('Futtasd először a FarmGod scriptet!');
+
+    return;
 }
+
+farmBtn.click();
 
 }
 
@@ -57,14 +70,6 @@ sendFarmGod();
 clearInterval(timer);
 
 timer = setInterval(sendFarmGod, 250);
-
-}
-
-function stopHold() {
-
-clearInterval(timer);
-
-timer = null;
 
 }
 
