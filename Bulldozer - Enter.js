@@ -2,6 +2,7 @@
 'use strict';
 
 if (!location.href.includes('screen=am_farm')) {
+    alert('Csak Farmkezelő oldalon használható!');
     return;
 }
 
