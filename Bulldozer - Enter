@@ -1,39 +1,32 @@
 (function () {
 'use strict';
 
-if (
-    location.search.indexOf('screen=am_farm') === -1
-) {
+if (!location.href.includes('screen=am_farm')) {
     return;
 }
 
-if (
-    document.getElementById('crytekEnterButton')
-) {
+if (document.getElementById('crytekEnterButton')) {
     return;
 }
 
 const saveBtn =
-    document.querySelector(
-        'input[type="submit"]'
-    );
+    [...document.querySelectorAll('input.btn')]
+    .find(x => x.value === 'Mentés');
 
-if (!saveBtn) return;
+if (!saveBtn) {
+    console.log('Mentés gomb nem található');
+    return;
+}
 
-const btn =
-    document.createElement('input');
+const btn = document.createElement('input');
 
 btn.type = 'button';
 btn.value = '⏎ Enter';
-
 btn.id = 'crytekEnterButton';
 btn.className = 'btn';
 
+btn.style.display = 'block';
 btn.style.marginTop = '5px';
-
-saveBtn.parentNode.appendChild(
-    document.createElement('br')
-);
 
 saveBtn.parentNode.appendChild(btn);
 
@@ -41,57 +34,44 @@ let timer = null;
 
 function sendEnter() {
 
-    document.dispatchEvent(
-        new KeyboardEvent(
-            'keydown',
-            {
-                key: 'Enter',
-                code: 'Enter',
-                keyCode: 13,
-                which: 13,
-                bubbles: true
-            }
-        )
+    const target =
+        document.activeElement || document;
+
+    target.dispatchEvent(
+        new KeyboardEvent('keydown', {
+            key: 'Enter',
+            code: 'Enter',
+            keyCode: 13,
+            which: 13,
+            bubbles: true
+        })
     );
 
-    document.dispatchEvent(
-        new KeyboardEvent(
-            'keyup',
-            {
-                key: 'Enter',
-                code: 'Enter',
-                keyCode: 13,
-                which: 13,
-                bubbles: true
-            }
-        )
+    target.dispatchEvent(
+        new KeyboardEvent('keyup', {
+            key: 'Enter',
+            code: 'Enter',
+            keyCode: 13,
+            which: 13,
+            bubbles: true
+        })
     );
 }
 
-btn.addEventListener(
-    'mousedown',
-    function(){
+btn.addEventListener('mousedown', () => {
 
-        sendEnter();
+    sendEnter();
 
-        timer =
-        setInterval(
-            sendEnter,
-            100
-        );
+    timer = setInterval(
+        sendEnter,
+        100
+    );
+});
 
-    }
-);
+document.addEventListener('mouseup', () => {
 
-document.addEventListener(
-    'mouseup',
-    function(){
-
-        clearInterval(timer);
-
-        timer = null;
-
-    }
-);
+    clearInterval(timer);
+    timer = null;
+});
 
 })();
