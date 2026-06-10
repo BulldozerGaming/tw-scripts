@@ -2,18 +2,18 @@
 'use strict';
 
 if (!location.href.includes('screen=am_farm')) {
-    alert('Csak Farmkezelő oldalon használható!'); 
-    return;
+alert('Csak Farmkezelő oldalon használható!');
+return;
 }
 
 if (document.getElementById('crytekEnterButton')) {
-    return;
+return;
 }
 
 const saveBtn = document.querySelector('input[type="submit"]');
 
 if (!saveBtn) {
-    return;
+return;
 }
 
 const btn = document.createElement('input');
@@ -31,38 +31,29 @@ saveBtn.parentNode.appendChild(btn);
 
 let timer = null;
 
-function sendEnter() {
+function sendFarmGod() {
 
-    const target = document.activeElement || document;
+const farmBtn = document.querySelector('.farmGod_icon');
 
-    target.dispatchEvent(new KeyboardEvent('keydown', {
-        key: 'Enter',
-        code: 'Enter',
-        keyCode: 13,
-        which: 13,
-        bubbles: true
-    }));
+if (farmBtn) {
+    farmBtn.click();
+}
 
-    target.dispatchEvent(new KeyboardEvent('keyup', {
-        key: 'Enter',
-        code: 'Enter',
-        keyCode: 13,
-        which: 13,
-        bubbles: true
-    }));
 }
 
 btn.addEventListener('mousedown', function () {
 
-    sendEnter();
+sendFarmGod();
 
-    timer = setInterval(sendEnter, 100);
+timer = setInterval(sendFarmGod, 100);
+
 });
 
 document.addEventListener('mouseup', function () {
 
-    clearInterval(timer);
-    timer = null;
+clearInterval(timer);
+timer = null;
+
 });
 
 })();
