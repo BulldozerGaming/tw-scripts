@@ -28,6 +28,9 @@ btn.value = 'Enter';
 btn.id = 'crytekEnterButton';
 btn.className = 'btn';
 btn.style.marginTop = '10px';
+btn.style.width = '140px';
+btn.style.height = '50px';
+btn.style.fontSize = '20px';
 
 const br = document.createElement('br');
 
