@@ -2,12 +2,12 @@
 'use strict';
 
 if (!location.href.includes('screen=am_farm')) {
-UI.ErrorMessage('Csak Farmkezelő oldalon használható!');
+UI.ErrorMessage('Csak Farmkezelő oldalon használható!', 5000);
 return;
 }
 
 if (typeof window.FarmGod === 'undefined') {
-UI.ErrorMessage('Futtasd először a FarmGod scriptet!');
+UI.ErrorMessage('Futtasd először a FarmGod scriptet!', 5000);
 return;
 }
 
@@ -52,7 +52,7 @@ if (!farmBtn) {
 
     stopHold();
 
-    UI.ErrorMessage('Futtasd először a FarmGod scriptet!');
+    UI.ErrorMessage('Futtasd először a FarmGod scriptet!', 5000);
 
     return;
 }
