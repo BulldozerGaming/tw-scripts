@@ -2,25 +2,26 @@
 'use strict';
 
 if (!location.href.includes('screen=am_farm')) {
-    UI.ErrorMessage('Csak Farmkezelő oldalon használható!', 5000);
-    return;
+UI.ErrorMessage('Csak Farmkezelő oldalon használható!', 5000);
+return;
 }
 
 if (document.getElementById('crytekEnterButton')) {
-    return;
+return;
 }
 
 const farmGodContent =
-    document.querySelector('.farmGodContent');
+document.querySelector('.farmGodContent');
 
 if (!farmGodContent) {
 
-    UI.ErrorMessage(
-        'Futtasd először a FarmGod scriptet!',
-        5000
-    );
+UI.ErrorMessage(
+    'Futtasd először a FarmGod scriptet!',
+    5000
+);
 
-    return;
+return;
+
 }
 
 const btn = document.createElement('input');
@@ -34,15 +35,17 @@ btn.style.width = '70px';
 btn.style.fontSize = '16px';
 
 const container =
-    document.createElement('div');
+document.createElement('div');
 
 container.style.textAlign = 'right';
 container.style.margin = '5px 0';
 
 const isMobileView =
-    !!document.getElementById(
-        'mobileContent'
-    );
+!!document.getElementById(
+'mobileContent'
+);
+
+function updateButtonStyle() {
 
 if (isMobileView) {
 
@@ -69,25 +72,33 @@ if (isMobileView) {
 
 }
 
-    
+}
+
+updateButtonStyle();
+
+window.addEventListener(
+'resize',
+updateButtonStyle
+);
+
 container.appendChild(btn);
 
 /* FarmGod blokk első táblája */
 const farmTable =
-    farmGodContent.querySelector('table.vis');
+farmGodContent.querySelector('table.vis');
 
 if (farmTable) {
 
-    farmTable.insertAdjacentElement(
-        'beforebegin',
-        container
-    );
+farmTable.insertAdjacentElement(
+    'beforebegin',
+    container
+);
 
 } else {
 
-    farmGodContent.appendChild(
-        container
-    );
+farmGodContent.appendChild(
+    container
+);
 
 }
 
@@ -97,94 +108,94 @@ let finishedMessageShown = false;
 
 function stopHold() {
 
-    clearInterval(timer);
-    timer = null;
+clearInterval(timer);
+timer = null;
 
 }
 
 function sendFarmGod() {
 
-    const farmBtn =
-        document.querySelector('.farmGod_icon');
+const farmBtn =
+    document.querySelector('.farmGod_icon');
 
-    if (!farmBtn) {
+if (!farmBtn) {
 
-        stopHold();
+    stopHold();
 
-        if (
-            farmGodUsed &&
-            !finishedMessageShown
-        ) {
+    if (
+        farmGodUsed &&
+        !finishedMessageShown
+    ) {
 
-            finishedMessageShown = true;
+        finishedMessageShown = true;
 
-            UI.SuccessMessage(
-                'Minden farm sikeresen kiküldve!',
-                5000
-            );
+        UI.SuccessMessage(
+            'Minden farm sikeresen kiküldve!',
+            5000
+        );
 
-        } else if (!farmGodUsed) {
+    } else if (!farmGodUsed) {
 
-            UI.ErrorMessage(
-                'Futtasd először a FarmGod scriptet!',
-                5000
-            );
+        UI.ErrorMessage(
+            'Futtasd először a FarmGod scriptet!',
+            5000
+        );
 
-        }
-
-        return;
     }
 
-    farmGodUsed = true;
+    return;
+}
 
-    farmBtn.click();
+farmGodUsed = true;
+
+farmBtn.click();
 
 }
 
 function startHold(e) {
 
-    e.preventDefault();
+e.preventDefault();
 
-    sendFarmGod();
+sendFarmGod();
 
-    clearInterval(timer);
+clearInterval(timer);
 
-    timer = setInterval(
-        sendFarmGod,
-        250
-    );
+timer = setInterval(
+    sendFarmGod,
+    250
+);
 
 }
 
 btn.addEventListener(
-    'mousedown',
-    startHold
+'mousedown',
+startHold
 );
 
 btn.addEventListener(
-    'touchstart',
-    startHold,
-    { passive: false }
+'touchstart',
+startHold,
+{ passive: false }
 );
 
 document.addEventListener(
-    'mouseup',
-    stopHold
+'mouseup',
+stopHold
 );
 
 document.addEventListener(
-    'mouseleave',
-    stopHold
+'mouseleave',
+stopHold
 );
 
 document.addEventListener(
-    'touchend',
-    stopHold
+'touchend',
+stopHold
 );
 
 document.addEventListener(
-    'touchcancel',
-    stopHold
+'touchcancel',
+stopHold
 );
 
 })();
