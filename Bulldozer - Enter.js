@@ -15,12 +15,6 @@ if (document.getElementById('crytekEnterButton')) {
 return;
 }
 
-const saveBtn = document.querySelector('input[type="submit"]');
-
-if (!saveBtn) {
-return;
-}
-
 const btn = document.createElement('input');
 
 btn.type = 'button';
@@ -32,10 +26,39 @@ btn.style.width = '100%';
 btn.style.height = '50px';
 btn.style.fontSize = '20px';
 
-const br = document.createElement('br');
+const progressBar =
+document.getElementById(
+'FarmGodProgressbar'
+);
 
-saveBtn.parentNode.appendChild(br);
-saveBtn.parentNode.appendChild(btn);
+if (!progressBar) {
+
+UI.ErrorMessage(
+'Futtasd először a FarmGod scriptet!',
+5000
+);
+
+return;
+
+}
+
+btn.style.width = '70px';
+btn.style.height = '45px';
+btn.style.fontSize = '16px';
+btn.style.marginTop = '0';
+
+const container =
+document.createElement('div');
+
+container.style.textAlign = 'right';
+container.style.margin = '5px 0';
+
+container.appendChild(btn);
+
+progressBar.insertAdjacentElement(
+'afterend',
+container
+);
 
 let timer = null;
 
