@@ -193,9 +193,4 @@ document.addEventListener(
 stopHold
 );
 
-document.addEventListener(
-'touchcancel',
-stopHold
-);
-
 })();
