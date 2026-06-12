@@ -50,12 +50,12 @@ if (isMobileView) {
 
     if (window.innerWidth >= 700) {
 
-        container.style.marginRight =
+        btn.style.marginRight =
             '3.5%';
 
     } else {
 
-        container.style.marginRight =
+        btn.style.marginRight =
             '1.5%';
 
     }
@@ -64,11 +64,12 @@ if (isMobileView) {
 
     btn.style.height = '30px';
 
-    container.style.marginRight =
+    btn.style.marginRight =
         '28px';
 
 }
 
+    
 container.appendChild(btn);
 
 /* FarmGod blokk első táblája */
