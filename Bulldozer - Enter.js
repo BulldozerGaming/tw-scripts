@@ -6,11 +6,6 @@ UI.ErrorMessage('Csak Farmkezelő oldalon használható!', 5000);
 return;
 }
 
-if (typeof window.FarmGod === 'undefined') {
-UI.ErrorMessage('Futtasd először a FarmGod scriptet!', 5000);
-return;
-}
-
 if (document.getElementById('crytekEnterButton')) {
 return;
 }
