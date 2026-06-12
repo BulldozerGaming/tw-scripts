@@ -31,7 +31,6 @@ btn.id = 'crytekEnterButton';
 btn.className = 'btn';
 
 btn.style.width = '70px';
-btn.style.height = '45px';
 btn.style.fontSize = '16px';
 
 const container =
@@ -39,6 +38,36 @@ const container =
 
 container.style.textAlign = 'right';
 container.style.margin = '5px 0';
+
+const isMobileView =
+    !!document.getElementById(
+        'mobileContent'
+    );
+
+if (isMobileView) {
+
+    btn.style.height = '45px';
+
+    if (window.innerWidth >= 700) {
+
+        container.style.marginRight =
+            '3.5%';
+
+    } else {
+
+        container.style.marginRight =
+            '1.5%';
+
+    }
+
+} else {
+
+    btn.style.height = '30px';
+
+    container.style.marginRight =
+        '32px';
+
+}
 
 container.appendChild(btn);
 
