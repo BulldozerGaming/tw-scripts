@@ -39,6 +39,10 @@ saveBtn.parentNode.appendChild(btn);
 
 let timer = null;
 
+let farmGodUsed = false;
+
+let finishedMessageShown = false;
+
 function stopHold() {
 
 clearInterval(timer);
@@ -55,14 +59,33 @@ if (!farmBtn) {
 
     stopHold();
 
-    UI.ErrorMessage('Futtasd először a FarmGod scriptet!', 5000);
+if (farmGodUsed && !finishedMessageShown) {
+
+finishedMessageShown = true;
+
+UI.SuccessMessage(
+    'Minden farm sikeresen kiküldve!',
+    5000
+);
+
+} else if (!farmGodUsed) {
+
+        UI.ErrorMessage(
+            'Futtasd először a FarmGod scriptet!',
+            5000
+        );
+
+    }
 
     return;
 }
 
+farmGodUsed = true;
+
 farmBtn.click();
 
 }
+    
 
 function startHold(e) {
 
