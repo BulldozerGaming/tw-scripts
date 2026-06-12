@@ -65,7 +65,7 @@ if (isMobileView) {
     btn.style.height = '30px';
 
     container.style.marginRight =
-        '32px';
+        '28px';
 
 }
 
