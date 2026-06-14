@@ -494,23 +494,45 @@ function scheduleAttack() {
         unsafeWindow.Timing.getCurrentServerTime();
 
     if (delay <= 0) {
+
+        triggerAttack();
+
+        localStorage.removeItem(STORAGE_KEY);
+
+        attackTimeStr = '';
+        attackTimestampMs = 0;
+
         return;
     }
 
-attackTimeout = setTimeout(() => {
+    if (delay > 1000) {
 
+        attackTimeout = setTimeout(
+            scheduleAttack,
+            Math.min(delay - 500, 1000)
+        );
 
-triggerAttack();
+        return;
+    }
 
-    localStorage.removeItem(STORAGE_KEY);
+    attackTimeout = setTimeout(() => {
 
-    attackTimeStr = '';
-    attackTimestampMs = 0;
+        triggerAttack();
 
+        localStorage.removeItem(STORAGE_KEY);
 
+        attackTimeStr = '';
+        attackTimestampMs = 0;
 
-}, delay);
+    }, delay);
 }
+
+
+
+
+
+
+
 
 
 
@@ -541,15 +563,6 @@ if (stored) {
         attackTimestampMs = 0;
     }
 }
-
-
-setInterval(() => {
-
-    if (!document.querySelector('.crytekTimingGear')) {
-        createGearButton();
-    }
-
-}, 1000);
 
 }
 
