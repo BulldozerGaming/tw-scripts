@@ -1,0 +1,559 @@
+// ==UserScript==
+// @name         Bulldozer - Automata T/V
+// @namespace    bulldozer
+// @license      Bulldozer Gaming
+// @version      2.0
+// @description  Ezredpontosan indít támadást vagy támogatást
+// @match        https://hu100.klanhaboru.hu/game.php*
+// @grant        unsafeWindow
+// @connect      klanhaboru.hu
+// ==/UserScript==
+
+
+(function () {
+'use strict';
+
+
+if (
+    game_data.screen !== 'place' ||
+    !location.href.includes('try=confirm')
+) {
+
+    localStorage.removeItem('crytek_attack_time');
+
+    return;
+}
+
+
+
+
+
+const STORAGE_KEY = 'crytek_attack_time';
+
+let attackTimeStr = localStorage.getItem(STORAGE_KEY) || '';
+let attackTimestampMs = 0;
+let attackTimeout = null;
+
+const SEND_OFFSET = 50;
+
+function parseTimeString(timeStr) {
+
+    const parts = timeStr.trim().split(':');
+
+    if (parts.length !== 4) return null;
+
+    const [h, m, s, ms] = parts.map(Number);
+
+    const serverNow =
+        new Date(
+            unsafeWindow.Timing.getCurrentServerTime()
+        );
+
+    const target =
+        new Date(
+            serverNow.getFullYear(),
+            serverNow.getMonth(),
+            serverNow.getDate(),
+            h,
+            m,
+            s,
+            ms
+        );
+
+    let timestamp = target.getTime();
+
+    if (timestamp < unsafeWindow.Timing.getCurrentServerTime()) {
+        timestamp += 86400000;
+    }
+
+    return timestamp;
+}
+
+function showSettingsHUD() {
+
+    if (document.getElementById('attackTimeOverlay')) {
+        return;
+    }
+
+    const overlay = document.createElement('div');
+    overlay.id = 'attackTimeOverlay';
+
+    overlay.style.position = 'fixed';
+    overlay.style.top = '50%';
+    overlay.style.left = '50%';
+    overlay.style.transform = 'translate(-50%, -50%)';
+overlay.style.background =
+    'linear-gradient(to bottom,#f5eedc,#e4d4b0)';
+
+overlay.style.border =
+    '3px solid #6b4f1d';
+
+overlay.style.borderRadius =
+    '8px';
+
+overlay.style.padding =
+    '20px';
+
+overlay.style.width =
+    'min(520px, 95vw)';
+
+overlay.style.maxHeight =
+    '95vh';
+
+overlay.style.overflowY =
+    'auto';
+
+overlay.style.zIndex =
+    '99999';
+
+overlay.style.boxShadow =
+    '0 8px 30px rgba(0,0,0,.55)';
+
+overlay.innerHTML = `
+
+<div style="
+    text-align:center;
+    font-size:34px;
+    font-weight:bold;
+    color:#3d260f;
+    margin-bottom:15px;
+">
+    Automatikus indítás időzítése
+</div>
+
+<div style="
+    text-align:center;
+    color:#8a6a3c;
+    margin-bottom:20px;
+    font-size:18px;
+">
+    ───────── ◇ ─────────
+</div>
+
+<div style="
+    font-size:18px;
+    color:#3d260f;
+    margin-bottom:15px;
+">
+    Add meg a kívánt időpontot
+    (óra:perc:másodperc:ezred):
+</div>
+
+<input
+id="attackTimeInput"
+type="text"
+placeholder="00:00:00:000"
+value="${attackTimeStr || ''}"
+style="
+width:100%;
+box-sizing:border-box;
+height:60px;
+padding:0 20px;
+font-size:26px;
+font-weight:bold;
+border:2px solid #9b7a4f;
+border-radius:10px;
+background:#fdfdfd;
+color:#2b1b08;
+box-shadow: inset 0 2px 8px rgba(0,0,0,.15);
+"
+
+>
+
+<div style="
+    margin-top:18px;
+    background:#e9dbbb;
+    border:1px solid #cfba8a;
+    border-radius:10px;
+    padding:15px;
+    color:#3d260f;
+    font-size:16px;
+">
+
+
+<b>Formátum:</b>
+óra:perc:másodperc:ezredmásodperc
+
+<br><br>
+
+<b>Példa:</b>
+18:47:59:500
+
+<br><br>
+
+Itt az <b>indítási időt</b> kell megadni, nem a becsapódási időt.<br>
+Ha például a cél a :330 utáni érkezés, akkor olyan indítási időt adj meg, amely :330-ra végződik.
+
+</div>
+
+<div style="
+    display:flex;
+    justify-content:center;
+    gap:20px;
+    margin-top:20px;
+">
+
+<button id="saveTimeBtn"
+style="
+width:180px;
+height:55px;
+cursor:pointer;
+font-size:20px;
+font-weight:bold;
+color:white;
+border-radius:8px;
+border:2px solid #234018;
+background:linear-gradient(to bottom,#5e9b43,#2e6621);
+">
+✓ Mentés </button>
+
+<button id="closeHUDBtn"
+style="
+width:180px;
+height:55px;
+cursor:pointer;
+font-size:20px;
+font-weight:bold;
+color:white;
+border-radius:8px;
+border:2px solid #5d1c13;
+background:linear-gradient(to bottom,#a34a40,#6c2119);
+">
+✕ Bezár </button>
+
+</div>
+
+<div style="
+    text-align:center;
+    color:#8a6a3c;
+    margin-top:22px;
+    margin-bottom:10px;
+    font-size:18px;
+">
+    ───────── ◇ ─────────
+</div>
+
+<div style="
+    text-align:center;
+    font-size:14px;
+    font-style:italic;
+    user-select:none;
+">
+
+    <span style="
+        color:#777;
+    ">
+        By
+    </span>
+
+    <span style="
+        color:#c11b1b;
+        font-weight:bold;
+    ">
+        Crytek
+    </span>
+
+</div>
+
+`;
+
+    document.body.appendChild(overlay);
+overlay.style.cursor = 'grab';
+
+
+
+
+
+const attackInput =
+    document.getElementById('attackTimeInput');
+
+attackInput.addEventListener('input', e => {
+
+    let value =
+        e.target.value.replace(/[^0-9:]/g, '');
+
+    value =
+        value.replace(/:/g, '');
+
+    if (value.length > 9) {
+        value = value.slice(0, 9);
+    }
+
+let formatted = '';
+
+if (value.length >= 1)
+    formatted += value.slice(0, 2);
+
+if (value.length >= 2)
+    formatted += ':';
+
+if (value.length >= 3)
+    formatted += value.slice(2, 4);
+
+if (value.length >= 4)
+    formatted += ':';
+
+if (value.length >= 5)
+    formatted += value.slice(4, 6);
+
+if (value.length >= 6)
+    formatted += ':';
+
+if (value.length >= 7)
+    formatted += value.slice(6, 9);
+
+    e.target.value = formatted;
+});
+
+
+
+
+
+let isDragging = false;
+let dragX = 0;
+let dragY = 0;
+
+overlay.addEventListener('mousedown', e => {
+
+    if (
+        e.target.tagName === 'INPUT' ||
+        e.target.tagName === 'BUTTON'
+    ) return;
+
+const rect = overlay.getBoundingClientRect();
+
+overlay.style.left = rect.left + 'px';
+overlay.style.top = rect.top + 'px';
+overlay.style.transform = 'none';
+
+    isDragging = true;
+overlay.style.cursor = 'grabbing';
+
+    dragX = e.clientX - overlay.offsetLeft;
+    dragY = e.clientY - overlay.offsetTop;
+});
+
+document.addEventListener('mousemove', e => {
+
+    if (!isDragging) return;
+
+    let left = e.clientX - dragX;
+    let top = e.clientY - dragY;
+
+    const maxLeft =
+        window.innerWidth -
+        overlay.offsetWidth;
+
+    const maxTop =
+        window.innerHeight -
+        overlay.offsetHeight;
+
+    left = Math.max(
+        0,
+        Math.min(left, maxLeft)
+    );
+
+    top = Math.max(
+        0,
+        Math.min(top, maxTop)
+    );
+
+    overlay.style.left = left + 'px';
+    overlay.style.top = top + 'px';
+    overlay.style.transform = 'none';
+});
+
+document.addEventListener('mouseup', () => {
+    isDragging = false;
+ overlay.style.cursor = 'grab';
+});
+
+    document
+        .getElementById('saveTimeBtn')
+        .addEventListener('click', () => {
+
+            const val =
+                document
+                    .getElementById('attackTimeInput')
+                    .value
+                    .trim();
+
+            const parsed =
+                parseTimeString(val);
+
+            if (parsed === null) {
+UI.ErrorMessage(
+    'Helyes formátum: óra:perc:másodperc:ezred. Példa: 20:39:18:500',
+    5000
+);
+                return;
+            }
+
+            localStorage.setItem(
+                STORAGE_KEY,
+                val
+            );
+
+            attackTimeStr = val;
+            attackTimestampMs = parsed + SEND_OFFSET;
+scheduleAttack();
+
+
+UI.SuccessMessage(
+    'Idő mentve: ' + val,
+    4000
+);
+
+overlay.remove();
+
+        });
+
+    document
+        .getElementById('closeHUDBtn')
+        .addEventListener('click', () => {
+            overlay.remove();
+        });
+}
+
+function createGearButton() {
+
+const arrivalCell = document.querySelector('#date_arrival');
+
+if (!arrivalCell) return;
+
+if (document.querySelector('.crytekTimingGear')) {
+    return;
+}
+
+const gear = document.createElement('span');
+
+gear.className = 'crytekTimingGear';
+gear.innerHTML = ' ⚙️';
+
+gear.style.display = 'inline-block';
+gear.style.cursor = 'pointer';
+gear.style.fontSize = '12px';
+gear.style.marginLeft = '4px';
+gear.style.verticalAlign = 'middle';
+gear.style.lineHeight = '1';
+
+gear.style.background =
+    'linear-gradient(to bottom, #947a62 0%, #7b5c3d 22%, #6c4824 30%, #6c4824 100%)';
+
+gear.style.borderRadius = '1px';
+gear.style.border = '1px solid #000';
+
+gear.style.padding = '0px 0px';
+gear.style.height = 'auto';
+gear.style.minWidth = 'auto';
+gear.style.textAlign = 'center';
+gear.style.verticalAlign = 'baseline';
+
+gear.title = 'Automatikus indítás beállítása';
+
+gear.addEventListener('click', showSettingsHUD);
+
+
+
+arrivalCell.appendChild(gear);
+
+}
+
+function triggerAttack() {
+
+
+
+    const btn =
+        document.querySelector(
+            '#troop_confirm_submit'
+        );
+
+    if (!btn) {
+        return;
+    }
+
+    btn.click();
+}
+
+
+
+
+
+
+
+
+
+function scheduleAttack() {
+
+    if (attackTimeout) {
+        clearTimeout(attackTimeout);
+    }
+
+    const delay =
+        attackTimestampMs -
+        unsafeWindow.Timing.getCurrentServerTime();
+
+    if (delay <= 0) {
+        return;
+    }
+
+attackTimeout = setTimeout(() => {
+
+
+triggerAttack();
+
+    localStorage.removeItem(STORAGE_KEY);
+
+    attackTimeStr = '';
+    attackTimestampMs = 0;
+
+
+
+}, delay);
+}
+
+
+
+
+function init() {
+
+    const stored = localStorage.getItem(STORAGE_KEY);
+
+if (stored) {
+
+    const parsed = parseTimeString(stored);
+
+    if (
+        parsed &&
+        parsed > unsafeWindow.Timing.getCurrentServerTime()
+    ) {
+
+        attackTimeStr = stored;
+        attackTimestampMs = parsed + SEND_OFFSET;
+
+        scheduleAttack();
+
+    } else {
+
+        localStorage.removeItem(STORAGE_KEY);
+
+        attackTimeStr = '';
+        attackTimestampMs = 0;
+    }
+}
+
+
+setInterval(() => {
+
+    if (!document.querySelector('.crytekTimingGear')) {
+        createGearButton();
+    }
+
+}, 1000);
+
+}
+
+init();
+createGearButton();
+
+})();
