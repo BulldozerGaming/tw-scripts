@@ -5927,7 +5927,7 @@ window.RAM_SPEED
 
 60000
 
-),
+)+1000,
 
 type:"NUKE"
 
@@ -6073,7 +6073,7 @@ window.SNOB_SPEED
 
 60000
 
-),
+)+1000,
 
 type:"NEMES"
 
