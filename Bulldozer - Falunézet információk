@@ -11,6 +11,33 @@
 
     'use strict';
 
+let WORLD_SPEED = 1;
+let UNIT_SPEED = 1;
+
+$.ajax({
+    url: "/interface.php?func=get_config",
+    async: false,
+    success: function(xml){
+
+        WORLD_SPEED =
+            parseFloat(
+                $(xml)
+                .find("speed")
+                .text()
+                .trim()
+            ) || 1;
+
+        UNIT_SPEED =
+            parseFloat(
+                $(xml)
+                .find("unit_speed")
+                .text()
+                .trim()
+            ) || 1;
+
+    }
+});
+
     // =========================================
     // KONTINENS A KOORDINÁTA ALÁ
     // =========================================
@@ -463,11 +490,15 @@ unit=>unitSpeeds[unit]
 
     activeUnits.forEach(unit => {
 
-        const speed =
-            unitSpeeds[unit];
+const speed =
+    unitSpeeds[unit];
 
-        const totalMinutes =
-            distance * speed;
+const totalMinutes =
+    distance *
+    (
+        speed /
+        (WORLD_SPEED * UNIT_SPEED)
+    );
 
         const totalSeconds =
             Math.floor(totalMinutes * 60);
