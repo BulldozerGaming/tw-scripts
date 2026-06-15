@@ -5901,33 +5901,24 @@ for(const target of targets){
 
 for(const from of nukes){
 
+const travelSeconds =
+Math.floor(
+plannerDistance(from,target)
+*
+window.RAM_SPEED
+*
+60
+);
+
 allNukes.push({
 
 from,
 target,
 
 time:
-
 arrival.getTime()
-
 -
-
-(
-
-plannerDistance(
-from,
-target
-)
-
-*
-
-window.RAM_SPEED
-
-*
-
-60000
-
-),
+(travelSeconds * 1000),
 
 type:"NUKE"
 
@@ -6047,33 +6038,24 @@ for(const target of targets){
 
 for(const from of snobs){
 
+const travelSeconds =
+Math.floor(
+plannerDistance(from,target)
+*
+window.SNOB_SPEED
+*
+60
+);
+
 allSnobs.push({
 
 from,
 target,
 
 time:
-
 arrival.getTime()
-
 -
-
-(
-
-plannerDistance(
-from,
-target
-)
-
-*
-
-window.SNOB_SPEED
-
-*
-
-60000
-
-),
+(travelSeconds * 1000),
 
 type:"NEMES"
 
@@ -6194,7 +6176,75 @@ x.time
 const pad=n=>
 String(n).padStart(2,"0");
 
-const launch=
+
+
+
+console.log(
+"RAW TIME:",
+x.time,
+new Date(x.time)
+);
+
+
+
+
+const now = new Date();
+
+const today =
+new Date(
+now.getFullYear(),
+now.getMonth(),
+now.getDate()
+);
+
+const launchDay =
+new Date(
+d.getFullYear(),
+d.getMonth(),
+d.getDate()
+);
+
+const diffDays =
+Math.floor(
+(launchDay - today) /
+86400000
+);
+
+let launchDateText = "";
+
+if(diffDays === 0){
+
+    launchDateText =
+    "Ma ekkor: ";
+
+}
+else if(diffDays === 1){
+
+    launchDateText =
+    "Holnap ekkor: ";
+
+}
+else{
+
+    launchDateText =
+
+    d.getFullYear()
+
+    + "."
+
+    + pad(d.getMonth()+1)
+
+    + "."
+
+    + pad(d.getDate())
+
+    + ". ";
+
+}
+
+const launch =
+
+launchDateText +
 
 pad(d.getHours())+
 ":"+
