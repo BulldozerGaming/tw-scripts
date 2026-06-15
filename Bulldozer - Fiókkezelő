@@ -26,6 +26,47 @@
    END STRICT MODE BLOCK
 =========================== */
 
+/* ===========================
+   START WORLD SPEED INIT
+=========================== */
+
+(function(){
+
+if(localStorage.getItem("crytek_fiokkezelo_world_speed")){
+    return;
+}
+
+$.get(
+"/interface.php?func=get_config",
+function(xml){
+
+const worldSpeed =
+parseFloat(
+$(xml)
+.find("speed")
+.text()
+.trim()
+) || 1;
+
+localStorage.setItem(
+"crytek_fiokkezelo_world_speed",
+worldSpeed
+);
+
+console.log(
+"[Bulldozer] Világsebesség:",
+worldSpeed
+);
+
+}
+);
+
+})();
+
+/* ===========================
+   END WORLD SPEED INIT
+=========================== */
+
 /* ============================================================================================================================================================
    END SCRIPT INIT MODULE
 ============================================================================================================================================================ */
@@ -737,12 +778,12 @@ return `${h} óra ${m} perc ${s} mp`;
 
 function calculateTemplateInfo(data){
 
-const speed=
-parseFloat(game_data.speed||1);
-console.log(
-"Világsebesség:",
-game_data.speed
-);
+const speed =
+parseFloat(
+localStorage.getItem(
+"crytek_fiokkezelo_world_speed"
+)
+) || 1;
 
 let barracks=0;
 let stable=0;
