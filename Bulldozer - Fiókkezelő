@@ -620,26 +620,26 @@ new MutationObserver(()=>{
 const TROOP_PRESETS={
 
 TF_24T:{
-axe:5020,
+axe:5335,
 spy:50,
-light:2970,
-ram:405,
+light:2910,
+ram:390,
 catapult:150
 },
 
 TF_26T:{
-axe:5625,
+axe:5985,
 spy:50,
-light:3325,
-ram:480,
+light:3260,
+ram:460,
 catapult:150
 },
 
 TF_29T:{
-axe:6270,
+axe:6683,
 spy:50,
-light:3715,
-ram:487,
+light:3633,
+ram:470,
 catapult:200
 },
 
@@ -728,22 +728,23 @@ heavy:1210
 
 
 
-const BASE_TIMES={
+const BASE_TIMES = {
 
-spear:157,      // 2:37
-sword:233,      // 3:53
-axe:223,        // 3:43
-archer:280,     // 4:40
+spear:1020,
+sword:1500,
+axe:1320,
+archer:1800,
 
-spy:187,        // 3:07
-light:374,      // 6:14
-marcher:561,    // 9:21
-heavy:748,      // 12:28
+spy:900,
+light:1800,
+marcher:2700,
+heavy:3600,
 
-ram:1778,       // 29:38
-catapult:2667   // 44:27
+ram:4800,
+catapult:7200
 
 };
+
 
 const POPULATION={
 
@@ -766,15 +767,30 @@ knight:10
 
 
 
-function formatDuration(sec){
+function formatDuration(seconds){
 
-const h=Math.floor(sec/3600);
-const m=Math.floor((sec%3600)/60);
-const s=Math.floor(sec%60);
+const days = Math.floor(seconds / 86400);
 
-return `${h} óra ${m} perc ${s} mp`;
+seconds %= 86400;
+
+const hours = Math.floor(seconds / 3600);
+
+seconds %= 3600;
+
+const minutes = Math.floor(seconds / 60);
+
+const secs = seconds % 60;
+
+if(days > 0){
+
+return `${days} nap ${hours} óra ${minutes} perc ${secs} mp`;
 
 }
+
+return `${hours} óra ${minutes} perc ${secs} mp`;
+
+}
+
 
 function calculateTemplateInfo(data){
 
@@ -797,8 +813,57 @@ Object.entries(data).forEach(([unit,count])=>{
 
 if(!BASE_TIMES[unit]) return;
 
-const time=
-(BASE_TIMES[unit]*count)/speed;
+const BARRACKS_LEVEL = 25;
+const STABLE_LEVEL = 20;
+const WORKSHOP_LEVEL = 10;
+
+let buildingLevel = 1;
+
+switch(unit){
+
+case "spear":
+case "sword":
+case "axe":
+case "archer":
+buildingLevel = BARRACKS_LEVEL;
+break;
+
+case "spy":
+case "light":
+case "marcher":
+case "heavy":
+buildingLevel = STABLE_LEVEL;
+break;
+
+case "ram":
+case "catapult":
+buildingLevel = WORKSHOP_LEVEL;
+break;
+
+}
+
+const unitTime =
+(
+BASE_TIMES[unit]
+*
+(2/3)
+*
+Math.pow(1.06, -buildingLevel)
+)
+/
+speed;
+
+const time =
+Math.floor(
+unitTime * count
+);
+
+
+
+
+
+
+
 
 switch(unit){
 
@@ -813,6 +878,7 @@ break;
 
 case "spy":
 case "light":
+case "marcher":
 case "heavy":
 
 stable+=time;
